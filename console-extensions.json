@@ -1,0 +1,26 @@
+[
+  {
+    "type": "console.page/route",
+    "properties": {
+      "exact": true,
+      "path": [
+        "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy/~new",
+        "/http-proxies/all-namespaces"
+      ],
+      "component": {
+        "$codeRef": "CreateRoute"
+      }
+    }
+  },
+  {
+    "type": "console.navigation/href",
+    "properties": {
+      "prefixNamespaced": true,
+      "id": "http-proxies",
+      "perspective": "admin",
+      "section": "networking",
+      "name": "%plugin__console-demo-plugin~HTTPProxies%",
+      "href": "/projectcontour.io~v1~HTTPProxy"
+    }
+  }
+]

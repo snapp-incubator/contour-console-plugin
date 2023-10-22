@@ -1,0 +1,40 @@
+/* Prefixing your CSS classes with your plugin name is a best practice to avoid
+ * collisions with other plugin styles. */
+.console-plugin-template__nice {
+  /* Use PF global vars for colors to support dark mode in OpenShift 4.11.
+   * https://patternfly-react-main.surge.sh/developer-resources/global-css-variables */
+  color: var(--pf-global--palette--blue-400);
+}
+.sub-title {
+  margin-bottom: 10px;
+  display: block;
+  color: var(--pf-chart-color-black-100);
+}
+.pf-c-form__group-control.pf-m-inline {
+  display: flex;
+  flex-flow: row wrap;
+}
+.pf-c-form__group-control.pf-m-inline > * {
+  margin-right: 20px;
+}
+.type-create-route {
+  padding: 10px;
+}
+.type-create-route input {
+  margin-left: auto !important;
+}
+.type-create-route .radio-inline {
+  margin-right: 10px;
+}
+.form-route {
+  margin-top: 10px;
+}
+.route-yaml-editor {
+  min-height: 350px;
+}
+.route-yaml-editor .yaml-editor {
+  margin: 0 !important;
+}
+.contour-footer {
+  z-index: 1000;
+}

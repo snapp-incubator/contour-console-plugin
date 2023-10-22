@@ -1,0 +1,16 @@
+{
+  "HTTPProxies": "HTTPProxies",
+  "Routing is a way to make your application publicly visible.": "Routing is a way to make your application publicly visible.",
+  "Name": "Name",
+  "Hostname": "Hostname",
+  "Service": "Service",
+  "Configure via:": "Configure via:",
+  "A unique name for the HTTP Proxy within the project.": "A unique name for the HTTP Proxy within the project.",
+  "HTTP Proxy type": "HTTP Proxy type",
+  "Public hostname for the Route. If not specified, a hostname is generated.": "Public hostname for the Route. If not specified, a hostname is generated.",
+  "Hostname!": "Hostname",
+  "Select a service above": "Select a service above",
+  "Target port": "Target port",
+  "Target port for traffic.": "Target port for traffic.",
+  "Path that the router watches to HTTP Proxy traffic to the service.": "Path that the router watches to HTTP Proxy traffic to the service."
+}
