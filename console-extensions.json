@@ -5,7 +5,7 @@
       "exact": true,
       "path": [
         "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy/~new",
-        "/http-proxies/all-namespaces"
+        "/k8s/cluster/projectcontour.io~v1~HTTPProxy/~new"
       ],
       "component": {
         "$codeRef": "CreateRoute"
