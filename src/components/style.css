@@ -5,6 +5,13 @@
    * https://patternfly-react-main.surge.sh/developer-resources/global-css-variables */
   color: var(--pf-global--palette--blue-400);
 }
+#create-route-contour {
+  padding-bottom: 150px;
+}
+.contour-dropdown-style .pf-c-dropdown__menu {
+  max-height: 100px;
+  overflow-y: scroll;
+}
 .sub-title {
   margin-bottom: 10px;
   display: block;
@@ -37,4 +44,15 @@
 }
 .contour-footer {
   z-index: 1000;
+}
+.pf-c-form-control {
+  display: block;
+}
+.pf-c-button.pf-m-link {
+  padding: 10px 0 !important;
+}
+.contour-add-remove-form__entry {
+  border-top: var(--pf-global--BorderWidth--sm) solid
+    var(--pf-global--BorderColor--100);
+  padding-top: 10px;
 }

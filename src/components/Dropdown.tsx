@@ -3,7 +3,7 @@ import { DropdownItem, Dropdown, DropdownToggle } from '@patternfly/react-core';
 
 interface DynamicDropdownProps {
   items: Array<string | { id: string; name: string }>;
-  selectedItem: string | null;
+  selectedItem: any | null;
   selectedKey?: (selected: string) => void;
   onSelect: (selected: string) => void;
   placeholder?: string;
@@ -26,7 +26,9 @@ const DynamicDropdown: React.FC<DynamicDropdownProps> = ({
     const targetElement = event.target;
     setIsOpen(!isOpen);
     onSelect(targetElement.textContent);
-    selectedKey(targetElement.getAttribute('data-key'));
+    if (selectedKey) {
+      selectedKey(targetElement.getAttribute('data-key'));
+    }
   };
 
   const dropdownItems = items.map((item, index) => {
@@ -42,7 +44,7 @@ const DynamicDropdown: React.FC<DynamicDropdownProps> = ({
 
   return (
     <Dropdown
-      className="dropdown--full-width"
+      className="dropdown--full-width contour-dropdown-style"
       onSelect={handleSelect}
       toggle={
         <DropdownToggle onToggle={handleToggle}>
