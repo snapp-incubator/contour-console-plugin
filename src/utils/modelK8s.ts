@@ -1,6 +1,6 @@
 export const mockHttpProxyFormData = (formData) => ({
   apiVersion: 'projectcontour.io/v1',
-  kind: 'httpproxy',
+  kind: 'HTTPProxy',
   metadata: {
     name: formData.metadataName,
     namespace: formData.metadataNamespace,
