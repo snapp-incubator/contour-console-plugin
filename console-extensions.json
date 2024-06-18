@@ -19,7 +19,7 @@
       "id": "http-proxies",
       "perspective": "admin",
       "section": "networking",
-      "name": "%plugin__console-demo-plugin~HTTPProxies%",
+      "name": "%plugin__contour-console-plugin~HTTPProxies%",
       "href": "/projectcontour.io~v1~HTTPProxy"
     }
   }

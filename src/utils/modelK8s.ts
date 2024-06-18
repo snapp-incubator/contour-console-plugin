@@ -1,39 +1,7 @@
-export const mockHttpProxyFormData = (formData) => ({
+export const mockHttpProxyFormData = {
   apiVersion: 'projectcontour.io/v1',
   kind: 'HTTPProxy',
-  metadata: {
-    name: formData.metadataName,
-    namespace: formData.metadataNamespace,
-  },
-  spec: {
-    httpVersions: ['http/1.1'],
-    ingressClassName: formData.labelsRouter,
-    routes: [
-      {
-        conditions: [
-          {
-            prefix: formData.specPath,
-          },
-        ],
-        enableWebsockets: true,
-        loadBalancerPolicy: {
-          strategy: 'Cookie',
-        },
-        services: formData.services,
-        timeoutPolicy: {
-          response: '5s',
-        },
-      },
-    ],
-    virtualhost: {
-      fqdn: formData.specHost,
-      tls: {
-        enableFallbackCertificate: formData.enableFallbackCertificate,
-        secretName: formData.secretName,
-      },
-    },
-  },
-});
+};
 
 export const mockServicesData = {
   apiVersion: 'api/v1',
@@ -58,5 +26,20 @@ export const labelRouterMapping = [
   {
     name: 'Inter-dc',
     key: 'inter-dc',
+  },
+  {
+    name: 'Inter-venture',
+    key: 'inter-venture',
+  },
+];
+
+export const tlsRouterMapping = [
+  {
+    name: 'Edge',
+    key: 'edge',
+  },
+  {
+    name: 'Passthrough',
+    key: 'passthrough',
   },
 ];

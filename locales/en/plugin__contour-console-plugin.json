@@ -2,8 +2,8 @@
   "HTTPProxies": "HTTPProxies",
   "Routing is a way to make your application publicly visible.": "Routing is a way to make your application publicly visible.",
   "Name": "Name",
-  "Hostname": "Hostname",
-  "hostname for the HTTPProxy. If not specified, a hostname is generated.": "hostname for the HTTPProxy. If not specified, a hostname is generated.",
+  "Hostname": "Hostname (Fqdn)",
+  "hostname for the HTTPProxy": "Hostname for the HTTPProxy (required)",
   "Service": "Service",
   "Configure via:": "Configure via:",
   "A unique name for the HTTP Proxy within the project.": "A unique name for the HTTP Proxy within the project.",
@@ -24,5 +24,6 @@
   "Alternate Service target": "Alternate Service target",
   "A number between 0 and 255 that depicts relative weight compared with other targets.": "A number between 0 and 255 that depicts relative weight compared with other targets.",
   "Path that the router watches to HTTP Proxy traffic to the service.": "Path that the router watches to HTTP Proxy traffic to the service.",
-  "Routes can be secured using several TLS termination types for serving certificates.": "Routes can be secured using several TLS termination types for serving certificates."
+  "Routes can be secured using several TLS termination types for serving certificates.": "Routes can be secured using several TLS termination types for serving certificates.",
+  "Cloud Doc": "https://docs.snappgroup.teh-1.snappcloud.io/docs/networking/ingress-routing/httpproxy"
 }
