@@ -20,7 +20,7 @@
   "Service weight": "Service weight",
   "Alternate Service to http proxy to.": "Alternate Service to http proxy to.",
   "Select a secret": "Select a secret",
-  "Remove alternate Service.": "Remove alternate Service.",
+  "Remove alternate Service": "Remove alternate Service",
   "Alternate Service target": "Alternate Service target",
   "A number between 0 and 255 that depicts relative weight compared with other targets.": "A number between 0 and 255 that depicts relative weight compared with other targets.",
   "Path that the router watches to HTTP Proxy traffic to the service.": "Path that the router watches to HTTP Proxy traffic to the service.",

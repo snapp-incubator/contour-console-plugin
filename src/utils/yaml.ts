@@ -2,37 +2,60 @@ export const convertRouteToYML = (formData) => {
   if (!formData) {
     return null;
   }
-  const { name, namespace, ingressClassName, prefix, fqdn, tls } = formData;
+  const {
+    name,
+    namespace,
+    conditional,
+    ingressClassName,
+    prefix,
+    fqdn,
+    tls,
+    services,
+  } = formData;
+
+  const protocol =
+    (conditional?.secureRoute && conditional?.termination) === 're-encrypt'
+      ? 'tls'
+      : undefined;
+
+  const routeServices = services.map((service) => ({
+    name: service.name,
+    port: service.port,
+    weight: service.weight,
+    ...(protocol && { protocol }),
+  }));
+
+  const sectionServices =
+    conditional?.secureRoute && conditional?.termination === 'passthrough'
+      ? { tcpproxy: { services: routeServices } }
+      : { services: routeServices };
+
   const modelData = {
     apiVersion: 'projectcontour.io/v1',
     kind: 'HTTPProxy',
     metadata: {
       name,
-      namespace: namespace,
+      namespace,
     },
     spec: {
-      httpVersions: ['http/1.1'],
-      ingressClassName,
+      virtualhost: {
+        fqdn,
+        tls,
+      },
       routes: [
         {
-          conditions: [
-            {
-              prefix: prefix,
-            },
-          ],
+          conditions: [{ prefix }],
+          ...sectionServices,
           loadBalancerPolicy: {
             strategy: 'Cookie',
           },
-          services: formData.services,
           timeoutPolicy: {
             response: '5s',
           },
         },
       ],
-      virtualhost: {
-        fqdn,
-        tls,
-      },
+      ingressClassName,
+      httpVersions: ['http/1.1'],
     },
   };
 
@@ -45,18 +68,33 @@ export const convertRouteToForm = (data) => {
   }
 
   const { metadata, spec } = data;
-  const { routes } = spec || {};
+  const { routes, virtualhost } = spec || {};
   const firstRoute = routes?.[0] || {};
-  const { conditions, services } = firstRoute;
+  const { conditions, services, tcpproxy } = firstRoute;
+
+  const routeServices = tcpproxy?.services || services;
+  const protocol = routeServices?.[0]?.protocol;
 
   return {
     name: metadata?.name,
+    namespace: metadata?.namespace,
     ingressClassName: spec?.ingressClassName,
     prefix: conditions?.[0]?.prefix,
+    fqdn: virtualhost?.fqdn,
+    tls: virtualhost?.tls,
     services:
-      services?.map((service) => ({
+      routeServices?.map((service) => ({
         name: service?.name,
         weight: service?.weight,
+        port: service?.port,
       })) || [],
+    conditional: {
+      secureRoute: !!tcpproxy || !!protocol,
+      termination: tcpproxy
+        ? 'passthrough'
+        : protocol === 'tls'
+        ? 're-encrypt'
+        : undefined,
+    },
   };
 };

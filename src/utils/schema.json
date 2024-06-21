@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "definitions": {
+    "SecureRoute": {
+      "title": "Security",
+      "type": "object",
+      "properties": {
+        "secureRoute": {
+          "title": "Secure Route",
+          "type": "boolean"
+        }
+      },
+      "dependencies": {
+        "secureRoute": {
+          "oneOf": [
+            {
+              "properties": {
+                "secureRoute": {
+                  "const": true
+                },
+                "termination": {
+                  "title": "TLS termination",
+                  "type": "string",
+                  "enum": [
+                    { "label": "Edge", "value": "edge" },
+                    { "label": "Passthrough", "value": "passthrough" },
+                    { "label": "Re-encrypt", "value": "re-encrypt" }
+                  ],
+                  "default": "edge"
+                },
+                "insecureTraffic": {
+                  "title": "Insecure traffic ",
+                  "type": "string",
+                  "enum": [
+                    { "label": "Allow", "value": "allow" },
+                    { "label": "Redirect", "value": "redirect" }
+                  ],
+                  "default": "None"
+                },
+                "secrets": {
+                  "title": "Secrets",
+                  "type": "string",
+                  "enum": []
+                }
+              },
+              "required": ["termination"]
+            },
+            {
+              "properties": {
+                "secureRoute": {
+                  "const": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "proxy": {
+      "title": "HTTP Proxy type",
+      "type": "string",
+      "enum": [
+        { "label": "Public", "value": "public" },
+        { "label": "Private", "value": "private" },
+        { "label": "Inter-dc", "value": "inter-dc" },
+        { "label": "Inter-venture", "value": "inter-venture" }
+      ],
+      "default": "public"
+    }
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "ingressClassName": {
+      "$ref": "#/definitions/proxy"
+    },
+    "fqdn": {
+      "type": "string",
+      "title": "Hostname (Fqdn)"
+    },
+    "prefix": {
+      "type": "string",
+      "title": "Path",
+      "default": "/"
+    },
+    "services": {
+      "type": "array",
+      "title": "Services",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Service Name",
+            "enum": []
+          },
+          "weight": {
+            "type": "number",
+            "title": "Service weight",
+            "default": 100
+          },
+          "port": {
+            "type": "string",
+            "title": "Target Port",
+            "enum": []
+          }
+        },
+        "required": ["name", "port", "weight"]
+      }
+    },
+    "conditional": {
+      "$ref": "#/definitions/SecureRoute"
+    }
+  },
+  "required": ["name", "fqdn", "ingressClassName"]
+}

@@ -75,6 +75,7 @@
     }
   },
   "dependencies": {
-    "@rjsf/core": "2.5.1"
+    "@rjsf/core": "2.5.1",
+    "classnames": "^2.5.1"
   }
 }

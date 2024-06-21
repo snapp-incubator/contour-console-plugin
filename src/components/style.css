@@ -56,3 +56,23 @@
     var(--pf-global--BorderColor--100);
   padding-top: 10px;
 }
+
+#create-route-contour .help-block {
+  display: block;
+  margin-top: -8px !important;
+}
+
+#create-route-contour .control-label .required {
+  color: #a30000;
+}
+
+#create-route-contour .custom-dropdown-options {
+  background: #27292d;
+  box-shadow: 0 3px 2px #27292d;
+  padding: 11px;
+  border-radius: 0 0 5px 5px;
+}
+
+.custom-dropdown-option {
+  padding: 6px;
+}
