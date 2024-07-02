@@ -66,18 +66,8 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   };
 
   const intialFormData = {
-    name: undefined,
     namespace: namespace,
-    fqdn: undefined,
-    prefix: '/',
-    specToName: '',
-    specTls: '',
-    labelsRole: '',
     services: [],
-    ingressClassName: '',
-    termination: [],
-    secrets: [],
-    tls: undefined,
   };
   const [formData, setFormData] = React.useState(intialFormData);
 
@@ -141,6 +131,12 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     };
 
     newSchema.definitions.SecureRoute.dependencies.secureRoute.oneOf[0].properties.secrets.enum =
+      k8Secrets?.map((item) => ({
+        label: item?.metadata?.name,
+        value: item?.metadata?.name,
+      })) || [];
+
+    newSchema.properties.services.items.properties.caSecret.enum =
       k8Secrets?.map((item) => ({
         label: item?.metadata?.name,
         value: item?.metadata?.name,
@@ -213,7 +209,9 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     k8sGetSecrets();
   }, []);
 
-  React.useEffect(() => {}, [k8Secrets]);
+  React.useEffect(() => {
+    updateSchema();
+  }, [k8Secrets]);
 
   const k8sCreateRoute = () => {
     k8sCreate({ model: k8sModel, data: yamlParser.load(yamlData) })

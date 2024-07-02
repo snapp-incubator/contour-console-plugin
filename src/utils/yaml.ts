@@ -1,7 +1,81 @@
-export const convertRouteToYML = (formData) => {
+interface ConditionalType {
+  secureRoute?: boolean;
+  termination?: string;
+  secrets?: string;
+  insecureTraffic?: string;
+}
+
+interface InputServiceType {
+  name: string;
+  port: number;
+  weight: number;
+  caSecret?: boolean;
+  subjectName?: string;
+}
+
+interface ServiceType {
+  name: string;
+  port: number;
+  weight: number;
+  validation?: {
+    caSecret: boolean;
+    subjectName?: string;
+  };
+  protocol?: string;
+}
+
+interface FormDataType {
+  name?: string;
+  namespace: string;
+  conditional?: ConditionalType;
+  ingressClassName?: string;
+  prefix?: string;
+  fqdn?: string;
+  services: InputServiceType[];
+}
+
+interface VirtualHostType {
+  fqdn?: string;
+  tls?: {
+    secretName: string;
+    passthrough?: boolean;
+  };
+}
+
+interface ModelDataType {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+    namespace: string;
+  };
+  spec: {
+    virtualhost?: VirtualHostType;
+    routes: Array<{
+      conditions: Array<{ prefix: string }>;
+      services?: ServiceType[];
+      tcpproxy?: {
+        services: ServiceType[];
+      };
+      loadBalancerPolicy: {
+        strategy: string;
+      };
+      timeoutPolicy: {
+        response: string;
+      };
+    }>;
+    ingressClassName?: string;
+    httpVersions: string[];
+  };
+}
+
+export const convertRouteToYML = (
+  formData: FormDataType | null,
+): ModelDataType | null => {
   if (!formData) {
     return null;
   }
+
   const {
     name,
     namespace,
@@ -9,7 +83,6 @@ export const convertRouteToYML = (formData) => {
     ingressClassName,
     prefix,
     fqdn,
-    tls,
     services,
   } = formData;
 
@@ -18,19 +91,51 @@ export const convertRouteToYML = (formData) => {
       ? 'tls'
       : undefined;
 
-  const routeServices = services.map((service) => ({
-    name: service.name,
-    port: service.port,
-    weight: service.weight,
-    ...(protocol && { protocol }),
-  }));
+  const secretName = conditional?.secureRoute
+    ? conditional?.secrets
+    : undefined;
+  const passthrough =
+    conditional?.insecureTraffic === 'redirect' ? true : undefined;
+  const tls =
+    (secretName && conditional?.termination) === 're-encrypt'
+      ? {
+          secretName,
+          passthrough,
+        }
+      : undefined;
+
+  const routeServices: ServiceType[] = services.map((service) => {
+    const serviceObject: ServiceType = {
+      name: service.name,
+      port: service.port,
+      weight: service.weight,
+      ...(protocol && { protocol }),
+    };
+
+    if (service?.caSecret) {
+      serviceObject.validation = {
+        caSecret: service.caSecret,
+        subjectName: service.subjectName,
+      };
+    }
+
+    return serviceObject;
+  });
 
   const sectionServices =
     conditional?.secureRoute && conditional?.termination === 'passthrough'
       ? { tcpproxy: { services: routeServices } }
       : { services: routeServices };
 
-  const modelData = {
+  const virtualhost: VirtualHostType = {};
+  if (fqdn) {
+    virtualhost.fqdn = fqdn;
+  }
+  if (tls) {
+    virtualhost.tls = tls;
+  }
+
+  const modelData: ModelDataType = {
     apiVersion: 'projectcontour.io/v1',
     kind: 'HTTPProxy',
     metadata: {
@@ -38,10 +143,7 @@ export const convertRouteToYML = (formData) => {
       namespace,
     },
     spec: {
-      virtualhost: {
-        fqdn,
-        tls,
-      },
+      ...(Object.keys(virtualhost).length > 0 && { virtualhost }),
       routes: [
         {
           conditions: [{ prefix }],
@@ -87,6 +189,8 @@ export const convertRouteToForm = (data) => {
         name: service?.name,
         weight: service?.weight,
         port: service?.port,
+        caSecret: service?.validation?.caSecret,
+        subjectName: service?.validation?.subjectName,
       })) || [],
     conditional: {
       secureRoute: !!tcpproxy || !!protocol,

@@ -33,7 +33,7 @@
                   "title": "Insecure traffic ",
                   "type": "string",
                   "enum": [
-                    { "label": "Allow", "value": "allow" },
+                    { "label": "None", "value": "none" },
                     { "label": "Redirect", "value": "redirect" }
                   ],
                   "default": "None"
@@ -106,6 +106,15 @@
             "type": "string",
             "title": "Target Port",
             "enum": []
+          },
+          "caSecret": {
+            "type": "string",
+            "title": "Secret",
+            "enum": []
+          },
+          "subjectName": {
+            "type": "string",
+            "title": "Subject Name"
           }
         },
         "required": ["name", "port", "weight"]

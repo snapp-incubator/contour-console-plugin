@@ -60,6 +60,21 @@ export const uiSchema = {
         'ui:help':
           'A number between 0 and 255 that depicts relative weight compared with other targets.',
       },
+      subjectName: {
+        'ui:widget': 'customTextWidget',
+        'ui:options': {
+          className: 'form-group',
+        },
+        'ui:help':
+          'To verify the backend endpoint`s identity, you will need a CA certificate and a Subject Name.',
+      },
+      caSecret: {
+        'ui:widget': 'customDropdownWidget',
+        'ui:options': {
+          className: 'form-group co-create-route__path',
+        },
+        'ui:help': 'You can create your own secret of(workloads->Secrets)',
+      },
     },
   },
   conditional: {
