@@ -47,6 +47,7 @@ import CustomDropdownWidget from './CustomDropdownWidget';
 import CustomTextWidget from './CustomTextWidget';
 import ArrayFieldTemplate from './ArrayFieldTemplate';
 import { CreateRouteProps } from '../utils/types';
+import { updateSchema } from '../utils/updateSchema';
 import './style.css';
 
 const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
@@ -71,78 +72,9 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   };
   const [formData, setFormData] = React.useState(intialFormData);
 
-  const updateSchema = () => {
-    let newSchema = { ...schema };
-
-    const getServiceNamesEnum = () => {
-      return (
-        k8Service?.items.map((service) => ({
-          value: service?.metadata.name,
-          label: service?.metadata.name,
-        })) || []
-      );
-    };
-
-    const getTargetPortsEnum = (serviceName) => {
-      const service = k8Service?.items.find(
-        (service) => service.metadata.name === serviceName,
-      );
-
-      return (
-        service?.spec.ports.map((port) => ({
-          label: port.targetPort,
-          value: port.targetPort,
-        })) || []
-      );
-    };
-
-    const serviceName = formData.services[0]?.name || '';
-
-    const updatedServicesProperties = {
-      ...newSchema.properties.services.items.properties,
-      name: {
-        type: 'string',
-        title: 'Service Name',
-        enum: getServiceNamesEnum(),
-      },
-      port: {
-        type: 'string',
-        title: 'Target Port',
-        enum: getTargetPortsEnum(serviceName),
-      },
-    };
-
-    newSchema = {
-      ...newSchema,
-      properties: {
-        ...newSchema.properties,
-        services: {
-          ...newSchema.properties.services,
-          items: {
-            ...newSchema.properties.services.items,
-            properties: updatedServicesProperties,
-            required: [
-              ...newSchema.properties.services.items.required,
-              'protocol',
-            ],
-          },
-        },
-      },
-    };
-
-    newSchema.definitions.SecureRoute.dependencies.secureRoute.oneOf[0].properties.secrets.enum =
-      k8Secrets?.map((item) => ({
-        label: item?.metadata?.name,
-        value: item?.metadata?.name,
-      })) || [];
-
-    newSchema.properties.services.items.properties.caSecret.enum =
-      k8Secrets?.map((item) => ({
-        label: item?.metadata?.name,
-        value: item?.metadata?.name,
-      })) || [];
-
-    setSchema(newSchema);
+  const handleUpdateSchema = () => {
+    const updatedSchema = updateSchema(schema, k8Service, k8Secrets, formData);
+    setSchema(updatedSchema);
   };
 
   const [k8sModel] = useK8sModel(
@@ -185,7 +117,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
 
   React.useEffect(() => {
     setYamlData(yamlParser.dump(convertRouteToYML(formData)));
-    updateSchema();
+    handleUpdateSchema();
   }, [formData]);
 
   React.useEffect(() => {
@@ -198,7 +130,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
         },
       ],
     }));
-    updateSchema();
+    handleUpdateSchema();
   }, [k8Service]);
 
   React.useEffect(() => {}, [selectedTLS]);
@@ -210,7 +142,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   }, []);
 
   React.useEffect(() => {
-    updateSchema();
+    handleUpdateSchema();
   }, [k8Secrets]);
 
   const k8sCreateRoute = () => {
