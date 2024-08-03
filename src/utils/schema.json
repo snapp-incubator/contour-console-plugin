@@ -60,12 +60,7 @@
     "proxy": {
       "title": "HTTP Proxy type",
       "type": "string",
-      "enum": [
-        { "label": "Public", "value": "public" },
-        { "label": "Private", "value": "private" },
-        { "label": "Inter-dc", "value": "inter-dc" },
-        { "label": "Inter-venture", "value": "inter-venture" }
-      ],
+      "enum": [],
       "default": "public"
     }
   },

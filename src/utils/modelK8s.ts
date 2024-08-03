@@ -13,3 +13,8 @@ export const mockSecrets = {
   apiVersion: 'api/v1',
   kind: 'Secret',
 };
+
+export const mockNetworking = {
+  apiVersion: 'networking.k8s.io/v1',
+  kind: 'IngressClass',
+};

@@ -38,6 +38,7 @@ interface VirtualHostType {
   fqdn?: string;
   tls?: {
     secretName: string;
+    enableFallbackCertificate: boolean;
     passthrough?: boolean;
   };
 }
@@ -101,6 +102,7 @@ export const convertRouteToYML = (
       ? {
           secretName,
           passthrough,
+          enableFallbackCertificate: true,
         }
       : undefined;
 

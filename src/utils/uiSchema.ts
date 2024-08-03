@@ -73,7 +73,7 @@ export const uiSchema = {
         'ui:options': {
           className: 'form-group co-create-route__path',
         },
-        'ui:help': 'You can create your own secret of(workloads->Secrets)',
+        'ui:help': 'Only TLS-type secrets are allowed for selection.',
       },
     },
   },
@@ -90,7 +90,7 @@ export const uiSchema = {
     },
     secrets: {
       'ui:widget': 'customDropdownWidget',
-      'ui:help': 'You can create your own secret of(workloads->Secrets)',
+      'ui:help': 'Only TLS-type secrets are allowed for selection.',
       'ui:options': {
         className: 'form-group co-create-route__path',
       },

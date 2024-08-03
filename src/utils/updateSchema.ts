@@ -36,6 +36,7 @@ export function updateSchema(
   originalSchema: any,
   k8Service: K8Service,
   k8Secrets: K8Secret[],
+  k8IngressClass: any,
   formData: FormData,
 ): any {
   let newSchema: any = JSON.parse(JSON.stringify(originalSchema));
@@ -69,18 +70,12 @@ export function updateSchema(
   const updatedServicesProperties: { [key: string]: SchemaProperty } = {
     ...newSchema.properties.services.items.properties,
     name: {
-      type: 'string',
-      title: 'Service Name',
       enum: getServiceNamesEnum(),
     },
     port: {
-      type: 'string',
-      title: 'Target Port',
       enum: getTargetPortsEnum(serviceName),
     },
     protocol: {
-      type: 'string',
-      title: 'Protocol',
       enum: [
         { label: 'HTTP', value: 'http' },
         { label: 'HTTPS', value: 'https' },
@@ -95,6 +90,12 @@ export function updateSchema(
 
   newSchema.definitions.SecureRoute.dependencies.secureRoute.oneOf[0].properties.secrets.enum =
     k8Secrets?.map((item) => ({
+      label: item.metadata?.name || '',
+      value: item.metadata?.name || '',
+    })) || [];
+
+  newSchema.definitions.proxy.enum =
+    k8IngressClass?.map((item) => ({
       label: item.metadata?.name || '',
       value: item.metadata?.name || '',
     })) || [];

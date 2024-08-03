@@ -40,6 +40,7 @@ import {
   mockHttpProxyFormData,
   mockServicesData,
   mockSecrets,
+  mockNetworking,
 } from '../utils/modelK8s';
 import { convertRouteToForm } from '../utils/yaml';
 import { convertRouteToYML } from '../utils/yaml';
@@ -60,6 +61,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   const [schema, setSchema] = React.useState(schemaRaw);
   const [k8Service, setK8Service] = React.useState<any>();
   const [k8Secrets, setK8Secrets] = React.useState<any>();
+  const [k8IngressClass, setK8IngressClass] = React.useState<any>();
   const [errData, setErrData] = React.useState<string>();
   const widgets = {
     customTextWidget: CustomTextWidget,
@@ -73,7 +75,13 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   const [formData, setFormData] = React.useState(intialFormData);
 
   const handleUpdateSchema = () => {
-    const updatedSchema = updateSchema(schema, k8Service, k8Secrets, formData);
+    const updatedSchema = updateSchema(
+      schema,
+      k8Service,
+      k8Secrets,
+      k8IngressClass,
+      formData,
+    );
     setSchema(updatedSchema);
   };
 
@@ -85,6 +93,10 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   );
   const [k8sModelSecret] = useK8sModel(
     getGroupVersionKindForResource(mockSecrets),
+  );
+
+  const [k8sModelNetworking] = useK8sModel(
+    getGroupVersionKindForResource(mockNetworking),
   );
 
   const handleYamlChange = (newValue: string) => {
@@ -139,6 +151,8 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     setYamlData(yamlParser.dump(convertRouteToYML(formData)));
     k8sGetServices();
     k8sGetSecrets();
+    k8sGetNetwoking();
+    console.log(k8IngressClass);
   }, []);
 
   React.useEffect(() => {
@@ -161,7 +175,23 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
       ns: namespace,
     })
       .then((response) => {
-        setK8Secrets(response['items']);
+        const tlsSecrets = response['items'].filter(
+          (secret) => secret.type === 'kubernetes.io/tls',
+        );
+        setK8Secrets(tlsSecrets);
+      })
+      .catch((e) => {
+        setErrData(e.message);
+        console.error(e);
+      });
+  };
+
+  const k8sGetNetwoking = () => {
+    k8sGet({
+      model: k8sModelNetworking,
+    })
+      .then((response) => {
+        setK8IngressClass(response['items']);
       })
       .catch((e) => {
         setErrData(e.message);
