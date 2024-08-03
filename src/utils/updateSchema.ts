@@ -70,12 +70,15 @@ export function updateSchema(
   const updatedServicesProperties: { [key: string]: SchemaProperty } = {
     ...newSchema.properties.services.items.properties,
     name: {
+      title: 'Name',
       enum: getServiceNamesEnum(),
     },
     port: {
+      title: 'Port',
       enum: getTargetPortsEnum(serviceName),
     },
     protocol: {
+      title: 'Protocol',
       enum: [
         { label: 'HTTP', value: 'http' },
         { label: 'HTTPS', value: 'https' },
