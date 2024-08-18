@@ -1,69 +1,14 @@
-interface ConditionalType {
-  secureRoute?: boolean;
-  termination?: string;
-  secrets?: string;
-  insecureTraffic?: string;
-}
-
-interface InputServiceType {
-  name: string;
-  port: number;
-  weight: number;
-  caSecret?: boolean;
-  subjectName?: string;
-}
-
-interface ServiceType {
-  name: string;
-  port: number;
-  weight: number;
-  validation?: {
-    caSecret: boolean;
-    subjectName?: string;
-  };
-  protocol?: string;
-}
-
-interface FormDataType {
-  name?: string;
-  namespace: string;
-  conditional?: ConditionalType;
-  ingressClassName?: string;
-  prefix?: string;
-  fqdn?: string;
-  services: InputServiceType[];
-}
-
-interface VirtualHostType {
-  fqdn?: string;
-  tls?: {
-    secretName: string;
-    enableFallbackCertificate: boolean;
-    passthrough?: boolean;
-  };
-}
-
-interface ModelDataType {
-  apiVersion: string;
-  kind: string;
-  metadata: {
-    name: string;
-    namespace: string;
-  };
-  spec: {
-    virtualhost?: VirtualHostType;
-    routes: Array<any>;
-    ingressClassName?: string;
-    httpVersions: string[];
-  };
-}
+import {
+  ServiceType,
+  FormDataType,
+  ModelDataType,
+  VirtualHostType,
+} from './types';
 
 export const convertRouteToYML = (
   formData: FormDataType | null,
 ): ModelDataType | null => {
-  if (!formData) {
-    return null;
-  }
+  if (!formData) return null;
 
   const {
     name,
@@ -75,126 +20,113 @@ export const convertRouteToYML = (
     services,
   } = formData;
 
-  const protocol =
-    conditional?.secureRoute && conditional?.termination === 're-encrypt'
-      ? 'tls'
-      : undefined;
+  const isSecureRoute = conditional?.secureRoute;
+  const termination = conditional?.termination;
+  const isPassthrough = termination === 'passthrough';
 
-  const enableFallbackCertificate =
-    conditional?.termination != 'passthrough' ? true : undefined;
-  const passthrough =
-    conditional?.termination === 'passthrough' ? true : undefined;
+  const createTLS = (): { tls?: VirtualHostType['tls']; protocol?: string } => {
+    if (!isSecureRoute) return {};
 
-  const secretName =
-    conditional?.secureRoute && !passthrough ? conditional?.secrets : undefined;
+    const protocol = termination === 're-encrypt' ? 'tls' : undefined;
 
-  const tls = conditional?.termination
-    ? {
-        secretName,
-        passthrough,
-        enableFallbackCertificate,
-      }
-    : undefined;
+    const tls = {
+      secretName: !isPassthrough ? conditional?.secrets : undefined,
+      passthrough: isPassthrough || undefined,
+      enableFallbackCertificate: !isPassthrough || undefined,
+    };
 
-  const routeServices: ServiceType[] = services.map((service) => {
-    const serviceObject: ServiceType = {
+    return { tls, protocol };
+  };
+
+  const createServices = (protocol?: string): ServiceType[] => {
+    return services.map((service) => ({
       name: service.name,
       port: service.port,
       weight: service.weight,
       ...(protocol && { protocol }),
-    };
-
-    if (service?.caSecret) {
-      serviceObject.validation = {
-        caSecret: service.caSecret,
-        subjectName: service.subjectName,
-      };
-    }
-
-    return serviceObject;
-  });
-
-  const sectionServices =
-    conditional?.secureRoute && conditional?.termination === 'passthrough'
-      ? { tcpproxy: { services: routeServices } }
-      : undefined;
-
-  const virtualhost: VirtualHostType = {};
-  if (fqdn) {
-    virtualhost.fqdn = fqdn;
-  }
-  if (tls) {
-    virtualhost.tls = tls;
-  }
-
-  const modelData: ModelDataType = {
-    apiVersion: 'projectcontour.io/v1',
-    kind: 'HTTPProxy',
-    metadata: {
-      name,
-      namespace,
-    },
-    spec: {
-      ...(Object.keys(virtualhost).length > 0 && { virtualhost }),
-      routes:
-        conditional?.termination != 'passthrough'
-          ? [
-              {
-                conditions: [{ prefix }],
-                services: routeServices,
-                loadBalancerPolicy: {
-                  strategy: 'Cookie',
-                },
-                timeoutPolicy: {
-                  response: '5s',
-                },
-              },
-            ]
-          : undefined,
-      ...sectionServices,
-      ingressClassName,
-      httpVersions: ['http/1.1'],
-    },
+      ...(service.caSecret && {
+        validation: {
+          caSecret: service.caSecret,
+          subjectName: service.subjectName,
+        },
+      }),
+    }));
   };
 
-  return modelData;
+  const { tls, protocol } = createTLS();
+  const routeServices = createServices(protocol);
+
+  const createVirtualHost = (): VirtualHostType => ({
+    ...(fqdn && { fqdn }),
+    ...(tls && { tls }),
+  });
+
+  const createSpec = (): ModelDataType['spec'] => ({
+    ...(Object.keys(createVirtualHost()).length > 0 && {
+      virtualhost: createVirtualHost(),
+    }),
+    ...(!isPassthrough && {
+      routes: [
+        {
+          conditions: [{ prefix }],
+          services: routeServices,
+          loadBalancerPolicy: { strategy: 'Cookie' },
+          timeoutPolicy: { response: '5s' },
+        },
+      ],
+    }),
+    ...(isSecureRoute &&
+      isPassthrough && {
+        tcpproxy: { services: routeServices },
+      }),
+    ingressClassName,
+    httpVersions: ['http/1.1'],
+  });
+
+  return {
+    apiVersion: 'projectcontour.io/v1',
+    kind: 'HTTPProxy',
+    metadata: { name, namespace },
+    spec: createSpec(),
+  };
 };
 
 export const convertRouteToForm = (data) => {
-  if (!data) {
-    return null;
-  }
+  if (!data) return null;
 
   const { metadata, spec } = data;
-  const { routes, virtualhost, tcpproxy } = spec || {};
+  const { routes, virtualhost, tcpproxy, ingressClassName } = spec || {};
   const firstRoute = routes?.[0] || {};
   const { conditions, services } = firstRoute;
+  const routeServices = tcpproxy?.services || services || [];
+  const firstService = routeServices[0] || {};
 
-  const routeServices = tcpproxy?.services || services;
-  const protocol = routeServices?.[0]?.protocol;
-  const tlsTermination = spec.virtualhost.tls.passthrough;
+  const determineTermination = () => {
+    if (virtualhost?.tls?.passthrough) return 'Passthrough';
+    if (firstService.protocol === 'tls') return 'Re-encrypt';
+    return 'Edge';
+  };
+
+  const mapServices = (services) =>
+    services.map(({ name, weight, port, validation }) => ({
+      name,
+      weight,
+      port,
+      caSecret: validation?.caSecret,
+      subjectName: validation?.subjectName,
+    }));
+
   return {
     name: metadata?.name,
     namespace: metadata?.namespace,
-    ingressClassName: spec?.ingressClassName,
+    ingressClassName,
     prefix: conditions?.[0]?.prefix || '/',
     fqdn: virtualhost?.fqdn,
     tls: virtualhost?.tls,
-    services:
-      routeServices?.map((service) => ({
-        name: service?.name,
-        weight: service?.weight,
-        port: service?.port,
-        caSecret: service?.validation?.caSecret,
-        subjectName: service?.validation?.subjectName,
-      })) || [],
+    services: mapServices(routeServices),
     conditional: {
       secureRoute: true,
-      termination: tlsTermination
-        ? 'Passthrough'
-        : protocol === 'tls'
-        ? 'Re-encrypt'
-        : 'Edge',
+      termination: determineTermination(),
       secrets: virtualhost?.tls?.secretName,
     },
   };
