@@ -1,0 +1,30 @@
+# Internationalization scripts
+i18n-scripts
+
+# Test files
+integration-tests
+
+# Localization files
+locales
+
+# Dependencies
+node_modules
+
+# Version control
+.git
+.gitignore
+
+# CI/CD
+.ci-operator.yaml
+
+# Linting and formatting
+.eslintrc.yml
+.prettierrc.yml
+
+# Charts (assuming these are Helm charts and not needed in the Docker image)
+charts
+
+# Misc
+*.log
+*.md
+!README.md
