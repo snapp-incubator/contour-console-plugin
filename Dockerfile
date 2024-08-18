@@ -1,14 +1,45 @@
-FROM registry.access.redhat.com/ubi8/nodejs-16:latest AS build
-USER root
-RUN command -v yarn || npm i -g yarn
+# Build stage
+FROM node:16-alpine AS build
 
-ADD . /usr/src/app
-WORKDIR /usr/src/app
-RUN yarn install && yarn build
+WORKDIR /app
 
-FROM registry.access.redhat.com/ubi8/nginx-120:latest
+# Copy package.json and yarn.lock (if exists)
+COPY package.json yarn.lock* ./
 
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
-USER 1001
+# Install dependencies
+RUN yarn install
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# Copy the rest of the application code
+COPY . .
+
+# Build the application
+RUN yarn build
+
+# Production stage
+FROM nginx:alpine
+
+# Copy custom nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Create Nginx cache directories and set permissions
+RUN mkdir -p /var/cache/nginx/client_temp \
+             /var/cache/nginx/proxy_temp \
+             /var/cache/nginx/fastcgi_temp \
+             /var/cache/nginx/uwsgi_temp \
+             /var/cache/nginx/scgi_temp \
+    && chmod 755 /var/cache/nginx
+
+# Set permissions for other Nginx directories
+RUN chown -R nginx:nginx /var/cache/nginx \
+                         /var/log/nginx \
+                         /etc/nginx \
+                         /usr/share/nginx/html \
+    && chmod -R 755 /var/cache/nginx \
+                    /var/log/nginx \
+                    /etc/nginx \
+                    /usr/share/nginx/html
+                    
+# Copy the built assets from the build stage
+COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
+
+CMD ["nginx", "-g", "daemon off;"]
