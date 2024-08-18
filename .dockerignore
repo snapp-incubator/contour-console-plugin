@@ -1,12 +1,3 @@
-# Internationalization scripts
-i18n-scripts
-
-# Test files
-integration-tests
-
-# Localization files
-locales
-
 # Dependencies
 node_modules
 
