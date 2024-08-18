@@ -152,7 +152,6 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     k8sGetServices();
     k8sGetSecrets();
     k8sGetNetwoking();
-    console.log(k8IngressClass);
   }, []);
 
   React.useEffect(() => {
@@ -191,7 +190,10 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
       model: k8sModelNetworking,
     })
       .then((response) => {
-        setK8IngressClass(response['items']);
+        const ingressClasses = response['items'].filter((ic) =>
+          ic.spec.controller.includes('projectcontour.io'),
+        );
+        setK8IngressClass(ingressClasses);
       })
       .catch((e) => {
         setErrData(e.message);

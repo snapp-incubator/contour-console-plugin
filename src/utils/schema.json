@@ -27,21 +27,13 @@
                     { "label": "Passthrough", "value": "passthrough" },
                     { "label": "Re-encrypt", "value": "re-encrypt" }
                   ],
-                  "default": "edge"
-                },
-                "insecureTraffic": {
-                  "title": "Insecure traffic ",
-                  "type": "string",
-                  "enum": [
-                    { "label": "None", "value": "none" },
-                    { "label": "Redirect", "value": "redirect" }
-                  ],
-                  "default": "None"
+                  "default": "Edge"
                 },
                 "secrets": {
                   "title": "Secrets",
                   "type": "string",
-                  "enum": []
+                  "enum": [],
+                  "default": "openshift-ingress/letsencrypt"
                 }
               },
               "required": ["termination"]

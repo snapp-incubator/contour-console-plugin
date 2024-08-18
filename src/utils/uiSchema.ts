@@ -46,12 +46,6 @@ export const uiSchema = {
         },
         'ui:help': 'Target port for traffic.',
       },
-      protocol: {
-        'ui:widget': 'customTextWidget',
-        'ui:options': {
-          className: 'form-group',
-        },
-      },
       weight: {
         'ui:widget': 'customTextWidget',
         'ui:options': {
@@ -79,7 +73,6 @@ export const uiSchema = {
   },
   conditional: {
     'ui:widget': 'checkbox',
-
     termination: {
       'ui:widget': 'customDropdownWidget',
       'ui:help':
@@ -91,13 +84,6 @@ export const uiSchema = {
     secrets: {
       'ui:widget': 'customDropdownWidget',
       'ui:help': 'Only TLS-type secrets are allowed for selection.',
-      'ui:options': {
-        className: 'form-group co-create-route__path',
-      },
-    },
-    insecureTraffic: {
-      'ui:widget': 'customDropdownWidget',
-      'ui:help': 'Policy for traffic on insecure schemes like HTTP.',
       'ui:options': {
         className: 'form-group co-create-route__path',
       },

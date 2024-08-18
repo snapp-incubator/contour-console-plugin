@@ -2,7 +2,7 @@ import { match as RMatch } from 'react-router-dom';
 
 export type ServiceType = {
   name: string;
-  protocol: string;
+  protocol?: string;
   port: number;
   weight: number;
 };

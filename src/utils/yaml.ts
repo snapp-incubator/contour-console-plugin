@@ -52,19 +52,7 @@ interface ModelDataType {
   };
   spec: {
     virtualhost?: VirtualHostType;
-    routes: Array<{
-      conditions: Array<{ prefix: string }>;
-      services?: ServiceType[];
-      tcpproxy?: {
-        services: ServiceType[];
-      };
-      loadBalancerPolicy: {
-        strategy: string;
-      };
-      timeoutPolicy: {
-        response: string;
-      };
-    }>;
+    routes: Array<any>;
     ingressClassName?: string;
     httpVersions: string[];
   };
@@ -88,23 +76,25 @@ export const convertRouteToYML = (
   } = formData;
 
   const protocol =
-    (conditional?.secureRoute && conditional?.termination) === 're-encrypt'
+    conditional?.secureRoute && conditional?.termination === 're-encrypt'
       ? 'tls'
       : undefined;
 
-  const secretName = conditional?.secureRoute
-    ? conditional?.secrets
-    : undefined;
+  const enableFallbackCertificate =
+    conditional?.termination != 'passthrough' ? true : undefined;
   const passthrough =
-    conditional?.insecureTraffic === 'redirect' ? true : undefined;
-  const tls =
-    (secretName && conditional?.termination) === 're-encrypt'
-      ? {
-          secretName,
-          passthrough,
-          enableFallbackCertificate: true,
-        }
-      : undefined;
+    conditional?.termination === 'passthrough' ? true : undefined;
+
+  const secretName =
+    conditional?.secureRoute && !passthrough ? conditional?.secrets : undefined;
+
+  const tls = conditional?.termination
+    ? {
+        secretName,
+        passthrough,
+        enableFallbackCertificate,
+      }
+    : undefined;
 
   const routeServices: ServiceType[] = services.map((service) => {
     const serviceObject: ServiceType = {
@@ -127,7 +117,7 @@ export const convertRouteToYML = (
   const sectionServices =
     conditional?.secureRoute && conditional?.termination === 'passthrough'
       ? { tcpproxy: { services: routeServices } }
-      : { services: routeServices };
+      : undefined;
 
   const virtualhost: VirtualHostType = {};
   if (fqdn) {
@@ -146,18 +136,22 @@ export const convertRouteToYML = (
     },
     spec: {
       ...(Object.keys(virtualhost).length > 0 && { virtualhost }),
-      routes: [
-        {
-          conditions: [{ prefix }],
-          ...sectionServices,
-          loadBalancerPolicy: {
-            strategy: 'Cookie',
-          },
-          timeoutPolicy: {
-            response: '5s',
-          },
-        },
-      ],
+      routes:
+        conditional?.termination != 'passthrough'
+          ? [
+              {
+                conditions: [{ prefix }],
+                services: routeServices,
+                loadBalancerPolicy: {
+                  strategy: 'Cookie',
+                },
+                timeoutPolicy: {
+                  response: '5s',
+                },
+              },
+            ]
+          : undefined,
+      ...sectionServices,
       ingressClassName,
       httpVersions: ['http/1.1'],
     },
@@ -172,18 +166,18 @@ export const convertRouteToForm = (data) => {
   }
 
   const { metadata, spec } = data;
-  const { routes, virtualhost } = spec || {};
+  const { routes, virtualhost, tcpproxy } = spec || {};
   const firstRoute = routes?.[0] || {};
-  const { conditions, services, tcpproxy } = firstRoute;
+  const { conditions, services } = firstRoute;
 
   const routeServices = tcpproxy?.services || services;
   const protocol = routeServices?.[0]?.protocol;
-
+  const tlsTermination = spec.virtualhost.tls.passthrough;
   return {
     name: metadata?.name,
     namespace: metadata?.namespace,
     ingressClassName: spec?.ingressClassName,
-    prefix: conditions?.[0]?.prefix,
+    prefix: conditions?.[0]?.prefix || '/',
     fqdn: virtualhost?.fqdn,
     tls: virtualhost?.tls,
     services:
@@ -195,12 +189,13 @@ export const convertRouteToForm = (data) => {
         subjectName: service?.validation?.subjectName,
       })) || [],
     conditional: {
-      secureRoute: !!tcpproxy || !!protocol,
-      termination: tcpproxy
-        ? 'passthrough'
+      secureRoute: true,
+      termination: tlsTermination
+        ? 'Passthrough'
         : protocol === 'tls'
-        ? 're-encrypt'
-        : undefined,
+        ? 'Re-encrypt'
+        : 'Edge',
+      secrets: virtualhost?.tls?.secretName,
     },
   };
 };
