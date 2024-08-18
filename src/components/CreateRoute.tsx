@@ -57,7 +57,6 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   const history = useHistory();
   const [yamlView, setYamlView] = React.useState(false);
   const [yamlData, setYamlData] = React.useState();
-  const [selectedTLS] = React.useState<string>('');
   const [schema, setSchema] = React.useState(schemaRaw);
   const [k8Service, setK8Service] = React.useState<any>();
   const [k8Secrets, setK8Secrets] = React.useState<any>();
@@ -144,8 +143,6 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     }));
     handleUpdateSchema();
   }, [k8Service]);
-
-  React.useEffect(() => {}, [selectedTLS]);
 
   React.useEffect(() => {
     setYamlData(yamlParser.dump(convertRouteToYML(formData)));
@@ -293,7 +290,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
                     environments.
                   </Text>
                   <br />
-                  <a target="_blank" href={t('Cloud Doc')}>
+                  <a target="_blank" href={t('Cloud Doc')} rel="noreferrer">
                     Read More (Cloud Doc)
                   </a>
                 </CardBody>
