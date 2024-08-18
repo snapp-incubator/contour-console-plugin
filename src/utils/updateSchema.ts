@@ -1,36 +1,13 @@
-interface K8Service {
-  items?: Array<{
-    metadata: {
-      name: string;
-    };
-    spec: {
-      ports: Array<{
-        targetPort: string | number;
-      }>;
-    };
-  }>;
-}
-
-interface K8Secret {
-  metadata?: {
-    name: string;
-  };
-}
-
-interface FormData {
-  services?: Array<{
-    name?: string;
-  }>;
-}
+import { K8Service, K8Secret, FormDataType } from './types';
 
 export function updateSchema(
   originalSchema: any,
   k8Service: K8Service,
   k8Secrets: K8Secret[],
   k8IngressClass: any,
-  formData: FormData,
+  formData: FormDataType,
 ): any {
-  let newSchema: any = JSON.parse(JSON.stringify(originalSchema));
+  const newSchema: any = JSON.parse(JSON.stringify(originalSchema));
   const defaultValue = 'openshift-ingress/letsencrypt';
 
   // Update services enum

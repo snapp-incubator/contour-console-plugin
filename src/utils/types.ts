@@ -16,22 +16,22 @@ export type CreateRouteProps = {
   }>;
 };
 
-export interface ConditionalType {
+export type ConditionalType = {
   secureRoute?: boolean;
   termination?: string;
   secrets?: string;
   insecureTraffic?: string;
-}
+};
 
-export interface InputServiceType {
+export type InputServiceType = {
   name: string;
   port: number;
   weight: number;
   caSecret?: boolean;
   subjectName?: string;
-}
+};
 
-export interface FormDataType {
+export type FormDataType = {
   name?: string;
   namespace: string;
   conditional?: ConditionalType;
@@ -39,18 +39,18 @@ export interface FormDataType {
   prefix?: string;
   fqdn?: string;
   services: InputServiceType[];
-}
+};
 
-export interface VirtualHostType {
+export type VirtualHostType = {
   fqdn?: string;
   tls?: {
     secretName: string;
     enableFallbackCertificate: boolean;
     passthrough?: boolean;
   };
-}
+};
 
-export interface ModelDataType {
+export type ModelDataType = {
   apiVersion: string;
   kind: string;
   metadata: {
@@ -63,4 +63,23 @@ export interface ModelDataType {
     ingressClassName?: string;
     httpVersions: string[];
   };
-}
+};
+
+export type K8Service = {
+  items?: Array<{
+    metadata: {
+      name: string;
+    };
+    spec: {
+      ports: Array<{
+        targetPort: string | number;
+      }>;
+    };
+  }>;
+};
+
+export type K8Secret = {
+  metadata?: {
+    name: string;
+  };
+};
