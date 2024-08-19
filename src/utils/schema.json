@@ -16,9 +16,7 @@
           "oneOf": [
             {
               "properties": {
-                "secureRoute": {
-                  "const": true
-                },
+                "secureRoute": { "const": true },
                 "termination": {
                   "title": "TLS termination",
                   "type": "string",
@@ -40,9 +38,7 @@
             },
             {
               "properties": {
-                "secureRoute": {
-                  "const": false
-                }
+                "secureRoute": { "const": false }
               }
             }
           ]
@@ -94,17 +90,39 @@
             "title": "Target Port",
             "enum": []
           },
-          "caSecret": {
-            "type": "string",
-            "title": "Secret",
-            "enum": []
-          },
-          "subjectName": {
-            "type": "string",
-            "title": "Subject Name"
+          "enableUpstreamTLS": {
+            "type": "boolean",
+            "title": "UpStream TLS",
+            "default": false
           }
         },
-        "required": ["name", "port", "weight"]
+        "required": ["name", "port", "weight"],
+        "dependencies": {
+          "enableUpstreamTLS": {
+            "oneOf": [
+              {
+                "properties": {
+                  "enableUpstreamTLS": { "const": true },
+                  "caSecret": {
+                    "type": "string",
+                    "title": "Secret",
+                    "enum": []
+                  },
+                  "subjectName": {
+                    "type": "string",
+                    "title": "Subject Name"
+                  }
+                },
+                "required": ["caSecret", "subjectName"]
+              },
+              {
+                "properties": {
+                  "enableUpstreamTLS": { "const": false }
+                }
+              }
+            ]
+          }
+        }
       }
     },
     "conditional": {

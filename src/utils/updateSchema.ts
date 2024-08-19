@@ -39,7 +39,8 @@ export function updateSchema(
 
   newSchema.definitions.SecureRoute.dependencies.secureRoute.oneOf[0].properties.secrets.enum =
     secretsEnum;
-  newSchema.properties.services.items.properties.caSecret.enum = secretsEnum;
+  newSchema.properties.services.items.dependencies.enableUpstreamTLS.oneOf[0].properties.caSecret.enum =
+    secretsEnum;
 
   // Update ingress class enum
   const ingressClassEnum =

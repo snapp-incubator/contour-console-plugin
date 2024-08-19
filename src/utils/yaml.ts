@@ -28,6 +28,7 @@ export const convertRouteToYML = (
     if (!isSecureRoute) return {};
 
     const protocol = termination === 're-encrypt' ? 'tls' : undefined;
+    const hasCaSecret = services.some((service) => service.enableUpstreamTLS);
 
     const tls = {
       secretName: !isPassthrough ? conditional?.secrets : undefined,
@@ -35,7 +36,11 @@ export const convertRouteToYML = (
       enableFallbackCertificate: !isPassthrough || undefined,
     };
 
-    return { tls, protocol };
+    if (!hasCaSecret) {
+      return { tls, protocol };
+    } else {
+      return { protocol };
+    }
   };
 
   const createServices = (protocol?: string): ServiceType[] => {
@@ -44,7 +49,7 @@ export const convertRouteToYML = (
       port: service.port,
       weight: service.weight,
       ...(protocol && { protocol }),
-      ...(service.caSecret && {
+      ...(service.enableUpstreamTLS && {
         validation: {
           caSecret: service.caSecret,
           subjectName: service.subjectName,
@@ -112,6 +117,7 @@ export const convertRouteToForm = (data) => {
       name,
       weight,
       port,
+      enableUpstreamTLS: validation?.caSecret ? true : false,
       caSecret: validation?.caSecret,
       subjectName: validation?.subjectName,
     }));

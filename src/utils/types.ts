@@ -28,6 +28,7 @@ export type InputServiceType = {
   port: number;
   weight: number;
   caSecret?: boolean;
+  enableUpstreamTLS: boolean;
   subjectName?: string;
 };
 
