@@ -104,7 +104,7 @@ export const convertRouteToForm = (data) => {
   const { metadata, spec } = data;
   const { routes, virtualhost, tcpproxy, ingressClassName } = spec || {};
   const firstRoute = routes?.[0] || {};
-  const { conditions, services } = firstRoute;
+  const { conditions, services, permitInsecure } = firstRoute;
   const routeServices = tcpproxy?.services || services || [];
   const firstService = routeServices[0] || {};
 
@@ -134,6 +134,7 @@ export const convertRouteToForm = (data) => {
     services: mapServices(routeServices),
     conditional: {
       secureRoute: true,
+      permitInsecureStatus: permitInsecure ? 'Allow' : 'None',
       termination: determineTermination(),
       secrets: virtualhost?.tls?.secretName,
     },
