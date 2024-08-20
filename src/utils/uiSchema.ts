@@ -81,6 +81,13 @@ export const uiSchema = {
         className: 'form-group co-create-route__path',
       },
     },
+    permitInsecureStatus: {
+      'ui:widget': 'customDropdownWidget',
+      'ui:help': 'Policy for traffic on insecure schemes like HTTP.',
+      'ui:options': {
+        className: 'form-group co-create-route__path',
+      },
+    },
     secrets: {
       'ui:widget': 'customDropdownWidget',
       'ui:help': 'Only TLS-type secrets are allowed for selection.',

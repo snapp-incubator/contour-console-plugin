@@ -27,6 +27,15 @@
                   ],
                   "default": "Edge"
                 },
+                "permitInsecureStatus": {
+                  "title": "Insecure traffic",
+                  "type": "string",
+                  "enum": [
+                    { "label": "None", "value": false },
+                    { "label": "Allow", "value": true }
+                  ],
+                  "default": false
+                },
                 "secrets": {
                   "title": "Secrets",
                   "type": "string",

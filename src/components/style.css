@@ -67,10 +67,11 @@
 }
 
 #create-route-contour .custom-dropdown-options {
-  background: #27292d;
-  box-shadow: 0 3px 2px #27292d;
+  background-color: var(--pf-c-menu--m-nav--BackgroundColor);
+  box-shadow: var(--pf-global--BoxShadow--sm);
+  color: var(--pf-c-menu--m-nav__item--Color);
   padding: 11px;
-  border-radius: 0 0 5px 5px;
+  border-radius: 0 0 3px 3px;
 }
 
 .custom-dropdown-option {

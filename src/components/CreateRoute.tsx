@@ -25,6 +25,10 @@ import {
   CardBody,
   Text,
   Grid,
+  Hint,
+  HintTitle,
+  HintBody,
+  HintFooter,
 } from '@patternfly/react-core';
 import { useTranslation } from 'react-i18next';
 import { YAMLEditor } from '@openshift-console/dynamic-plugin-sdk';
@@ -280,7 +284,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
             <GridItem span={4}>
               <br />
               <Card isFullHeight={true} isFlat={true}>
-                <CardTitle> HTTPProxy </CardTitle>
+                <CardTitle> HTTPProxies</CardTitle>
                 <CardBody>
                   <Text>
                     The goal of the HTTPProxy Custom Resource Definition (CRD)
@@ -290,9 +294,19 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
                     environments.
                   </Text>
                   <br />
-                  <a target="_blank" href={t('Cloud Doc')} rel="noreferrer">
-                    Read More (Cloud Doc)
-                  </a>
+                  <Hint>
+                    <HintTitle>Advance Configuration</HintTitle>
+                    <HintBody>
+                      HTTPProxies allows for the use of advanced configuration
+                      options in the YAML tab, offering greater flexibility and
+                      control over routing and load balancing behaviors.
+                    </HintBody>
+                    <HintFooter>
+                      <a href={t('Cloud Doc')} target="_blank">
+                        Read More (Cloud Doc)
+                      </a>
+                    </HintFooter>
+                  </Hint>
                 </CardBody>
               </Card>
             </GridItem>

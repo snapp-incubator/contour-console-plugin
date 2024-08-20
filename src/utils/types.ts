@@ -18,6 +18,7 @@ export type CreateRouteProps = {
 
 export type ConditionalType = {
   secureRoute?: boolean;
+  permitInsecureStatus?: boolean;
   termination?: string;
   secrets?: string;
   insecureTraffic?: string;
@@ -43,7 +44,7 @@ export type FormDataType = {
 };
 
 export type VirtualHostType = {
-  fqdn?: string;
+  valueDomain?: string;
   tls?: {
     secretName: string;
     enableFallbackCertificate: boolean;

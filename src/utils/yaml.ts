@@ -4,6 +4,7 @@ import {
   ModelDataType,
   VirtualHostType,
 } from './types';
+import { convertToDomain, convertToString } from './fqdnHandler';
 
 export const convertRouteToYML = (
   formData: FormDataType | null,
@@ -19,7 +20,6 @@ export const convertRouteToYML = (
     fqdn,
     services,
   } = formData;
-
   const isSecureRoute = conditional?.secureRoute;
   const termination = conditional?.termination;
   const isPassthrough = termination === 'passthrough';
@@ -29,7 +29,6 @@ export const convertRouteToYML = (
 
     const protocol = termination === 're-encrypt' ? 'tls' : undefined;
     const hasCaSecret = services.some((service) => service.enableUpstreamTLS);
-
     const tls = {
       secretName: !isPassthrough ? conditional?.secrets : undefined,
       passthrough: isPassthrough || undefined,
@@ -61,8 +60,10 @@ export const convertRouteToYML = (
   const { tls, protocol } = createTLS();
   const routeServices = createServices(protocol);
 
+  const permitInsecure = conditional?.permitInsecureStatus || undefined;
+
   const createVirtualHost = (): VirtualHostType => ({
-    ...(fqdn && { fqdn }),
+    ...(fqdn && { fqdn: convertToDomain(fqdn) }),
     ...(tls && { tls }),
   });
 
@@ -74,6 +75,7 @@ export const convertRouteToYML = (
       routes: [
         {
           conditions: [{ prefix }],
+          permitInsecure,
           services: routeServices,
           loadBalancerPolicy: { strategy: 'Cookie' },
           timeoutPolicy: { response: '5s' },
@@ -127,7 +129,7 @@ export const convertRouteToForm = (data) => {
     namespace: metadata?.namespace,
     ingressClassName,
     prefix: conditions?.[0]?.prefix || '/',
-    fqdn: virtualhost?.fqdn,
+    fqdn: convertToString(virtualhost?.fqdn),
     tls: virtualhost?.tls,
     services: mapServices(routeServices),
     conditional: {
