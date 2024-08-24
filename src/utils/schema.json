@@ -27,19 +27,14 @@
                   ],
                   "default": "Edge"
                 },
-                "permitInsecureStatus": {
-                  "title": "Insecure traffic",
-                  "type": "string",
-                  "enum": [
-                    { "label": "None", "value": false },
-                    { "label": "Allow", "value": true }
-                  ],
+                "permitInsecure": {
+                  "title": "Allow insecure traffic",
+                  "type": "boolean",
                   "default": false
                 },
                 "secrets": {
                   "title": "Secrets",
                   "type": "string",
-                  "enum": [],
                   "default": "openshift-ingress/letsencrypt"
                 }
               },
@@ -57,7 +52,7 @@
     "proxy": {
       "title": "HTTP Proxy type",
       "type": "string",
-      "enum": [],
+      "enum": ["public", "private"],
       "default": "public"
     }
   },
@@ -86,8 +81,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "title": "Service Name",
-            "enum": []
+            "title": "Service Name"
           },
           "weight": {
             "type": "number",
@@ -96,8 +90,7 @@
           },
           "port": {
             "type": "string",
-            "title": "Target Port",
-            "enum": []
+            "title": "Target Port"
           },
           "enableUpstreamTLS": {
             "type": "boolean",
@@ -114,8 +107,7 @@
                   "enableUpstreamTLS": { "const": true },
                   "caSecret": {
                     "type": "string",
-                    "title": "Secret",
-                    "enum": []
+                    "title": "Secret"
                   },
                   "subjectName": {
                     "type": "string",

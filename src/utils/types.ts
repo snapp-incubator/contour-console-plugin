@@ -18,7 +18,7 @@ export type CreateRouteProps = {
 
 export type ConditionalType = {
   secureRoute?: boolean;
-  permitInsecureStatus?: boolean;
+  permitInsecure?: boolean;
   termination?: string;
   secrets?: string;
   insecureTraffic?: string;

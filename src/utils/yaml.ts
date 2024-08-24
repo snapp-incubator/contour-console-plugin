@@ -10,7 +10,6 @@ export const convertRouteToYML = (
   formData: FormDataType | null,
 ): ModelDataType | null => {
   if (!formData) return null;
-
   const {
     name,
     namespace,
@@ -20,13 +19,13 @@ export const convertRouteToYML = (
     fqdn,
     services,
   } = formData;
+
   const isSecureRoute = conditional?.secureRoute;
   const termination = conditional?.termination;
   const isPassthrough = termination === 'passthrough';
 
   const createTLS = (): { tls?: VirtualHostType['tls']; protocol?: string } => {
     if (!isSecureRoute) return {};
-
     const protocol = termination === 're-encrypt' ? 'tls' : undefined;
     const hasCaSecret = services.some((service) => service.enableUpstreamTLS);
     const tls = {
@@ -34,7 +33,6 @@ export const convertRouteToYML = (
       passthrough: isPassthrough || undefined,
       enableFallbackCertificate: !isPassthrough || undefined,
     };
-
     if (!hasCaSecret) {
       return { tls, protocol };
     } else {
@@ -59,8 +57,7 @@ export const convertRouteToYML = (
 
   const { tls, protocol } = createTLS();
   const routeServices = createServices(protocol);
-
-  const permitInsecure = conditional?.permitInsecureStatus || undefined;
+  const permitInsecure = conditional?.permitInsecure ? true : undefined;
 
   const createVirtualHost = (): VirtualHostType => ({
     ...(fqdn && { fqdn: convertToDomain(fqdn) }),
@@ -100,7 +97,6 @@ export const convertRouteToYML = (
 
 export const convertRouteToForm = (data) => {
   if (!data) return null;
-
   const { metadata, spec } = data;
   const { routes, virtualhost, tcpproxy, ingressClassName } = spec || {};
   const firstRoute = routes?.[0] || {};
@@ -109,9 +105,9 @@ export const convertRouteToForm = (data) => {
   const firstService = routeServices[0] || {};
 
   const determineTermination = () => {
-    if (virtualhost?.tls?.passthrough) return 'Passthrough';
-    if (firstService.protocol === 'tls') return 'Re-encrypt';
-    return 'Edge';
+    if (virtualhost?.tls?.passthrough) return 'passthrough';
+    if (firstService.protocol === 'tls') return 're-encrypt';
+    return 'edge';
   };
 
   const mapServices = (services) =>
@@ -133,8 +129,8 @@ export const convertRouteToForm = (data) => {
     tls: virtualhost?.tls,
     services: mapServices(routeServices),
     conditional: {
-      secureRoute: true,
-      permitInsecureStatus: permitInsecure ? 'Allow' : 'None',
+      secureRoute: !!virtualhost?.tls,
+      permitInsecure: !!permitInsecure,
       termination: determineTermination(),
       secrets: virtualhost?.tls?.secretName,
     },
