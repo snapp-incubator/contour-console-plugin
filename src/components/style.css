@@ -77,3 +77,8 @@
 .custom-dropdown-option {
   padding: 6px;
 }
+
+#create-route-contour input[type='radio'],
+input[type='checkbox'] {
+  margin-top: 4px !important;
+}
