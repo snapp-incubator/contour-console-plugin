@@ -1,15 +1,16 @@
-import {
-  ServiceType,
-  FormDataType,
-  ModelDataType,
-  VirtualHostType,
-} from './types';
+import { load } from 'js-yaml';
+import { ServiceType, FormDataType } from './types';
 import { convertToDomain, convertToString } from './fqdnHandler';
 
 export const convertRouteToYML = (
   formData: FormDataType | null,
-): ModelDataType | null => {
+  existingYAML: string,
+): string | null => {
   if (!formData) return null;
+
+  // Parse existing YAML
+  const existingData = existingYAML ? load(existingYAML) : {};
+
   const {
     name,
     namespace,
@@ -24,7 +25,7 @@ export const convertRouteToYML = (
   const termination = conditional?.termination;
   const isPassthrough = termination === 'passthrough';
 
-  const createTLS = (): { tls?: VirtualHostType['tls']; protocol?: string } => {
+  const createTLS = (): { tls?: any; protocol?: string } => {
     if (!isSecureRoute) return {};
     const protocol = termination === 're-encrypt' ? 'tls' : undefined;
     const hasCaSecret = services.some((service) => service.enableUpstreamTLS);
@@ -59,40 +60,56 @@ export const convertRouteToYML = (
   const routeServices = createServices(protocol);
   const permitInsecure = conditional?.permitInsecure ? true : undefined;
 
-  const createVirtualHost = (): VirtualHostType => ({
+  const updateVirtualHost = (existing: any = {}): any => ({
+    ...existing,
     ...(fqdn && { fqdn: convertToDomain(fqdn) }),
     ...(tls && { tls }),
   });
 
-  const createSpec = (): ModelDataType['spec'] => ({
-    ...(Object.keys(createVirtualHost()).length > 0 && {
-      virtualhost: createVirtualHost(),
-    }),
-    ...(!isPassthrough && {
-      routes: [
-        {
-          conditions: [{ prefix }],
-          permitInsecure,
-          services: routeServices,
-          loadBalancerPolicy: { strategy: 'Cookie' },
-          timeoutPolicy: { response: '5s' },
-        },
-      ],
-    }),
-    ...(isSecureRoute &&
-      isPassthrough && {
-        tcpproxy: { services: routeServices },
-      }),
-    ingressClassName,
-    httpVersions: ['http/1.1'],
-  });
+  const updateSpec = (existing: any = {}): any => {
+    const updatedSpec: any = {
+      ...existing,
+      ...(fqdn && { virtualhost: updateVirtualHost(existing.virtualhost) }),
+      ...(ingressClassName && { ingressClassName }),
+      httpVersions: existing.httpVersions || ['http/1.1'],
+    };
 
-  return {
+    if (!isPassthrough) {
+      const existingRoute = existing.routes?.[0] || {};
+      updatedSpec.routes = [
+        {
+          ...existingRoute,
+          conditions: [
+            { prefix: prefix || existingRoute.conditions?.[0]?.prefix || '/' },
+          ],
+          permitInsecure: permitInsecure ?? existingRoute.permitInsecure,
+          services: routeServices,
+          loadBalancerPolicy: existingRoute.loadBalancerPolicy || {
+            strategy: 'Cookie',
+          },
+          timeoutPolicy: existingRoute.timeoutPolicy || { response: '5s' },
+        },
+      ];
+    } else if (isSecureRoute) {
+      updatedSpec.tcpproxy = { services: routeServices };
+    }
+
+    return updatedSpec;
+  };
+
+  const updatedData: any = {
+    ...existingData,
     apiVersion: 'projectcontour.io/v1',
     kind: 'HTTPProxy',
-    metadata: { name, namespace },
-    spec: createSpec(),
+    metadata: {
+      ...existingData?.metadata,
+      ...(name && { name }),
+      ...(namespace && { namespace }),
+    },
+    spec: updateSpec(existingData?.spec),
   };
+
+  return updatedData;
 };
 
 export const convertRouteToForm = (data) => {

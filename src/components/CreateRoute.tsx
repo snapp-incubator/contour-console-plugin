@@ -1,8 +1,9 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import { JSONSchema7 } from 'json-schema';
 import classNames from 'classnames';
+import { useParams } from 'react-router-dom';
 
 import { uiSchema } from '../utils/uiSchema';
 import schemaRaw from '../utils/schema.json';
@@ -59,13 +60,16 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
 
   const history = useHistory();
-  const [yamlView, setYamlView] = React.useState(false);
-  const [yamlData, setYamlData] = React.useState();
-  const [schema, setSchema] = React.useState(schemaRaw);
-  const [k8Service, setK8Service] = React.useState<any>();
-  const [k8Secrets, setK8Secrets] = React.useState<any>();
-  const [k8IngressClass, setK8IngressClass] = React.useState<any>();
-  const [errData, setErrData] = React.useState<string>();
+  const isYamlView = location.pathname.endsWith('/yaml') || false;
+  const [yamlView, setYamlView] = useState(isYamlView);
+  const [yamlData, setYamlData] = useState();
+  const [schema, setSchema] = useState(schemaRaw);
+  const [k8Service, setK8Service] = useState<any>();
+  const [k8Secrets, setK8Secrets] = useState<any>();
+  const [k8IngressClass, setK8IngressClass] = useState<any>();
+  const [errData, setErrData] = useState<string>();
+  const { name } = useParams<{ name: string }>();
+
   const widgets = {
     customTextWidget: CustomTextWidget,
     customDropdownWidget: CustomDropdownWidget,
@@ -75,7 +79,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     namespace: namespace,
     services: [],
   };
-  const [formData, setFormData] = React.useState(intialFormData);
+  const [formData, setFormData] = useState(intialFormData);
 
   const handleUpdateSchema = () => {
     const updatedSchema = updateSchema(
@@ -118,8 +122,9 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
 
   const onChangeRadio = (checked: boolean, event) => {
     const view = event.target.value;
-    if (view === 'yaml') {
+    if (view == 'yaml') {
       setYamlView(true);
+      setYamlData(yamlParser.dump(convertRouteToYML(formData, yamlData)));
     } else {
       setYamlView(false);
       updateFormData();
@@ -130,12 +135,11 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     history.goBack();
   };
 
-  React.useEffect(() => {
-    setYamlData(yamlParser.dump(convertRouteToYML(formData)));
+  useEffect(() => {
     handleUpdateSchema();
   }, [formData]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,
       services: [
@@ -148,23 +152,42 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     handleUpdateSchema();
   }, [k8Service]);
 
-  React.useEffect(() => {
-    setYamlData(yamlParser.dump(convertRouteToYML(formData)));
+  useEffect(() => {
+    if (name != undefined) {
+      k8sGetRoute();
+    } else {
+      setYamlData(yamlParser.dump(convertRouteToYML(formData, yamlData)));
+    }
     k8sGetServices();
     k8sGetSecrets();
     k8sGetNetwoking();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleUpdateSchema();
   }, [k8Secrets]);
 
   const k8sCreateRoute = () => {
     k8sCreate({ model: k8sModel, data: yamlParser.load(yamlData) })
-      .then((response) => {
+      .then(() => {
         history.goBack();
       })
       .catch((e) => {
+        setErrData(e.message);
+      });
+  };
+
+  const k8sGetRoute = () => {
+    k8sGet({
+      model: k8sModel,
+      ns: namespace,
+      name: name,
+    })
+      .then((response) => {
+        setYamlData(yamlParser.dump(response));
+      })
+      .catch((e) => {
+        console.log('error', e.message);
         setErrData(e.message);
       });
   };
@@ -337,15 +360,11 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
     </React.Fragment>
   );
 };
-const CreateRoute: React.FC<CreateRouteProps> = ({ match }) => {
+const CreateRoute = ({ match }: CreateRouteProps) => {
   const { ns } = match?.params;
   const activeNamespace = ns || 'all-namespaces';
 
-  return (
-    <React.Fragment>
-      <NamespacePageContent namespace={activeNamespace} />
-    </React.Fragment>
-  );
+  return <NamespacePageContent namespace={activeNamespace} />;
 };
 
 export default CreateRoute;
