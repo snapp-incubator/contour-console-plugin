@@ -145,7 +145,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
       services: [
         {
           name: k8Service?.items[0]?.metadata.name,
-          port: k8Service?.items[0]?.spec?.ports[0]?.targetPort,
+          port: k8Service?.items[0]?.spec?.ports[0]?.port,
         },
       ],
     }));

@@ -74,7 +74,7 @@ export type K8Service = {
     };
     spec: {
       ports: Array<{
-        targetPort: string | number;
+        port: string | number;
       }>;
     };
   }>;

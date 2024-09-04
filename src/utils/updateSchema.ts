@@ -24,8 +24,8 @@ export function updateSchema(
     k8Service?.items
       ?.find((service) => service.metadata.name === serviceName)
       ?.spec.ports.map((port) => ({
-        label: port.targetPort.toString(),
-        value: port.targetPort,
+        label: port.port.toString(),
+        value: port.port,
       })) || [];
   newSchema.properties.services.items.properties.port.enum = targetPortsEnum;
 
