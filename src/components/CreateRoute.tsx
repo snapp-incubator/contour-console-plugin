@@ -37,6 +37,7 @@ import yamlParser from 'js-yaml';
 
 import {
   k8sCreate,
+  k8sUpdate,
   k8sGet,
   useK8sModel,
   getGroupVersionKindForResource,
@@ -61,6 +62,13 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
 
   const history = useHistory();
   const isYamlView = location.pathname.endsWith('/yaml') || false;
+  const updatedUiSchema = {
+    ...uiSchema,
+    name: {
+      ...(uiSchema.name || {}),
+      'ui:disabled': isYamlView,
+    },
+  };
   const [yamlView, setYamlView] = useState(isYamlView);
   const [yamlData, setYamlData] = useState();
   const [schema, setSchema] = useState(schemaRaw);
@@ -176,6 +184,22 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
         setErrData(e.message);
       });
   };
+  const k8sUpdateRoute = () => {
+    const updatedYamlData = yamlParser.dump(
+      convertRouteToYML(formData, yamlData),
+    );
+    k8sUpdate({
+      model: k8sModel,
+      data: yamlParser.load(updatedYamlData),
+      ns: namespace,
+    })
+      .then((response) => {
+        history.goBack();
+      })
+      .catch((e) => {
+        setErrData(e.message);
+      });
+  };
 
   const k8sGetRoute = () => {
     k8sGet({
@@ -187,7 +211,6 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
         setYamlData(yamlParser.dump(response));
       })
       .catch((e) => {
-        console.log('error', e.message);
         setErrData(e.message);
       });
   };
@@ -285,7 +308,7 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
                     <Form
                       ArrayFieldTemplate={ArrayFieldTemplate}
                       schema={schema as JSONSchema7}
-                      uiSchema={uiSchema}
+                      uiSchema={updatedUiSchema}
                       widgets={widgets}
                       onChange={(e) => setFormData(e.formData)}
                       formData={formData}
@@ -349,9 +372,16 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
           </AlertGroup>
         )}
         <ActionGroup className="pf-c-form pf-c-form__group--no-top-margin">
-          <Button onClick={k8sCreateRoute} variant="primary">
-            {t('public~Create')}
-          </Button>
+          {isYamlView ? (
+            <Button onClick={k8sUpdateRoute} variant="primary">
+              {t('public~Update')}
+            </Button>
+          ) : (
+            <Button onClick={k8sCreateRoute} variant="primary">
+              {t('public~Create')}
+            </Button>
+          )}
+
           <Button onClick={handleGoBack} variant="secondary">
             {t('public~Cancel')}
           </Button>
