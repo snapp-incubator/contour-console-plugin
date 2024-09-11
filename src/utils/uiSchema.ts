@@ -1,6 +1,7 @@
 export const uiSchema = {
   name: {
     'ui:widget': 'customTextWidget',
+    'ui:disabled': false,
     'ui:options': {
       className: 'form-group co-create-route__name',
     },
