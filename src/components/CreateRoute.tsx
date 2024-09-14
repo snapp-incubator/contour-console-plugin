@@ -176,7 +176,10 @@ const NamespacePageContent = ({ namespace }: { namespace?: string }) => {
   }, [k8Secrets]);
 
   const k8sCreateRoute = () => {
-    k8sCreate({ model: k8sModel, data: yamlParser.load(yamlData) })
+    const updatedYamlData = yamlParser.dump(
+      convertRouteToYML(formData, yamlData),
+    );
+    k8sCreate({ model: k8sModel, data: yamlParser.load(updatedYamlData) })
       .then(() => {
         history.goBack();
       })
