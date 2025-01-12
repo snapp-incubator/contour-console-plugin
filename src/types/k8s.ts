@@ -31,3 +31,11 @@ export interface K8sIngressClass extends K8sResource {
     controller: string;
   };
 }
+
+export interface K8sResources {
+  services: K8sService[];
+  secrets: K8sSecret[];
+  ingressClasses: K8sIngressClass[];
+  loading: boolean;
+  error: string | null;
+}
