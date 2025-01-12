@@ -6,10 +6,36 @@
       "path": [
         "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy/~new",
         "/k8s/cluster/projectcontour.io~v1~HTTPProxy/~new",
-        "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy/:name/yaml"
+        "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy/:name/edit"
       ],
       "component": {
-        "$codeRef": "CreateRoute"
+        "$codeRef": "RouteHandlerPage"
+      }
+    }
+  },
+  {
+    "type": "console.page/route",
+    "properties": {
+      "exact": true,
+      "path": [
+        "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy",
+        "/k8s/all-namespaces/projectcontour.io~v1~HTTPProxy"
+      ],
+      "component": {
+        "$codeRef": "RoutesList"
+      }
+    }
+  },
+  {
+    "type": "console.page/route",
+    "properties": {
+      "exact": true,
+      "path": [
+        "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy/:name",
+        "/k8s/all-namespaces/projectcontour.io~v1~HTTPProxy/:name"
+      ],
+      "component": {
+        "$codeRef": "RouteDetails"
       }
     }
   },
