@@ -1,5 +1,3 @@
-import { match as RMatch } from 'react-router-dom';
-
 export type ServiceType = {
   name: string;
   protocol?: string;
@@ -9,11 +7,6 @@ export type ServiceType = {
     caSecret: boolean;
     subjectName?: string;
   };
-};
-export type CreateRouteProps = {
-  match: RMatch<{
-    ns?: string;
-  }>;
 };
 
 export type ConditionalType = {

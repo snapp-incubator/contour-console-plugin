@@ -1,6 +1,8 @@
 export const mockHttpProxyFormData = {
   apiVersion: 'projectcontour.io/v1',
   kind: 'HTTPProxy',
+  apiGroup: 'projectcontour.io',
+  plural: 'httpproxies',
 };
 
 export const mockServicesData = {
