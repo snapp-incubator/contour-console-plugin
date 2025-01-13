@@ -1,3 +1,10 @@
+export const DEFAULT_PADDING_CHART = {
+  bottom: 75,
+  left: 50,
+  right: 50,
+  top: 50,
+};
+
 export const CONTOUR_MODEL = {
   apiVersion: 'projectcontour.io/v1',
   kind: 'HTTPProxy',

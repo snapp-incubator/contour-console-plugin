@@ -5,31 +5,20 @@ import {
   SelectVariant,
   SelectProps,
 } from '@patternfly/react-core';
+import { useTranslation } from 'react-i18next';
+import { CustomDropdownProps } from './dropdown.type';
 
-export interface DropdownOption {
-  label: string;
-  value: string;
-}
+const { t } = useTranslation('plugin__contour-console-plugin');
 
-interface CustomDropdownProps {
-  options: DropdownOption[];
-  value?: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  isDisabled?: boolean;
-  className?: string;
-  'aria-label'?: string;
-}
-
-const CustomDropdown: React.FC<CustomDropdownProps> = ({
+const CustomDropdown = ({
   options,
   value,
   onChange,
-  placeholder = 'Select an option',
+  placeholder = t('select_option'),
   isDisabled = false,
   className,
   'aria-label': ariaLabel,
-}) => {
+}: CustomDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onToggle = (isOpen: boolean) => {
