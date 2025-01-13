@@ -14,6 +14,7 @@
   "public_hostname_description": "Public hostname for the Route. If not specified, a hostname is generated.",
   "plugin_used_description": "The goal of the HTTPProxy Custom Resource Definition (CRD) is to expand upon the functionality of the Ingress API to allow for a richer user experience as well addressing the limitations of the latter’s use in multi tenant environments.",
   "select_service_above": "Select a service above",
+  "select_option": "Select an option",
   "select_termination": "Select Security",
   "target_port": "Target port",
   "target_port_traffic": "Target port for traffic.",
