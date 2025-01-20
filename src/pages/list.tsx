@@ -1,58 +1,51 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import { useTranslation } from 'react-i18next';
-import { TagsInput } from 'react-tag-input-component';
-import '../style.css';
-
+import { Page, PageSection, Alert, Skeleton } from '@patternfly/react-core';
 import {
   useK8sModel,
   k8sDelete,
-  k8sPatch,
   getGroupVersionKindForResource,
   useModal,
 } from '@openshift-console/dynamic-plugin-sdk';
-import { mockHttpProxyFormData } from '../utils/modelK8s';
-import Modal from '../components/modal';
-import CloudDocument from '../components/shared/Info';
-import { labelToObject, objectToLabel } from '../utils/labelToObject';
-
-// Define types for Route data
-interface Route {
-  name: string;
-  namespace: string;
-  status: string;
-  location: string;
-  service: string;
-}
+import type { HTTPProxy } from '../types/k8s';
+import { HTTPProxyHeader } from '@/list/Header';
+import { HTTPProxyFilters } from '@/list/Filter';
+import { HTTPProxyTable } from '@/list/Table';
+import { EditMetadataModal } from '@/modals/EditMetadataModal';
+import { DeleteConfirmationModal } from '@/modals/DeleteConfirmationModal';
+import { useHTTPProxyData } from '../hooks/useHTTPProxyData';
+import HTTPProxyInfo from '@/shared/HTTPProxyInfo';
+import { CONTOUR_MODEL } from '../constants';
 
 const List = ({ namespace }: { namespace?: string }) => {
   const navigate = useHistory();
   const launchModal = useModal();
-
   const { t } = useTranslation('plugin__contour-console-plugin');
 
-  const [routes, setRoutes] = useState<Route[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refresh, setRefresh] = useState(false);
-  const [filteredRoutes, setFilteredRoutes] = useState<Route[]>([]);
-
+  // State management
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(t('name'));
-  const [labelsValue, setLabelsValue] = useState<[]>();
-  const [annotationsValue, setAnnotationsValue] = useState<[]>();
-
-  const labelsValueRef = useRef(labelsValue);
-  const annotationsValueRef = useRef(annotationsValue);
-
   const [searchValue, setSearchValue] = useState<string>('');
+
+  const {
+    routes,
+    filteredRoutes,
+    loading,
+    refresh,
+    setRefresh,
+    handleLabelsUpdate,
+    handleAnnotationsUpdate,
+  } = useHTTPProxyData(namespace, searchValue, selectedFilter);
+
+  const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
 
   const onFilterToggle = (isOpen: boolean) => {
     setIsFilterOpen(isOpen);
   };
 
   const onFilterSelect = (event: React.SyntheticEvent<HTMLDivElement>) => {
-    console.log('event', event.currentTarget.textContent);
     const selected = event.currentTarget.textContent || t('name');
     setSelectedFilter(selected);
     setIsFilterOpen(false);
@@ -62,264 +55,87 @@ const List = ({ namespace }: { namespace?: string }) => {
     setSearchValue(value);
   };
 
-  const handleDeleteModal = (route: any) => {
-    k8sDelete({
-      model: k8sModel,
-      resource: route,
-      ns: namespace,
-    })
-      .then(() => {
-        setRefresh(true);
-      })
-      .catch((e) => {
-        console.log('error', e);
-      });
-  };
-
-  useEffect(() => {
-    labelsValueRef.current = labelsValue;
-  }, [labelsValue]);
-
-  useEffect(() => {
-    annotationsValueRef.current = annotationsValue;
-  }, [annotationsValue]);
-
-  const handleChangeTags = (tags: any) => {
-    setLabelsValue(tags);
-  };
-
-  const handleChangeAnnotations = (tags: any) => {
-    setAnnotationsValue(tags);
-  };
-
-  const handleUpdateLabel = (route: any) => {
-    k8sPatch({
-      model: k8sModel,
-      resource: route,
-      data: [
-        {
-          op: 'replace',
-          path: '/metadata/labels',
-          value: labelToObject(labelsValueRef.current),
-        },
-      ],
-    })
-      .then(() => {
-        setRefresh(true);
-      })
-      .catch((e) => {
-        console.log('error', e);
-      });
-  };
-
-  const handleUpdateAnnotations = (route: any) => {
-    k8sPatch({
-      model: k8sModel,
-      resource: route,
-      data: [
-        {
-          op: 'replace',
-          path: '/metadata/annotations',
-          value: labelToObject(annotationsValueRef.current),
-        },
-      ],
-    })
-      .then(() => {
-        setRefresh(true);
-      })
-      .catch((e) => {
-        console.log('error', e);
-      });
-  };
-
-  const handleDelete = React.useCallback(
-    (route, namespace) =>
-      launchModal(
-        ({ closeModal }) => (
-          <Modal
-            isModalOpen={true}
-            title={t('title_delete_modal')}
-            textSuccess={t('delete')}
-            successVariant={'danger'}
-            textCancel={t('cancel')}
-            closeModal={closeModal}
-            handleSuccess={() => {
-              handleDeleteModal(route);
-              closeModal();
-              setLoading(true);
-            }}
-          >
-            {t('confirm_delete_route')
-              .replace('{{name}}', route.metadata.name)
-              .replace('{{namespace}}', namespace)}
-          </Modal>
-        ),
-        {},
-      ),
-    [launchModal],
-  );
-
-  const handleLabels = React.useCallback(
-    (route) =>
-      launchModal(
-        ({ closeModal }) => (
-          <Modal
-            isModalOpen={true}
-            title={t('edit_labels')}
-            textSuccess={t('save')}
-            textCancel={t('cancel')}
-            closeModal={closeModal}
-            handleSuccess={() => {
-              handleUpdateLabel(route);
-              closeModal();
-              setLoading(true);
-            }}
-          >
-            <>
-              {t('labels_help_text')}
-              <FormGroup
-                className="pf-u-mt-lg"
-                label={`Labels for: ${route.metadata['name']}`}
-                fieldId="tags-label"
-              >
-                <TagsInput
-                  classNames={{ tag: 'tags', input: 'input-tag' }}
-                  value={objectToLabel(route?.metadata?.labels)}
-                  onChange={handleChangeTags}
-                  name="tags"
-                  placeHolder="app=frontend"
-                />
-              </FormGroup>
-            </>
-          </Modal>
-        ),
-        {},
-      ),
-    [launchModal, labelsValueRef],
-  );
-
-  const handleAnnotations = React.useCallback(
-    (route) =>
-      launchModal(
-        ({ closeModal }) => (
-          <Modal
-            isModalOpen={true}
-            title={t('edit_annotations')}
-            textSuccess={t('save')}
-            textCancel={t('cancel')}
-            closeModal={closeModal}
-            handleSuccess={() => {
-              handleUpdateAnnotations(route);
-              closeModal();
-              setLoading(true);
-            }}
-          >
-            <>
-              {t('annotations_help_text')}
-              <FormGroup
-                className="pf-u-mt-lg"
-                label={`Annotations for: ${route.metadata?.name}`}
-                fieldId="tags-label"
-              >
-                <TagsInput
-                  classNames={{ tag: 'tags', input: 'input-tag' }}
-                  value={objectToLabel(route?.metadata?.annotations)}
-                  onChange={handleChangeAnnotations}
-                  name="annotations"
-                  placeHolder="key=value"
-                />
-              </FormGroup>
-            </>
-          </Modal>
-        ),
-        {},
-      ),
-    [launchModal, annotationsValueRef],
-  );
-
-  const filterItems = [
-    <DropdownItem key="name">{t('name')}</DropdownItem>,
-    <DropdownItem key="label">{t('label')}</DropdownItem>,
-  ];
-
-  const handleCreateRoute = (ns) => {
+  const handleCreateRoute = (ns: string) => {
     navigate.push(`/k8s/ns/${ns}/projectcontour.io~v1~HTTPProxy/~new`);
   };
 
-  const handleEditRoute = (ns, route) => {
+  const handleEditRoute = (ns: string, route: HTTPProxy) => {
     navigate.push(
       `/k8s/ns/${ns}/projectcontour.io~v1~HTTPProxy/${route?.metadata?.name}/edit`,
     );
   };
 
-  const [k8sModel] = useK8sModel(
-    getGroupVersionKindForResource(mockHttpProxyFormData),
-  );
-
-  const fetchRoutes = async () => {
+  const handleDeleteModal = async (ns: string, route: HTTPProxy) => {
     try {
-      const response = await k8sGet({
+      await k8sDelete({
         model: k8sModel,
-        ns: namespace,
+        resource: route,
+        ns: ns,
       });
-      setRoutes(response['items']);
-      setFilteredRoutes(response['items']);
-    } catch (error) {
-      console.log('Error fetching routes:', error);
-    } finally {
-      setLoading(false);
+      setRefresh(true);
+    } catch (e) {
+      console.error('Error deleting route:', e);
     }
   };
 
-  useEffect(() => {
-    fetchRoutes();
-  }, [namespace, refresh]);
+  const handleDelete = React.useCallback(
+    (route: HTTPProxy) =>
+      launchModal(
+        ({ closeModal }) => (
+          <DeleteConfirmationModal
+            isOpen={true}
+            route={route}
+            namespace={namespace}
+            onDelete={handleDeleteModal}
+            onClose={closeModal}
+            t={t}
+          />
+        ),
+        { title: t('delete_route') },
+      ),
+    [namespace, refresh],
+  );
 
-  useEffect(() => {
-    const lowerSearchValue = searchValue.toLowerCase();
-    const regex = new RegExp(lowerSearchValue, 'i');
+  const handleLabels = React.useCallback(
+    (route: HTTPProxy) =>
+      launchModal(
+        ({ closeModal }) => (
+          <EditMetadataModal
+            route={route}
+            type="labels"
+            onSave={handleLabelsUpdate}
+            onClose={closeModal}
+            t={t}
+            isOpen={true}
+          />
+        ),
+        { title: t('edit_labels') },
+      ),
+    [namespace, refresh],
+  );
 
-    const filtered = lowerSearchValue
-      ? routes.filter((route: any) => {
-          if (selectedFilter === t('label')) {
-            if (!route.metadata?.labels) {
-              return false;
-            }
-            const labelStrings = Object.entries(route.metadata.labels).map(
-              ([key, value]) => `${key}=${value}`,
-            );
+  const handleAnnotations = React.useCallback(
+    (route: HTTPProxy) =>
+      launchModal(
+        ({ closeModal }) => (
+          <EditMetadataModal
+            route={route}
+            type="annotations"
+            onSave={handleAnnotationsUpdate}
+            onClose={closeModal}
+            t={t}
+            isOpen={true}
+          />
+        ),
+        { title: t('edit_annotations') },
+      ),
+    [],
+  );
 
-            return labelStrings.some((label) =>
-              regex.test(label.toLowerCase()),
-            );
-          }
-          return regex.test(route.metadata?.name?.toLowerCase());
-        })
-      : routes;
-
-    setFilteredRoutes(filtered);
-  }, [searchValue, selectedFilter, routes]);
-
-  const renderStatus = (status: string) => {
-    return status === 'valid' ? (
-      <Flex>
-        <CheckCircleIcon className="pf-u-mr-xs" color="green" />
-        {t('accepted')}
-      </Flex>
-    ) : (
-      <Flex>
-        <ExclamationCircleIcon className="pf-u-mr-xs" color="red" />
-        {t('error')}
-      </Flex>
-    );
-  };
-
-  const lastRowActions = (route: any) => [
+  const getRowActions = (route: HTTPProxy) => [
     {
       title: t('edit_route'),
-      onClick: () => {
-        handleEditRoute(namespace, route);
-      },
+      onClick: () => handleEditRoute(namespace, route),
     },
     {
       title: t('edit_labels'),
@@ -331,7 +147,7 @@ const List = ({ namespace }: { namespace?: string }) => {
     },
     {
       title: t('deleteRoute'),
-      onClick: () => handleDelete(route, namespace),
+      onClick: () => handleDelete(route),
     },
   ];
 
@@ -342,170 +158,28 @@ const List = ({ namespace }: { namespace?: string }) => {
       </Helmet>
       <Page>
         <PageSection variant="light">
-          <Flex>
-            <FlexItem>
-              <Title headingLevel="h1">{t('http_proxies')}</Title>
-            </FlexItem>
-            <FlexItem align={{ default: 'alignRight' }}>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  handleCreateRoute(namespace);
-                }}
-              >
-                {t('create_http_proxy')}
-              </Button>
-            </FlexItem>
-          </Flex>
-          {routes && routes?.length > 0 ? (
+          <HTTPProxyHeader
+            onCreateRoute={() => handleCreateRoute(namespace)}
+            t={t}
+          />
+          {routes && routes.length > 0 ? (
             <>
-              <Flex className="pf-u-mt-xl">
-                <FlexItem>
-                  <InputGroup>
-                    <Dropdown
-                      toggle={
-                        <DropdownToggle
-                          onToggle={onFilterToggle}
-                          icon={<FilterIcon />}
-                        >
-                          {selectedFilter}
-                        </DropdownToggle>
-                      }
-                      isOpen={isFilterOpen}
-                      dropdownItems={filterItems}
-                      onSelect={onFilterSelect}
-                    />
-                    <TextInput
-                      value={searchValue}
-                      type="text"
-                      onChange={onSearchChange}
-                      aria-label={t('searchBy', { filter: selectedFilter })}
-                      placeholder={t('search_by_placeholder').replace(
-                        '{{filter}}',
-                        selectedFilter.toLowerCase(),
-                      )}
-                    />
-                  </InputGroup>
-                </FlexItem>
-              </Flex>
+              <HTTPProxyFilters
+                selectedFilter={selectedFilter}
+                searchValue={searchValue}
+                isFilterOpen={isFilterOpen}
+                onFilterToggle={onFilterToggle}
+                onFilterSelect={onFilterSelect}
+                onSearchChange={onSearchChange}
+                t={t}
+              />
               <div className="pf-u-mt-xl">
-                <Table
-                  aria-label={t('routes_table')}
-                  variant={TableVariant.compact}
-                >
-                  <Thead>
-                    <Tr>
-                      <Th>{t('name')}</Th>
-                      <Th>{t('namespace')}</Th>
-                      <Th>{t('status')}</Th>
-                      <Th>{t('location')}</Th>
-                      <Th>{t('target_port')}</Th>
-                      <Th colSpan={2}>{t('service')}</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {loading ? (
-                      <>
-                        <Tr>
-                          <Td colSpan={6} className="pf-u-text-align-center">
-                            <Skeleton width="100%" height="25%" />
-                          </Td>
-                        </Tr>
-                        <Tr>
-                          <Td colSpan={6} className="pf-u-text-align-center">
-                            <Skeleton width="100%" height="25%" />
-                          </Td>
-                        </Tr>
-                        <Tr>
-                          <Td colSpan={6} className="pf-u-text-align-center">
-                            <Skeleton width="100%" height="25%" />
-                          </Td>
-                        </Tr>
-                      </>
-                    ) : filteredRoutes && filteredRoutes.length > 0 ? (
-                      filteredRoutes.map((route: any) => (
-                        <Tr key={route?.metadata?.uid}>
-                          <Td dataLabel={t('name')}>
-                            <TableText>
-                              <Link
-                                to={`/k8s/ns/${route?.metadata?.namespace}/projectcontour.io~v1~HTTPProxy/${route?.metadata?.name}`}
-                              >
-                                <Badge className="pf-u-mr-xs">{t('hp')}</Badge>
-                                {route?.metadata?.name}
-                              </Link>
-                            </TableText>
-                          </Td>
-                          <Td dataLabel={t('namespace')}>
-                            <TableText>
-                              <Link
-                                to={`/k8s/cluster/namespaces/${route?.metadata?.namespace}`}
-                              >
-                                <Badge className="pf-u-mr-xs">{t('ns')}</Badge>
-                                {route?.metadata?.namespace}
-                              </Link>
-                            </TableText>
-                          </Td>
-                          <Td width={10} dataLabel={t('status')}>
-                            {renderStatus(route.status.currentStatus)}
-                          </Td>
-                          <Td width={20} dataLabel={t('location')}>
-                            <a
-                              href={
-                                route?.spec?.virtualhost
-                                  ? route?.spec?.virtualhost?.tls
-                                    ? `https://${route?.spec?.virtualhost?.fqdn}`
-                                    : `http://${route?.spec?.virtualhost?.fqdn}`
-                                  : ''
-                              }
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {route?.spec?.virtualhost
-                                ? route?.spec?.virtualhost?.tls
-                                  ? `https://${route?.spec?.virtualhost?.fqdn}`
-                                  : `http://${route?.spec?.virtualhost?.fqdn}`
-                                : ''}
-                              <ExternalLinkAltIcon className="pf-u-ml-xs" />
-                            </a>
-                          </Td>
-                          <Td dataLabel={t('target_port')}>
-                            <Badge isRead>
-                              <TableText>
-                                {t('tcp')}-
-                                {route?.spec?.routes[0]?.services
-                                  ? route?.spec?.routes[0]?.services[0]?.port
-                                  : 'Error'}
-                              </TableText>
-                            </Badge>
-                          </Td>
-                          <Td dataLabel={t('service')}>
-                            <TableText>
-                              <Badge
-                                className={
-                                  'co-m-resource-icon co-m-resource-service'
-                                }
-                              >
-                                {t('s')}
-                              </Badge>
-                              {route?.spec?.routes[0]?.services
-                                ? route?.spec?.routes[0]?.services[0]?.name
-                                : 'Error'}
-                            </TableText>
-                          </Td>
-                          <Td>
-                            <ActionsColumn items={lastRowActions(route)} />
-                          </Td>
-                        </Tr>
-                      ))
-                    ) : (
-                      <Tr>
-                        <Td colSpan={6} className="pf-u-text-align-center">
-                          {t('not_found')}
-                        </Td>
-                      </Tr>
-                    )}
-                  </Tbody>
-                </Table>
+                <HTTPProxyTable
+                  loading={loading}
+                  filteredRoutes={filteredRoutes}
+                  lastRowActions={getRowActions}
+                  t={t}
+                />
               </div>
             </>
           ) : loading ? (
@@ -521,7 +195,7 @@ const List = ({ namespace }: { namespace?: string }) => {
                 variant="warning"
                 title={t('not_found')}
               />
-              <CloudDocument isTitle={false} />
+              <HTTPProxyInfo isTitle={false} />
             </div>
           )}
         </PageSection>

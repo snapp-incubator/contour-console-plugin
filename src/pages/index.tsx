@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import cx from 'classnames';
 import {
+  Form,
   FormGroup,
   Title,
   Page,
@@ -19,9 +20,9 @@ import {
 } from '@openshift-console/dynamic-plugin-sdk';
 import { useTranslation } from 'react-i18next';
 import { useParams, useHistory } from 'react-router-dom';
-import RouteForm from '../components/form/ContourForm';
+import RouteForm from '@/form/ContourForm';
 import Helmet from 'react-helmet';
-import CloudDocument from '../components/shared/Info';
+import HTTPProxyInfo from '@/shared/HTTPProxyInfo';
 import { YAMLEditor } from '@openshift-console/dynamic-plugin-sdk';
 import {
   convertFormToYAML,
@@ -42,9 +43,17 @@ import '../style.css';
 const RouteHandlerPage = () => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const history = useHistory();
-  const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
-
   const { ns, name } = useParams<{ ns?: string; name?: string }>();
+
+  const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
+  const pageList = `/k8s/ns/${ns}/projectcontour.io~v1~HTTPProxy`;
+
+  const {
+    errors: validationErrors,
+    validate,
+    clearErrors,
+  } = useFormValidation();
+
   const isEdit = !!name;
   const namespace = ns || 'default';
 
@@ -57,12 +66,6 @@ const RouteHandlerPage = () => {
   const [yamlError, setYamlError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-
-  const {
-    errors: validationErrors,
-    validate,
-    clearErrors,
-  } = useFormValidation();
 
   const handleFormChange = useCallback(
     (newFormData: FormData) => {
@@ -128,15 +131,15 @@ const RouteHandlerPage = () => {
 
     try {
       if (isEdit) {
-        await updateContourProxy(formData, name!, namespace);
+        await updateContourProxy(formData, name, namespace, k8sModel);
       } else {
-        await createContourProxy(formData, namespace);
+        await createContourProxy(formData, namespace, k8sModel);
       }
-      history.push(`/k8s/ns/${namespace}/httpproxies`);
     } catch (err) {
       setSaveError(err.message);
     } finally {
       setLoading(false);
+      history.push(pageList);
     }
   };
 
@@ -176,7 +179,7 @@ const RouteHandlerPage = () => {
         <PageSection id="create-route-contour" variant="light">
           <Title headingLevel="h1">{t('http_proxies')}</Title>
           <span className="sub-title pf-v5-u-color-200">
-            {t('Routing is a way to make your application publicly visible.')}
+            {t('routing_way_description')}
           </span>
           <Divider />
           <div className="type-create-route">
@@ -215,65 +218,80 @@ const RouteHandlerPage = () => {
                   className="pf-u-mb-md"
                 />
               )}
-              {!yamlView ? (
-                <RouteForm
-                  isEdit={isEdit}
-                  formData={formData}
-                  updateFormData={setFormData}
-                  onChange={handleFormChange}
-                  validationErrors={validationErrors}
-                  saveError={saveError}
-                  onSubmit={handleSubmit}
-                />
-              ) : (
-                <div className="route-yaml-editor">
-                  <React.Suspense fallback={<></>}>
-                    <YAMLEditor
-                      language="yaml"
-                      value={yamlData}
-                      onChange={handleYamlChange}
-                      minHeight={600}
-                      options={{
-                        readOnly: false,
-                        scrollBeyondLastLine: false,
-                        minimap: { enabled: true },
-                        folding: true,
-                        lineNumbers: true,
-                        wordWrap: 'on',
-                      }}
-                    />
-                  </React.Suspense>
+              <Form onSubmit={handleSubmit}>
+                {!yamlView ? (
+                  <RouteForm
+                    isEdit={isEdit}
+                    formData={formData}
+                    updateFormData={setFormData}
+                    onChange={handleFormChange}
+                    validationErrors={validationErrors}
+                    saveError={saveError}
+                    onSubmit={handleSubmit}
+                  />
+                ) : (
+                  <div className="route-yaml-editor">
+                    <React.Suspense fallback={<></>}>
+                      <YAMLEditor
+                        language="yaml"
+                        value={yamlData}
+                        onChange={handleYamlChange}
+                        minHeight={600}
+                        options={{
+                          readOnly: false,
+                          scrollBeyondLastLine: false,
+                          minimap: { enabled: true },
+                          folding: true,
+                          lineNumbers: true,
+                          wordWrap: 'on',
+                        }}
+                      />
+                    </React.Suspense>
+                  </div>
+                )}
+                <div
+                  className={cx('ocs-form-footer pf-u-mt-xl contour-footer', {
+                    'ocs-form-footer__sticky': true,
+                  })}
+                  data-test="contour-form-footer"
+                >
+                  {(validationErrors.length > 0 || saveError) && (
+                    <Alert
+                      variant="danger"
+                      title={saveError || t('validation_errors')}
+                      isInline
+                    >
+                      {validationErrors.length > 0 && (
+                        <ul>
+                          {validationErrors.map((error, index) => (
+                            <li key={index}>{error}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </Alert>
+                  )}
+                  <ActionGroup className="pf-u-mt-sm">
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      isDisabled={isLoading}
+                      isLoading={isLoading}
+                    >
+                      {isEdit ? t('update') : t('create')}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => history.goBack()}
+                      isDisabled={isLoading}
+                    >
+                      {t('cancel')}
+                    </Button>
+                  </ActionGroup>
                 </div>
-              )}
-              <div
-                className={cx('ocs-form-footer pf-u-mt-xl contour-footer', {
-                  'ocs-form-footer__sticky': true,
-                  'ocs-form-footer__shadow': 'bottom',
-                })}
-                data-test="contour-form-footer"
-              >
-                <ActionGroup>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    isDisabled={isLoading}
-                    isLoading={isLoading}
-                  >
-                    {isEdit ? t('update') : t('create')}
-                  </Button>
-                  <Button
-                    className="pf-u-ml-sm"
-                    variant="secondary"
-                    onClick={() => history.goBack()}
-                    isDisabled={isLoading}
-                  >
-                    {t('cancel')}
-                  </Button>
-                </ActionGroup>
-              </div>
+              </Form>
             </GridItem>
             <GridItem span={4}>
-              <CloudDocument isTitle={true} />
+              <HTTPProxyInfo isTitle={true} />
             </GridItem>
           </Grid>
         </PageSection>
