@@ -26,6 +26,7 @@ export interface FormData {
   name: string;
   namespace?: string;
   ingressClassName: string;
+  resourceVersion?: string;
   fqdn: string;
   routes: Route[];
   conditional?: ConditionalFields;
