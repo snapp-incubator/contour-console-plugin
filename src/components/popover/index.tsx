@@ -11,7 +11,7 @@ const PopoverContent = (props: PopoverContentProps) => {
   );
 };
 
-export function AlertPopover(props: PopoverComponentProps) {
+export const AlertPopover = (props: PopoverComponentProps) => {
   const { title, footer, content } = props;
   return (
     <Popover
@@ -29,4 +29,4 @@ export function AlertPopover(props: PopoverComponentProps) {
       </Button>
     </Popover>
   );
-}
+};
