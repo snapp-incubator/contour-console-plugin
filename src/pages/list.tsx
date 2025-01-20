@@ -6,41 +6,6 @@ import { TagsInput } from 'react-tag-input-component';
 import '../style.css';
 
 import {
-  TableVariant,
-  TableText,
-  Table,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
-  Td,
-  ActionsColumn,
-} from '@patternfly/react-table';
-import {
-  Page,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
-  InputGroup,
-  TextInput,
-  Button,
-  PageSection,
-  Flex,
-  FlexItem,
-  Title,
-  Badge,
-  Skeleton,
-  FormGroup,
-  Alert,
-} from '@patternfly/react-core';
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  FilterIcon,
-  ExternalLinkAltIcon,
-} from '@patternfly/react-icons';
-import {
-  k8sGet,
   useK8sModel,
   k8sDelete,
   k8sPatch,
