@@ -117,7 +117,7 @@ const DetailsTab = ({ name, ns }: DetailsTabProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {router?.spec?.routes.map((route, index) => (
+          {router?.spec?.routes?.map((route, index) => (
             <Tr key={index}>
               <Td>{route?.conditions?.[index]?.prefix || '/'}</Td>
               <Td>{route?.services?.[index]?.name || '-'}</Td>
@@ -192,7 +192,7 @@ const DetailsTab = ({ name, ns }: DetailsTabProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {router?.status?.conditions.map((condition, index) => (
+          {router?.status?.conditions?.map((condition, index) => (
             <Tr key={index}>
               <Td>{condition?.type}</Td>
               <Td>{condition?.status}</Td>
