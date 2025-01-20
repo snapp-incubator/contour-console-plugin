@@ -2,22 +2,20 @@ import {
   k8sCreate,
   k8sUpdate,
   k8sGet,
-  useK8sModel,
-  getGroupVersionKindForResource,
+  K8sModel,
 } from '@openshift-console/dynamic-plugin-sdk';
 import { FormData } from '../types';
 import { convertFormToYAML } from './yamlUtils';
-import { CONTOUR_MODEL } from '../constants';
 import { load } from 'js-yaml';
 
 export const createContourProxy = async (
   formData: FormData,
   namespace: string,
+  k8sModel: K8sModel,
 ) => {
   const yamlString = convertFormToYAML(formData);
   const yamlData = load(yamlString);
 
-  const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
   try {
     const response = await k8sCreate({
       model: k8sModel,
@@ -29,6 +27,7 @@ export const createContourProxy = async (
         },
       },
     });
+
     return response;
   } catch (error) {
     throw new Error(`Failed to create HTTP Proxy: ${error.message}`);
@@ -39,10 +38,10 @@ export const updateContourProxy = async (
   formData: FormData,
   name: string,
   namespace: string,
+  k8sModel: K8sModel,
 ) => {
   const yamlString = convertFormToYAML(formData);
   const yamlData = load(yamlString);
-  const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
   try {
     const response = await k8sUpdate({
       model: k8sModel,
@@ -64,7 +63,7 @@ export const updateContourProxy = async (
 };
 
 export const getContourProxy = async (
-  k8sModel: any,
+  k8sModel: K8sModel,
   name: string,
   namespace: string,
 ) => {
