@@ -1,13 +1,14 @@
 export const DEFAULT_PADDING_CHART = {
-  bottom: 75,
+  bottom: 50,
   left: 50,
   right: 50,
-  top: 50,
+  top: 20,
 };
 
 export const CONTOUR_MODEL = {
   apiVersion: 'projectcontour.io/v1',
   kind: 'HTTPProxy',
+  apiGroup: 'projectcontour.io',
 };
 
 export const SERVICE_MODEL = {
@@ -28,7 +29,7 @@ export const INGRESS_CLASS_MODEL = {
 
 export const DEFAULT_SERVICE = {
   name: '',
-  weight: 100,
+  weight: 0,
   port: '',
   validation: false,
   websocket: false,
@@ -50,4 +51,11 @@ export const DEFAULT_FORM_DATA = {
     secureRoute: false,
     permitInsecure: false,
   },
+};
+export const TLSType = 'kubernetes.io/tls';
+export const defaultSecret = {
+  metadata: {
+    name: 'openshift-ingress/letsencrypt',
+  },
+  type: TLSType,
 };
