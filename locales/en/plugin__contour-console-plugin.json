@@ -136,5 +136,8 @@
   "port": "Port",
   "service_name": "Service Name",
   "enable_websocket": "Enable WebSocket",
-  "ca_secret": "CA Secret"
+  "ca_secret": "CA Secret",
+  "reload": "Reload",
+  "invalid_yaml_format": "Invalid YAML format",
+  "error_fetching_proxy": "Error fetching proxy"
 }
