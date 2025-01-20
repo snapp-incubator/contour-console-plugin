@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Form,
   FormGroup,
   TextInput,
   Switch,
   Button,
-  Alert,
 } from '@patternfly/react-core';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -21,55 +20,60 @@ const ContourForm = ({
   updateFormData,
   onChange,
   isEdit = false,
-  validationErrors = [],
-  saveError = null,
   onSubmit,
 }: ContourFormProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const { ns: namespace } = useParams<{ ns: string; name?: string }>();
   const { services, secrets, ingressClasses } = useK8sResources(namespace);
 
-  useEffect(() => {
-    onChange(formData);
-  }, [formData]);
-
   const addRoute = () => {
-    updateFormData((prev) => ({
-      ...prev,
-      routes: [...prev.routes, { ...DEFAULT_ROUTE }],
-    }));
+    const newFormData = {
+      ...formData,
+      routes: [...formData.routes, { ...DEFAULT_ROUTE }],
+    };
+    updateFormData(newFormData);
+    onChange(newFormData);
   };
 
   const updateRoute = (index: number, updatedRoute: Route) => {
     const newRoutes = [...formData.routes];
     newRoutes[index] = updatedRoute;
-    updateFormData((prev) => ({ ...prev, routes: newRoutes }));
+    const newFormData = { ...formData, routes: newRoutes };
+    updateFormData(newFormData);
+    onChange(newFormData);
   };
 
   const removeRoute = (index: number) => {
     const newRoutes = formData.routes.filter((_, i) => i !== index);
-    updateFormData((prev) => ({ ...prev, routes: newRoutes }));
+    const newFormData = { ...formData, routes: newRoutes };
+    updateFormData(newFormData);
+    onChange(newFormData);
+  };
+
+  const handleFormChange = (field: string, value: any) => {
+    const newFormData = {
+      ...formData,
+      [field]: value,
+    };
+    updateFormData(newFormData);
+    onChange(newFormData);
+  };
+
+  const handleConditionalChange = (field: string, value: any) => {
+    const newFormData = {
+      ...formData,
+      conditional: {
+        ...formData.conditional,
+        [field]: value,
+      },
+    };
+    updateFormData(newFormData);
+    onChange(newFormData);
   };
 
   return (
     <>
       <Form onSubmit={onSubmit}>
-        {(validationErrors.length > 0 || saveError) && (
-          <Alert
-            variant="danger"
-            title={saveError || t('validation_errors')}
-            isInline
-          >
-            {validationErrors.length > 0 && (
-              <ul>
-                {validationErrors.map((error, index) => (
-                  <li key={index}>{error}</li>
-                ))}
-              </ul>
-            )}
-          </Alert>
-        )}
-
         <FormGroup
           className="pf-u-mt-md"
           fieldId="name"
@@ -79,35 +83,27 @@ const ContourForm = ({
           <TextInput
             isDisabled={isEdit}
             value={formData?.name}
-            onChange={(value) =>
-              updateFormData((prev) => ({ ...prev, name: value }))
-            }
+            onChange={(value) => handleFormChange('name', value)}
           />
           <div className="help-block">{t('unique_name_for_Proxy')}</div>
         </FormGroup>
         <FormGroup fieldId="proxy_type" label={t('http_proxy_type')} isRequired>
           <CustomDropdown
             options={ingressClasses?.map((ic) => ({
-              label: ic.metadata.name,
-              value: ic.metadata.name,
+              label: ic.label,
+              value: ic.value,
             }))}
             value={formData?.ingressClassName}
-            onChange={(value) =>
-              updateFormData((prev) => ({
-                ...prev,
-                ingressClassName: value,
-              }))
-            }
+            onChange={(value) => handleFormChange('ingressClassName', value)}
             placeholder={t('private')}
           />
           <div className="help-block">{t('http_proxy_type')}</div>
         </FormGroup>
+
         <FormGroup fieldId="hostname" label={t('hostname')} isRequired>
           <TextInput
             value={formData?.fqdn}
-            onChange={(value) => {
-              updateFormData((prev) => ({ ...prev, fqdn: value }));
-            }}
+            onChange={(value) => handleFormChange('fqdn', value)}
           />
           <div className="help-block">{t('hostname_http_proxies')}</div>
         </FormGroup>
@@ -117,11 +113,7 @@ const ContourForm = ({
               <RouteForm
                 route={route}
                 onChange={(updatedRoute) => updateRoute(index, updatedRoute)}
-                onDelete={
-                  formData?.routes.length > 1
-                    ? () => removeRoute(index)
-                    : undefined
-                }
+                onDelete={() => removeRoute(index)}
                 availableServices={services?.map((svc) => svc.metadata.name)}
                 availablePorts={services?.flatMap((svc) =>
                   svc.spec.ports?.map((port) => port.port.toString()),
@@ -145,13 +137,7 @@ const ContourForm = ({
                 label={t('secure_route')}
                 isChecked={formData?.conditional?.secureRoute}
                 onChange={(checked) =>
-                  updateFormData((prev) => ({
-                    ...prev,
-                    conditional: {
-                      ...prev.conditional,
-                      secureRoute: checked,
-                    },
-                  }))
+                  handleConditionalChange('secureRoute', checked)
                 }
               />
             </FormGroup>
