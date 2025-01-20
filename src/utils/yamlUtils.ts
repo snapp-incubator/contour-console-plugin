@@ -39,12 +39,16 @@ export const convertFormToYAML = (formData: FormData): string => {
               subjectName: service.subjectName,
             },
           }),
+          timeoutPolicy: {
+            idle: `${service.idleConnection}s`,
+            response: `${service.responseTimeout}s`,
+          },
         })),
         ...(formData.conditional?.permitInsecure && {
           permitInsecure: true,
         }),
       })),
-      ingressClassName: formData.ingressClassName || 'private',
+      ingressClassName: formData.ingressClassName,
     },
   };
 
@@ -57,7 +61,7 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
     name: k8sResource.metadata.name,
     namespace: k8sResource.metadata.namespace,
     resourceVersion: k8sResource.metadata.resourceVersion,
-    ingressClassName: spec.ingressClassName || 'private',
+    ingressClassName: spec.ingressClassName,
     fqdn: spec.virtualhost.fqdn,
     routes: spec.routes.map((route) => ({
       prefix: route.conditions?.[0]?.prefix || '/',
@@ -69,8 +73,9 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
         caSecret: service.validation?.caSecret,
         subjectName: service.validation?.subjectName,
         websocket: false,
-        idleConnection: '15',
-        responseTimeout: '5',
+        idleConnection: service.timeoutPolicy?.idle?.replace('s', '') || '15',
+        responseTimeout:
+          service.timeoutPolicy?.response?.replace('s', '') || '5',
       })),
     })),
     conditional: spec.virtualhost.tls

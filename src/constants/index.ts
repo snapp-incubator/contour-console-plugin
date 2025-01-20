@@ -44,7 +44,7 @@ export const DEFAULT_ROUTE = {
 
 export const DEFAULT_FORM_DATA = {
   name: '',
-  ingressClassName: '',
+  ingressClassName: 'private',
   fqdn: '',
   routes: [DEFAULT_ROUTE],
   conditional: {
