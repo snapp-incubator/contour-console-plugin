@@ -162,3 +162,7 @@ input[type='checkbox'] {
   padding: 16px 25px;
   border-left: 1px solid #36373a;
 }
+
+.pf-c-form__label {
+  display: inline-flex;
+}
