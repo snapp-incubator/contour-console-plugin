@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Service } from '../../types';
 import CustomDropdown from '../shared/CustomDropdown';
-
+import { AlertPopover } from '../popover';
 interface ServiceFormProps {
   service: Service;
   onChange: (service: Service) => void;
@@ -31,7 +31,7 @@ const ServiceForm = ({
 
   return (
     <div className="service-form pf-c-form">
-      <FormGroup fieldId="service-2" label="Service Name" isRequired>
+      <FormGroup fieldId="service-2" label={t('service_name')} isRequired>
         <CustomDropdown
           options={availableServices.map((name) => ({
             label: name,
@@ -43,7 +43,7 @@ const ServiceForm = ({
         />
       </FormGroup>
 
-      <FormGroup fieldId="port" label="Port" isRequired>
+      <FormGroup fieldId="port" label={t('port')} isRequired>
         <CustomDropdown
           options={availablePorts.map((port) => ({ label: port, value: port }))}
           value={service.port}
@@ -53,7 +53,7 @@ const ServiceForm = ({
         <div className="help-block">{t('target_port_traffic')}</div>
       </FormGroup>
 
-      <FormGroup fieldId="weight" label="Weight">
+      <FormGroup fieldId="weight" label={t('weight')}>
         <TextInput
           type="number"
           value={service.weight}
@@ -66,7 +66,7 @@ const ServiceForm = ({
         <div className="help-block">{t('weight_service_route')}</div>
       </FormGroup>
 
-      <FormGroup fieldId="validation" label="Enable Validation">
+      <FormGroup fieldId="validation" label={t('enable_validation')}>
         <Switch
           id="validation-switch"
           label="Enable Validation"
@@ -77,7 +77,7 @@ const ServiceForm = ({
 
       {service.validation ? (
         <>
-          <FormGroup fieldId="Secret" label="CA Secret" isRequired>
+          <FormGroup fieldId="Secret" label={t('ca_secret')} isRequired>
             <CustomDropdown
               options={availableSecrets.map((name) => ({
                 label: name,
@@ -89,7 +89,28 @@ const ServiceForm = ({
             />
           </FormGroup>
 
-          <FormGroup fieldId="subject" label="Subject Name" isRequired>
+          <FormGroup
+            fieldId="subject"
+            label={
+              <div>
+                <span>{t('subject_name')}</span>
+                <span>
+                  <AlertPopover
+                    content={
+                      <div>
+                        <div>{t('validation_info')}</div>
+                        <div className="pf-u-mt-sm">
+                          {t('validation_info_note')}
+                        </div>
+                      </div>
+                    }
+                    title={t('info')}
+                  />
+                </span>
+              </div>
+            }
+            isRequired
+          >
             <TextInput
               value={service.subjectName}
               onChange={(value) => onChange({ ...service, subjectName: value })}
@@ -98,7 +119,7 @@ const ServiceForm = ({
         </>
       ) : null}
 
-      <FormGroup fieldId="websocket" label="Enable WebSocket">
+      <FormGroup fieldId="websocket" label={t('enable_websocket')}>
         <Switch
           id="websocket-switch"
           label="Enable WebSocket"
@@ -109,7 +130,7 @@ const ServiceForm = ({
       {service.websocket ? (
         <Flex>
           <FlexItem>
-            <FormGroup fieldId="idle" label="Idle Connection Timeout (seconds)">
+            <FormGroup fieldId="idle" label={t('idle_connection_timeout')}>
               <TextInput
                 type="number"
                 value={service.idleConnection}
@@ -120,7 +141,7 @@ const ServiceForm = ({
             </FormGroup>
           </FlexItem>
           <FlexItem>
-            <FormGroup fieldId="response" label="Response Timeout (minutes)">
+            <FormGroup fieldId="response" label={t('response_timeout')}>
               <TextInput
                 type="number"
                 value={service.responseTimeout}
