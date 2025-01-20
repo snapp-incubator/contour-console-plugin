@@ -1,3 +1,18 @@
+export interface HTTPProxy {
+  metadata: {
+    name: string;
+    namespace: string;
+    labels?: Record<string, string>;
+    annotations?: Record<string, string>;
+  };
+  spec: {
+    virtualhost?: {
+      fqdn: string;
+    };
+    routes?: any[];
+  };
+}
+
 export interface K8sResource {
   apiVersion: string;
   kind: string;
@@ -26,16 +41,10 @@ export interface K8sSecret extends K8sResource {
   data?: Record<string, string>;
 }
 
-export interface K8sIngressClass extends K8sResource {
-  spec: {
-    controller: string;
-  };
-}
-
 export interface K8sResources {
   services: K8sService[];
   secrets: K8sSecret[];
-  ingressClasses: K8sIngressClass[];
+  ingressClasses: any[];
   loading: boolean;
   error: string | null;
 }
