@@ -11,6 +11,7 @@ export const convertFormToYAML = (formData: FormData): string => {
     metadata: {
       name: formData.name,
       namespace: formData.namespace,
+      resourceVersion: formData.resourceVersion,
     },
     spec: {
       virtualhost: {
@@ -30,7 +31,7 @@ export const convertFormToYAML = (formData: FormData): string => {
         conditions: [{ prefix: route.prefix || '/' }],
         services: route.services.map((service) => ({
           name: service.name,
-          port: parseInt(service.port),
+          port: service.port ? parseInt(service.port) : '',
           weight: service.weight,
           ...(service.validation && {
             validation: {
@@ -43,7 +44,7 @@ export const convertFormToYAML = (formData: FormData): string => {
           permitInsecure: true,
         }),
       })),
-      ingressClassName: formData.ingressClassName,
+      ingressClassName: formData.ingressClassName || 'private',
     },
   };
 
@@ -52,11 +53,11 @@ export const convertFormToYAML = (formData: FormData): string => {
 
 export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
   const spec = (k8sResource as any).spec;
-
   return {
     name: k8sResource.metadata.name,
     namespace: k8sResource.metadata.namespace,
-    ingressClassName: spec.ingressClassName,
+    resourceVersion: k8sResource.metadata.resourceVersion,
+    ingressClassName: spec.ingressClassName || 'private',
     fqdn: spec.virtualhost.fqdn,
     routes: spec.routes.map((route) => ({
       prefix: route.conditions?.[0]?.prefix || '/',
