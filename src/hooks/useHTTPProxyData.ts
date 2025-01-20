@@ -1,0 +1,110 @@
+import { useState, useEffect } from 'react';
+import {
+  k8sGet,
+  k8sPatch,
+  useK8sModel,
+  getGroupVersionKindForResource,
+  K8sResourceCommon,
+} from '@openshift-console/dynamic-plugin-sdk';
+import { CONTOUR_MODEL } from '../constants';
+import { labelToObject } from '../utils/labelToObject';
+
+export const useHTTPProxyData = (
+  namespace: string,
+  searchValue: string,
+  selectedFilter: string,
+) => {
+  const [routes, setRoutes] = useState<any[]>([]);
+  const [filteredRoutes, setFilteredRoutes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refresh, setRefresh] = useState(false);
+  const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
+
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const response = (await k8sGet({
+          model: k8sModel,
+          ns: namespace,
+        })) as { items: K8sResourceCommon[] };
+        setRoutes(response.items || []);
+        setFilteredRoutes(response.items || []);
+      } catch (error) {
+        console.error('Error fetching routes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoutes();
+  }, [namespace, refresh]);
+
+  useEffect(() => {
+    const filtered = searchValue
+      ? routes.filter((route) => {
+          if (selectedFilter === 'label') {
+            return Object.entries(route.metadata?.labels || {}).some(
+              ([key, value]) =>
+                `${key}=${value}`
+                  .toLowerCase()
+                  .includes(searchValue.toLowerCase()),
+            );
+          }
+          return route.metadata?.name
+            ?.toLowerCase()
+            .includes(searchValue.toLowerCase());
+        })
+      : routes;
+
+    setFilteredRoutes(filtered);
+  }, [searchValue, selectedFilter, routes]);
+
+  const handleLabelsUpdate = async (route: any, labels: any) => {
+    try {
+      await k8sPatch({
+        model: k8sModel,
+        resource: route,
+        data: [
+          {
+            op: 'replace',
+            path: '/metadata/labels',
+            value: labelToObject(labels),
+          },
+        ],
+      });
+      setRefresh(true);
+    } catch (error) {
+      console.error('Error updating labels:', error);
+    }
+  };
+
+  const handleAnnotationsUpdate = async (route: any, annotations: any) => {
+    try {
+      await k8sPatch({
+        model: k8sModel,
+        resource: route,
+        data: [
+          {
+            op: 'replace',
+            path: '/metadata/annotations',
+            value: labelToObject(annotations),
+          },
+        ],
+      });
+      setRefresh(true);
+    } catch (error) {
+      console.error('Error updating annotations:', error);
+    }
+  };
+
+  return {
+    routes,
+    filteredRoutes,
+    loading,
+    refresh,
+    setRefresh,
+    setLoading,
+    handleLabelsUpdate,
+    handleAnnotationsUpdate,
+  };
+};
