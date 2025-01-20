@@ -1,8 +1,7 @@
 import { FormData } from '../types';
-import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next'; // Add this import
 
-export const validateForm = (data: FormData): string[] => {
-  const { t } = useTranslation('plugin__contour-console-plugin');
+export const validateForm = (data: FormData, t: TFunction): string[] => {
   const errors: string[] = [];
 
   if (!data.name?.trim()) {
