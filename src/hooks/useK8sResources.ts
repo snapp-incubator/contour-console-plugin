@@ -6,6 +6,7 @@ import {
 } from '@openshift-console/dynamic-plugin-sdk';
 import { K8sResources } from '../types';
 import { SERVICE_MODEL, SECRET_MODEL } from '../constants';
+import { defaultSecret, TLSType } from '../constants';
 
 export const useK8sResources = (namespace: string): K8sResources => {
   const [resources, setResources] = useState<K8sResources>({
@@ -21,8 +22,6 @@ export const useK8sResources = (namespace: string): K8sResources => {
     getGroupVersionKindForResource(SECRET_MODEL),
   );
 
-  const TLSType = 'kubernetes.io/tls';
-
   useEffect(() => {
     const fetchResources = async () => {
       try {
@@ -33,8 +32,28 @@ export const useK8sResources = (namespace: string): K8sResources => {
 
         setResources({
           services: servicesRes?.items || [],
-          secrets: secretsRes?.items?.filter((s) => s.type === TLSType) || [],
-          ingressClasses: [],
+          secrets: [
+            defaultSecret,
+            ...(secretsRes?.items?.filter((s) => s.type === TLSType) || []),
+          ],
+          ingressClasses: [
+            {
+              label: 'Inter-venture',
+              value: 'inter-venture',
+            },
+            {
+              label: 'Inter-dc',
+              value: 'inter-dc',
+            },
+            {
+              label: 'Public',
+              value: 'public',
+            },
+            {
+              label: 'Private',
+              value: 'private',
+            },
+          ],
           loading: false,
           error: null,
         });
