@@ -5,16 +5,13 @@ import {
   SelectVariant,
   SelectProps,
 } from '@patternfly/react-core';
-import { useTranslation } from 'react-i18next';
 import { CustomDropdownProps } from './dropdown.type';
-
-const { t } = useTranslation('plugin__contour-console-plugin');
 
 const CustomDropdown = ({
   options,
   value,
   onChange,
-  placeholder = t('select_option'),
+  placeholder,
   isDisabled = false,
   className,
   'aria-label': ariaLabel,
