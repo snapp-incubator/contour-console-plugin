@@ -27,3 +27,9 @@ export const convertToString = (value: string): string => {
 
   return value;
 };
+
+export const getBaseURL = () => {
+  const hostname = window.location.hostname;
+  const parts = hostname.split('.');
+  return parts.slice(1).join('.');
+};

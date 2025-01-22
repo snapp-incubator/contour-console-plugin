@@ -6,6 +6,8 @@ import {
   ResourceUtilizationQuery,
 } from '../../utils/promql/metrix';
 import MetricCard from '@/metric';
+import { getBaseURL } from '../../utils/fqdnHandler';
+import { PROMETHEUS_API, CONTOUR_MODEL } from '../../constants';
 
 interface MetricsTabProps {
   name: string;
@@ -16,15 +18,18 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [loading, setLoading] = useState(true);
   const [metricsData, setMetricsData] = useState<Record<string, any>>({});
+  const baseURL = getBaseURL();
 
-  const metricsQueries = useResourceMetricsQueries({
-    kind: 'HTTPProxy',
-    apiVersion: 'projectcontour.io/v1',
-    metadata: {
-      name,
-      namespace: ns,
+  const metricsQueries = useResourceMetricsQueries(
+    {
+      ...CONTOUR_MODEL,
+      metadata: {
+        name,
+        namespace: ns,
+      },
     },
-  });
+    baseURL,
+  );
 
   const processMetricsData = (data: Record<string, any>) => {
     const processed: Record<string, any> = {};
@@ -43,15 +48,21 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
       setLoading(true);
       try {
         const results: Record<string, any> = {};
-        const endTime = Date.now();
-        const startTime = endTime - 3600000; // Last hour
+        const endTime = Math.floor(Date.now() / 1000);
+        const startTime = endTime - PROMETHEUS_API.TIME_RANGE;
 
         const promises = Object.entries(metricsQueries).map(
           async ([queryType, queries]) => {
+            const params = new URLSearchParams({
+              query: queries[0],
+              start: startTime.toString(),
+              end: endTime.toString(),
+              step: PROMETHEUS_API.DEFAULT_STEP,
+              timeout: PROMETHEUS_API.DEFAULT_TIMEOUT,
+            });
+
             const response = await fetch(
-              `/api/prometheus/query_range?query=${encodeURIComponent(
-                queries[0],
-              )}&start=${startTime}&end=${endTime}&step=60`,
+              `${PROMETHEUS_API.QUERY_RANGE}?${params.toString()}`,
             );
             const data = await response.json();
             return [queryType, data.data.result[0]?.values || []];
@@ -72,7 +83,7 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
     };
 
     fetchData();
-  }, []);
+  }, [metricsQueries]);
 
   return (
     <Grid className="pf-u-mt-xl" hasGutter>
