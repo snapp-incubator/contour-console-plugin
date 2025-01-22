@@ -3,6 +3,7 @@ import {
   useK8sModel,
   getGroupVersionKindForResource,
 } from '@openshift-console/dynamic-plugin-sdk';
+
 export enum ResourceUtilizationQuery {
   NETWORK_IN = 'NETWORK_IN',
   NETWORK_OUT = 'NETWORK_OUT',
@@ -12,10 +13,10 @@ export enum ResourceUtilizationQuery {
 
 const MetricsQueries = {
   [ResourceUtilizationQuery.NETWORK_IN]: _.template(
-    "sum without (instance,exported_pod,exported_service,pod,server) (irate(haproxy_server_bytes_in_total{exported_namespace='<%= namespace %>',route='<%= name %>'}[5m]))",
+    "sum without (instance,exported_pod,exported_service,pod,server)(irate(cloud:routes_received:bytes{namespace='<%= namespace %>',authority='<%= authority %>'}[5m]))",
   ),
   [ResourceUtilizationQuery.NETWORK_OUT]: _.template(
-    "sum without (instance,exported_pod,exported_service,pod,server) (irate(haproxy_server_bytes_out_total{exported_namespace='<%= namespace %>',route='<%= name %>'}[5m]))",
+    "sum without (instance,exported_pod,exported_service,pod,server) (irate(cloud:routes_sent:bytes{namespace='<%= namespace %>',authority='<%= authority %>'}[5m]))",
   ),
   [ResourceUtilizationQuery.CONNECTION_RATE]: _.template(
     "sum without (instance,exported_pod,exported_service,pod,server) (irate(haproxy_backend_connections_total{exported_namespace='<%= namespace %>',route='<%= name %>'}[5m]))",
@@ -28,12 +29,19 @@ const MetricsQueries = {
 export const getMetricsQueries = (
   name: string,
   namespace: string,
+  authority?: string,
 ): { [key: string]: string[] } => ({
   [ResourceUtilizationQuery.NETWORK_IN]: [
-    MetricsQueries[ResourceUtilizationQuery.NETWORK_IN]({ namespace, name }),
+    MetricsQueries[ResourceUtilizationQuery.NETWORK_IN]({
+      namespace,
+      authority: authority || `${name}.apps.public.okd4.teh-1.snappcloud.io`,
+    }),
   ],
   [ResourceUtilizationQuery.NETWORK_OUT]: [
-    MetricsQueries[ResourceUtilizationQuery.NETWORK_OUT]({ namespace, name }),
+    MetricsQueries[ResourceUtilizationQuery.NETWORK_OUT]({
+      namespace,
+      authority: authority || `${name}.apps.public.okd4.teh-1.snappcloud.io`,
+    }),
   ],
   [ResourceUtilizationQuery.CONNECTION_RATE]: [
     MetricsQueries[ResourceUtilizationQuery.CONNECTION_RATE]({
@@ -50,8 +58,14 @@ export const useResourceMetricsQueries = (
   obj: any,
 ): { [key: string]: string[] } => {
   const [model] = useK8sModel(getGroupVersionKindForResource(obj));
+  const authority = obj?.spec?.virtualhost?.fqdn;
+
   if (model) {
-    return getMetricsQueries(obj.metadata.name, obj.metadata.namespace);
+    return getMetricsQueries(
+      obj.metadata.name,
+      obj.metadata.namespace,
+      authority,
+    );
   }
   return null;
 };
