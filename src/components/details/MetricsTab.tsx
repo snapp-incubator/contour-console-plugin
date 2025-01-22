@@ -6,6 +6,7 @@ import {
   ResourceUtilizationQuery,
 } from '../../utils/promql/metrix';
 import MetricCard from '@/metric';
+
 interface MetricsTabProps {
   name: string;
   ns: string;
@@ -42,16 +43,26 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
       setLoading(true);
       try {
         const results: Record<string, any> = {};
+        const endTime = Date.now();
+        const startTime = endTime - 3600000; // Last hour
 
-        for (const [queryType, queries] of Object.entries(metricsQueries)) {
-          const response = await fetch(
-            `/api/prometheus/query_range?query=${encodeURIComponent(
-              queries[0],
-            )}&start=${Date.now() - 3600000}&end=${Date.now()}&step=60`,
-          );
-          const data = await response.json();
-          results[queryType] = data.data.result[0]?.values || [];
-        }
+        const promises = Object.entries(metricsQueries).map(
+          async ([queryType, queries]) => {
+            const response = await fetch(
+              `/api/prometheus/query_range?query=${encodeURIComponent(
+                queries[0],
+              )}&start=${startTime}&end=${endTime}&step=60`,
+            );
+            const data = await response.json();
+            return [queryType, data.data.result[0]?.values || []];
+          },
+        );
+
+        const resolvedResults = await Promise.all(promises);
+        resolvedResults.forEach(([queryType, values]) => {
+          results[queryType] = values;
+        });
+
         setMetricsData(processMetricsData(results));
       } catch (error) {
         console.error('Error fetching metrics:', error);
@@ -71,6 +82,7 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
           data={metricsData[ResourceUtilizationQuery.NETWORK_IN] || []}
           loading={loading}
           unit=" bytes/s"
+          query={metricsQueries?.[ResourceUtilizationQuery.NETWORK_IN]?.[0]}
         />
       </GridItem>
       <GridItem span={6}>
@@ -79,6 +91,7 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
           data={metricsData[ResourceUtilizationQuery.NETWORK_OUT] || []}
           loading={loading}
           unit=" bytes/s"
+          query={metricsQueries?.[ResourceUtilizationQuery.NETWORK_OUT]?.[0]}
         />
       </GridItem>
       <GridItem span={6}>
@@ -87,6 +100,9 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
           data={metricsData[ResourceUtilizationQuery.CONNECTION_RATE] || []}
           loading={loading}
           unit=" conn/s"
+          query={
+            metricsQueries?.[ResourceUtilizationQuery.CONNECTION_RATE]?.[0]
+          }
         />
       </GridItem>
       <GridItem span={6}>
@@ -95,6 +111,7 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
           data={metricsData[ResourceUtilizationQuery.PRS] || []}
           loading={loading}
           unit=" req/s"
+          query={metricsQueries?.[ResourceUtilizationQuery.PRS]?.[0]}
         />
       </GridItem>
     </Grid>

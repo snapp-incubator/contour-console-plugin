@@ -1,6 +1,7 @@
 export interface MetricCardProps {
   title: string;
-  data: { x: Date; y: number }[];
+  data: Array<{ x: Date; y: number }>;
   loading?: boolean;
   unit?: string;
+  query?: string;
 }
