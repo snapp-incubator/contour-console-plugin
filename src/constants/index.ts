@@ -52,10 +52,22 @@ export const DEFAULT_FORM_DATA = {
     permitInsecure: false,
   },
 };
+
 export const TLSType = 'kubernetes.io/tls';
+
 export const defaultSecret = {
   metadata: {
     name: 'openshift-ingress/letsencrypt',
   },
   type: TLSType,
+};
+
+export const HTTP_PROXY_TEMPLATE = {
+  apiVersion: 'projectcontour.io/v1',
+  kind: 'HTTPProxy',
+  metadata: {},
+  spec: {
+    virtualhost: {},
+    routes: [],
+  },
 };

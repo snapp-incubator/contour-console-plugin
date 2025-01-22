@@ -1,13 +1,21 @@
-import { dump } from 'js-yaml';
+import { dump, load } from 'js-yaml';
 import { FormData } from '../types';
 import { K8sResourceCommon } from '@openshift-console/dynamic-plugin-sdk';
-import { load } from 'js-yaml';
 import { convertToDomain } from '../utils/fqdnHandler';
+import { HTTP_PROXY_TEMPLATE } from '../constants';
+
+export const createYAMLFromTemplate = (template: any, data: any): string => {
+  try {
+    const mergedData = deepMerge(template, data);
+    return dump(mergedData, { noRefs: true, lineWidth: -1 });
+  } catch (error) {
+    console.error('Error creating YAML:', error);
+    return '';
+  }
+};
 
 export const convertFormToYAML = (formData: FormData): string => {
   const k8sObject = {
-    apiVersion: 'projectcontour.io/v1',
-    kind: 'HTTPProxy',
     metadata: {
       name: formData.name,
       namespace: formData.namespace,
@@ -52,7 +60,16 @@ export const convertFormToYAML = (formData: FormData): string => {
     },
   };
 
-  return dump(k8sObject, { noRefs: true, lineWidth: -1 });
+  return createYAMLFromTemplate(HTTP_PROXY_TEMPLATE, k8sObject);
+};
+
+export const parseYAML = (yamlString: string): any => {
+  try {
+    return load(yamlString);
+  } catch (error) {
+    console.error('Error parsing YAML:', error);
+    return null;
+  }
 };
 
 export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
@@ -95,12 +112,34 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
 };
 
 export const convertYAMLToForm = (yamlString: string): FormData | null => {
-  try {
-    const yamlData = load(yamlString) as K8sResourceCommon;
+  const yamlData = parseYAML(yamlString);
+  return yamlData ? convertK8sToForm(yamlData) : null;
+};
 
-    return convertK8sToForm(yamlData);
-  } catch (error) {
-    console.error('Error parsing YAML:', error);
-    return null;
+// Helper function to deep merge objects
+const deepMerge = (target: any, source: any): any => {
+  if (Array.isArray(source)) {
+    return source;
   }
+
+  const output = { ...target };
+
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach((key) => {
+      if (isObject(source[key])) {
+        if (!(key in target)) {
+          Object.assign(output, { [key]: source[key] });
+        } else {
+          output[key] = deepMerge(target[key], source[key]);
+        }
+      } else {
+        Object.assign(output, { [key]: source[key] });
+      }
+    });
+  }
+  return output;
+};
+
+const isObject = (item: any): boolean => {
+  return item && typeof item === 'object' && !Array.isArray(item);
 };
