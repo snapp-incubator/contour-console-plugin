@@ -83,7 +83,7 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
     };
 
     fetchData();
-  }, [metricsQueries]);
+  }, []);
 
   return (
     <Grid className="pf-u-mt-xl" hasGutter>
