@@ -43,7 +43,7 @@ export const TableRow = ({
     <Td dataLabel={t('target_port')}>
       <Badge isRead>
         <TableText>
-          {t('tcp')}-{route?.spec?.routes[0]?.services?.[0]?.port ?? 'Error'}
+          {t('tcp')}-{route?.spec?.routes?.[0]?.services?.[0]?.port ?? 'Error'}
         </TableText>
       </Badge>
     </Td>
@@ -52,7 +52,7 @@ export const TableRow = ({
         <Badge className="co-m-resource-icon co-m-resource-service">
           {t('s')}
         </Badge>
-        {route?.spec?.routes[0]?.services?.[0]?.name ?? 'Error'}
+        {route?.spec?.routes?.[0]?.services?.[0]?.name ?? 'Error'}
         <Link
           className="pf-u-ml-sm"
           to={`/k8s/ns/${route?.metadata?.namespace}/projectcontour.io~v1~HTTPProxy/${route?.metadata?.name}`}
