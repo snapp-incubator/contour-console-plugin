@@ -114,10 +114,7 @@ const ContourForm = ({
                 route={route}
                 onChange={(updatedRoute) => updateRoute(index, updatedRoute)}
                 onDelete={() => removeRoute(index)}
-                availableServices={services?.map((svc) => svc.metadata.name)}
-                availablePorts={services?.flatMap((svc) =>
-                  svc.spec.ports?.map((port) => port.port.toString()),
-                )}
+                availableServices={services}
                 availableSecrets={secrets?.map(
                   (secret) => secret.metadata.name,
                 )}

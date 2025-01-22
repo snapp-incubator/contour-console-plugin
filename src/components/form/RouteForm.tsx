@@ -11,10 +11,18 @@ const RouteForm = ({
   onChange,
   onDelete,
   availableServices,
-  availablePorts,
   availableSecrets,
 }: RouteFormProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
+
+  const servicesWithPorts = availableServices.map((svc) => ({
+    name: svc.metadata.name,
+    ports:
+      svc.spec.ports?.map((port) => ({
+        port: port.port,
+        name: port.name,
+      })) || [],
+  }));
 
   const addService = () => {
     onChange({
@@ -85,8 +93,7 @@ const RouteForm = ({
                   onChange={(updatedService) =>
                     updateService(index, updatedService)
                   }
-                  availableServices={availableServices}
-                  availablePorts={availablePorts}
+                  availableServices={servicesWithPorts}
                   availableSecrets={availableSecrets}
                 />
               </div>

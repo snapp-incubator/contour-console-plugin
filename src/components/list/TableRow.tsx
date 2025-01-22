@@ -53,6 +53,12 @@ export const TableRow = ({
           {t('s')}
         </Badge>
         {route?.spec?.routes[0]?.services?.[0]?.name ?? 'Error'}
+        <Link
+          className="pf-u-ml-sm"
+          to={`/k8s/ns/${route?.metadata?.namespace}/projectcontour.io~v1~HTTPProxy/${route?.metadata?.name}`}
+        >
+          {t('more_details')}
+        </Link>
       </TableText>
     </Td>
     <Td>

@@ -10,11 +10,14 @@ import { useTranslation } from 'react-i18next';
 import { Service } from '../../types';
 import CustomDropdown from '../shared/CustomDropdown';
 import { AlertPopover } from '../popover';
+
 interface ServiceFormProps {
   service: Service;
   onChange: (service: Service) => void;
-  availableServices: string[];
-  availablePorts: string[];
+  availableServices: Array<{
+    name: string;
+    ports: Array<{ port: number; name?: string }>;
+  }>;
   availableSecrets: string[];
   onDelete?: () => void;
 }
@@ -23,32 +26,45 @@ const ServiceForm = ({
   service,
   onChange,
   availableServices,
-  availablePorts,
   availableSecrets,
   onDelete,
 }: ServiceFormProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
 
+  // Get available ports for the selected service
+  const selectedService = availableServices.find(
+    (svc) => svc.name === service.name,
+  );
+  const availablePorts =
+    selectedService?.ports.map((port) => ({
+      label: port.name ? `${port.port} (${port.name})` : port.port.toString(),
+      value: port.port.toString(),
+    })) || [];
+
   return (
     <div className="service-form pf-c-form">
       <FormGroup fieldId="service-2" label={t('service_name')} isRequired>
         <CustomDropdown
-          options={availableServices.map((name) => ({
-            label: name,
-            value: name,
+          options={availableServices.map((svc) => ({
+            label: svc.name,
+            value: svc.name,
           }))}
           value={service.name}
-          onChange={(value) => onChange({ ...service, name: value })}
+          onChange={(value) => {
+            // Reset port when service changes
+            onChange({ ...service, name: value, port: '' });
+          }}
           placeholder="Select a service"
         />
       </FormGroup>
 
       <FormGroup fieldId="port" label={t('port')} isRequired>
         <CustomDropdown
-          options={availablePorts.map((port) => ({ label: port, value: port }))}
+          options={availablePorts}
           value={service.port}
           onChange={(value) => onChange({ ...service, port: value })}
           placeholder="Select a port"
+          isDisabled={!service.name}
         />
         <div className="help-block">{t('target_port_traffic')}</div>
       </FormGroup>
