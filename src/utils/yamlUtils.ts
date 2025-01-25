@@ -20,6 +20,8 @@ export const convertFormToYAML = (formData: FormData): string => {
       name: formData.name,
       namespace: formData.namespace,
       resourceVersion: formData.resourceVersion,
+      labels: formData.labels,
+      annotations: formData.annotations,
     },
     spec: {
       virtualhost: {
@@ -80,6 +82,8 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
     resourceVersion: k8sResource.metadata.resourceVersion,
     ingressClassName: spec.ingressClassName,
     fqdn: spec.virtualhost.fqdn,
+    labels: k8sResource.metadata.labels,
+    annotations: k8sResource.metadata.annotations,
     routes: spec.routes.map((route) => ({
       prefix: route.conditions?.[0]?.prefix || '/',
       services: route.services.map((service) => ({

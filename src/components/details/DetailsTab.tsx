@@ -73,6 +73,40 @@ const DetailsTab = ({ name, ns }: DetailsTabProps) => {
             <strong>{t('details_created')}</strong>
           </Text>
           <Text>{router?.metadata?.creationTimestamp}</Text>
+          {router?.metadata?.labels ? (
+            <>
+              <Text className="pf-u-mt-xl">
+                <strong>{t('labels')}</strong>
+              </Text>
+              {Object.entries(router?.metadata?.labels).map(([key, value]) => (
+                <Badge
+                  isRead={true}
+                  className="pf-c-badge-BorderWidth pf-c-badge-BorderColor"
+                  key={key}
+                >
+                  {key}: {value}
+                </Badge>
+              ))}
+            </>
+          ) : null}
+          {router?.metadata?.annotations ? (
+            <>
+              <Text className="pf-u-mt-xl">
+                <strong>{t('annotations')}</strong>
+              </Text>
+              {Object.entries(router?.metadata?.annotations).map(
+                ([key, value]) => (
+                  <Badge
+                    isRead={true}
+                    className="pf-c-badge-BorderWidth pf-c-badge-BorderColor"
+                    key={key}
+                  >
+                    {key}: {value}
+                  </Badge>
+                ),
+              )}
+            </>
+          ) : null}
         </GridItem>
         <GridItem span={6}>
           <Text className="pf-u-mt-xl">

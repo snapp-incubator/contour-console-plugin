@@ -29,6 +29,8 @@ export interface FormData {
   resourceVersion?: string;
   fqdn: string;
   routes: Route[];
+  labels?: Record<string, string>;
+  annotations?: Record<string, string>;
   conditional?: ConditionalFields;
 }
 
