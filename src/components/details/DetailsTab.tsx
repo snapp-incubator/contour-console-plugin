@@ -192,14 +192,14 @@ const DetailsTab = ({ name, ns }: DetailsTabProps) => {
         <strong>
           {t('details_router_title')}:
           <Badge className="pf-u-ml-sm">
-            {router?.spec?.ingressClassName.toUpperCase()}
+            {router?.spec?.ingressClassName?.toUpperCase() || '-'}
           </Badge>
         </strong>
       </Text>
       <Text className="pf-u-mt-xl">
         <strong>{t('details_fqdn')}</strong>
       </Text>
-      <Text>{router?.spec?.virtualhost?.fqdn}</Text>
+      <Text>{router?.spec?.virtualhost?.fqdn || '-'}</Text>
       <Text className="pf-u-mt-xl">
         <strong>{t('wildcard_policy')}</strong>
       </Text>
