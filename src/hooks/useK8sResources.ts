@@ -5,7 +5,7 @@ import {
   getGroupVersionKindForResource,
 } from '@openshift-console/dynamic-plugin-sdk';
 import { K8sResources } from '../types';
-import { SERVICE_MODEL, SECRET_MODEL } from '../constants';
+import { SERVICE_MODEL, SECRET_MODEL, INGRESS_CLASSES } from '../constants';
 import { defaultSecret, TLSType } from '../constants';
 
 export const useK8sResources = (namespace: string): K8sResources => {
@@ -36,24 +36,7 @@ export const useK8sResources = (namespace: string): K8sResources => {
             defaultSecret,
             ...(secretsRes?.items?.filter((s) => s.type === TLSType) || []),
           ],
-          ingressClasses: [
-            {
-              label: 'Inter-venture',
-              value: 'inter-venture',
-            },
-            {
-              label: 'Inter-dc',
-              value: 'inter-dc',
-            },
-            {
-              label: 'Public',
-              value: 'public',
-            },
-            {
-              label: 'Private',
-              value: 'private',
-            },
-          ],
+          ingressClasses: INGRESS_CLASSES,
           loading: false,
           error: null,
         });

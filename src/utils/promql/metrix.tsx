@@ -3,28 +3,13 @@ import {
   useK8sModel,
   getGroupVersionKindForResource,
 } from '@openshift-console/dynamic-plugin-sdk';
+import {
+  ResourceUtilizationQuery,
+  MetricsQueries,
+  MONITORING_BASE_URL,
+} from '../../constants';
 
-export enum ResourceUtilizationQuery {
-  NETWORK_IN = 'NETWORK_IN',
-  NETWORK_OUT = 'NETWORK_OUT',
-  CONNECTION_RATE = 'CONNECTION_RATE',
-  PRS = 'PRS',
-}
-
-const MetricsQueries = {
-  [ResourceUtilizationQuery.NETWORK_IN]: _.template(
-    "sum without (instance,exported_pod,exported_service,pod,server)(irate(cloud:routes_received:bytes{namespace='<%= namespace %>',authority='<%= authority %>'}[5m]))",
-  ),
-  [ResourceUtilizationQuery.NETWORK_OUT]: _.template(
-    "sum without (instance,exported_pod,exported_service,pod,server) (irate(cloud:routes_sent:bytes{namespace='<%= namespace %>',authority='<%= authority %>'}[5m]))",
-  ),
-  [ResourceUtilizationQuery.CONNECTION_RATE]: _.template(
-    "sum without (instance,exported_pod,exported_service,pod,server) (irate(haproxy_backend_connections_total{exported_namespace='<%= namespace %>',route='<%= name %>'}[5m]))",
-  ),
-  [ResourceUtilizationQuery.PRS]: _.template(
-    "sum (cloud:routes:rps{namespace='<%= namespace %>',route_name='<%= name %>'}) OR on() vector(0)",
-  ),
-};
+export { ResourceUtilizationQuery };
 
 export const getMetricsQueries = (
   name: string,
@@ -71,4 +56,9 @@ export const useResourceMetricsQueries = (
     );
   }
   return null;
+};
+
+export const getMonitoringURL = (query: string) => {
+  const encodedQuery = encodeURIComponent(query);
+  return `${MONITORING_BASE_URL}?query0=${encodedQuery}`;
 };

@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 export const DEFAULT_PADDING_CHART = {
   bottom: 50,
   left: 50,
@@ -10,7 +12,7 @@ export const PROMETHEUS_API = {
   QUERY_RANGE: '/api/prometheus/api/v1/query_range',
   DEFAULT_STEP: '6',
   DEFAULT_TIMEOUT: '60s',
-  TIME_RANGE: 3600, // 1 hour in seconds
+  TIME_RANGE: 3600,
   DEFAULT_ERROR_VALUE: 0,
   DEFAULT_METRIC_DATA: {
     x: new Date(),
@@ -112,3 +114,46 @@ export const HTTP_PROXY_TEMPLATE = {
     routes: [],
   },
 };
+
+export const MONITORING_BASE_URL = '/monitoring/query-browser';
+
+export enum ResourceUtilizationQuery {
+  NETWORK_IN = 'NETWORK_IN',
+  NETWORK_OUT = 'NETWORK_OUT',
+  CONNECTION_RATE = 'CONNECTION_RATE',
+  PRS = 'PRS',
+}
+
+export const MetricsQueries = {
+  [ResourceUtilizationQuery.NETWORK_IN]: _.template(
+    "sum without (instance,exported_pod,exported_service,pod,server)(irate(cloud:routes_received:bytes{namespace='<%= namespace %>',authority='<%= authority %>'}[5m]))",
+  ),
+  [ResourceUtilizationQuery.NETWORK_OUT]: _.template(
+    "sum without (instance,exported_pod,exported_service,pod,server) (irate(cloud:routes_sent:bytes{namespace='<%= namespace %>',authority='<%= authority %>'}[5m]))",
+  ),
+  [ResourceUtilizationQuery.CONNECTION_RATE]: _.template(
+    "sum without (instance,exported_pod,exported_service,pod,server) (irate(haproxy_backend_connections_total{exported_namespace='<%= namespace %>',route='<%= name %>'}[5m]))",
+  ),
+  [ResourceUtilizationQuery.PRS]: _.template(
+    "sum (cloud:routes:rps{namespace='<%= namespace %>',route_name='<%= name %>'}) OR on() vector(0)",
+  ),
+};
+
+export const INGRESS_CLASSES = [
+  {
+    label: 'Inter-venture',
+    value: 'inter-venture',
+  },
+  {
+    label: 'Inter-dc',
+    value: 'inter-dc',
+  },
+  {
+    label: 'Public',
+    value: 'public',
+  },
+  {
+    label: 'Private',
+    value: 'private',
+  },
+];
