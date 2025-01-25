@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   CardHeader,
@@ -6,35 +7,43 @@ import {
   CardBody,
   Button,
 } from '@patternfly/react-core';
-import {
-  Chart,
-  ChartAxis,
-  ChartGroup,
-  ChartLine,
-  ChartVoronoiContainer,
-} from '@patternfly/react-charts';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import type { MetricCardProps } from './metricCard.type';
-
-import { DEFAULT_PADDING_CHART } from '../../constants';
+import { getMonitoringURL } from '../../utils/promql/metrix';
+import { LoadingState, ErrorState, EmptyDataState } from './MetricStates';
+import MetricChart from './MetricChart';
 
 const MetricCard = ({
   title,
   data,
   unit,
   query,
+  loading,
+  error,
 }: MetricCardProps): JSX.Element => {
-  const getMonitoringURL = (query: string) => {
-    const baseURL = '/monitoring/query-browser';
-    const encodedQuery = encodeURIComponent(query);
-    return `${baseURL}?query0=${encodedQuery}`;
+  const { t } = useTranslation('plugin__contour-console-plugin');
+
+  const renderContent = () => {
+    if (loading) {
+      return <LoadingState />;
+    }
+
+    if (error) {
+      return <ErrorState error={error} />;
+    }
+
+    if (!data || data.length === 0) {
+      return <EmptyDataState />;
+    }
+
+    return <MetricChart data={data} unit={unit} />;
   };
 
   return (
     <Card isFlat={true}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        {query ? (
+        {query && !loading && !error ? (
           <Button
             className="pf-u-ml-auto"
             variant="link"
@@ -45,33 +54,12 @@ const MetricCard = ({
             rel="noopener noreferrer"
             isInline
           >
-            {title}
+            {t('view_query')}
           </Button>
         ) : null}
       </CardHeader>
       <CardBody>
-        <div style={{ height: '200px' }}>
-          <Chart
-            containerComponent={<ChartVoronoiContainer />}
-            scale={{ x: 'time', y: 'linear' }}
-            padding={DEFAULT_PADDING_CHART}
-            height={200}
-          >
-            <ChartAxis />
-            <ChartAxis
-              dependentAxis
-              tickFormat={(tick) => `${tick}${unit || ''}`}
-            />
-            <ChartGroup>
-              <ChartLine
-                data={data}
-                style={{
-                  data: { stroke: '#0066CC' },
-                }}
-              />
-            </ChartGroup>
-          </Chart>
-        </div>
+        <div style={{ height: '200px', width: '100%' }}>{renderContent()}</div>
       </CardBody>
     </Card>
   );

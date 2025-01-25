@@ -142,5 +142,11 @@
   "error_fetching_proxy": "Error fetching proxy",
   "more_details": "(More)",
   "labels": "Labels",
-  "annotations": "Annotations"
+  "annotations": "Annotations",
+  "metrics_loading": "Loading metrics...",
+  "metrics_no_data": "No data available",
+  "metrics_error": "Error fetching metrics",
+  "metrics_no_data_description": "No data available for this query",
+  "metrics_unit": "bytes/s",
+  "view_query": "View Query"
 }
