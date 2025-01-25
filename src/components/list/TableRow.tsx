@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Tr, Td, TableText, ActionsColumn } from '@patternfly/react-table';
 import { Badge } from '@patternfly/react-core';
-import { StatusIndicator } from './StatusIndicator';
+import { StatusIndicator } from '../shared/StatusIndicator';
 import { LocationLink } from './LocationLink';
 interface TableRowProps {
   route: any;

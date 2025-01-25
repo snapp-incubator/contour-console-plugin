@@ -15,6 +15,7 @@ import {
 } from '@openshift-console/dynamic-plugin-sdk';
 import { useTranslation } from 'react-i18next';
 import { CONTOUR_MODEL } from '../../constants';
+import { StatusIndicator } from '../shared/StatusIndicator';
 
 interface DetailsTabProps {
   name: string;
@@ -81,7 +82,7 @@ const DetailsTab = ({ name, ns }: DetailsTabProps) => {
               {Object.entries(router?.metadata?.labels).map(([key, value]) => (
                 <Badge
                   isRead={true}
-                  className="pf-c-badge-BorderWidth pf-c-badge-BorderColor"
+                  className="pf-u-mr-xs pf-u-mt-xs pf-c-badge-BorderWidth pf-c-badge-BorderColor"
                   key={key}
                 >
                   {key}: {value}
@@ -98,7 +99,7 @@ const DetailsTab = ({ name, ns }: DetailsTabProps) => {
                 ([key, value]) => (
                   <Badge
                     isRead={true}
-                    className="pf-c-badge-BorderWidth pf-c-badge-BorderColor"
+                    className="pf-u-mr-xs pf-u-mt-xs pf-c-badge-BorderWidth pf-c-badge-BorderColor"
                     key={key}
                   >
                     {key}: {value}
@@ -120,7 +121,7 @@ const DetailsTab = ({ name, ns }: DetailsTabProps) => {
           <Text className="pf-u-mt-xl">
             <strong>{t('details_status')}</strong>
           </Text>
-          <Badge className="pf-u-mr-xs">{t('accepted')}</Badge>
+          <StatusIndicator status={router.status.currentStatus} t={t} />
           <Text className="pf-u-mt-xl">
             <strong>{t('details_fqdn')}</strong>
           </Text>
