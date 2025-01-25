@@ -4,15 +4,18 @@ import { Tr, Td, TableText, ActionsColumn } from '@patternfly/react-table';
 import { Badge } from '@patternfly/react-core';
 import { StatusIndicator } from '../shared/StatusIndicator';
 import { LocationLink } from './LocationLink';
+
 interface TableRowProps {
   route: any;
   lastRowActions: (route: any) => any[];
+  isAllNamespaces: boolean;
   t: (key: string) => string;
 }
 
 export const TableRow = ({
   route,
   lastRowActions,
+  isAllNamespaces,
   t,
 }: TableRowProps): JSX.Element => (
   <Tr key={route?.metadata?.uid}>
@@ -40,27 +43,32 @@ export const TableRow = ({
     <Td width={20} dataLabel={t('location')}>
       <LocationLink route={route} />
     </Td>
-    <Td dataLabel={t('target_port')}>
-      <Badge isRead>
-        <TableText>
-          {t('tcp')}-{route?.spec?.routes?.[0]?.services?.[0]?.port ?? 'Error'}
-        </TableText>
-      </Badge>
-    </Td>
-    <Td dataLabel={t('service')}>
-      <TableText>
-        <Badge className="co-m-resource-icon co-m-resource-service">
-          {t('s')}
-        </Badge>
-        {route?.spec?.routes?.[0]?.services?.[0]?.name ?? 'Error'}
-        <Link
-          className="pf-u-ml-sm"
-          to={`/k8s/ns/${route?.metadata?.namespace}/projectcontour.io~v1~HTTPProxy/${route?.metadata?.name}`}
-        >
-          {t('more_details')}
-        </Link>
-      </TableText>
-    </Td>
+    {!isAllNamespaces && (
+      <>
+        <Td dataLabel={t('target_port')}>
+          <Badge isRead>
+            <TableText>
+              {t('tcp')}-
+              {route?.spec?.routes?.[0]?.services?.[0]?.port ?? 'Error'}
+            </TableText>
+          </Badge>
+        </Td>
+        <Td dataLabel={t('service')}>
+          <TableText>
+            <Badge className="co-m-resource-icon co-m-resource-service">
+              {t('s')}
+            </Badge>
+            {route?.spec?.routes?.[0]?.services?.[0]?.name ?? 'Error'}
+            <Link
+              className="pf-u-ml-sm"
+              to={`/k8s/ns/${route?.metadata?.namespace}/projectcontour.io~v1~HTTPProxy/${route?.metadata?.name}`}
+            >
+              {t('more_details')}
+            </Link>
+          </TableText>
+        </Td>
+      </>
+    )}
     <Td>
       <ActionsColumn items={lastRowActions(route)} />
     </Td>

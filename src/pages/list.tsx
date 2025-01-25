@@ -17,7 +17,7 @@ import { EditMetadataModal } from '@/modals/EditMetadataModal';
 import { DeleteConfirmationModal } from '@/modals/DeleteConfirmationModal';
 import { useHTTPProxyData } from '../hooks/useHTTPProxyData';
 import HTTPProxyInfo from '@/shared/HTTPProxyInfo';
-import { CONTOUR_MODEL } from '../constants';
+import { CONTOUR_MODEL, ALL_NAMESPACES } from '../constants';
 
 const List = ({ namespace }: { namespace?: string }) => {
   const navigate = useHistory();
@@ -28,6 +28,8 @@ const List = ({ namespace }: { namespace?: string }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(t('name'));
   const [searchValue, setSearchValue] = useState<string>('');
+
+  const isAllNamespaces = namespace === ALL_NAMESPACES;
 
   const {
     routes,
@@ -85,7 +87,7 @@ const List = ({ namespace }: { namespace?: string }) => {
           <DeleteConfirmationModal
             isOpen={true}
             route={route}
-            namespace={namespace}
+            namespace={route.metadata.namespace}
             onDelete={handleDeleteModal}
             onClose={closeModal}
             t={t}
@@ -93,7 +95,7 @@ const List = ({ namespace }: { namespace?: string }) => {
         ),
         { title: t('delete_route') },
       ),
-    [namespace, refresh],
+    [refresh],
   );
 
   const handleLabels = React.useCallback(
@@ -111,7 +113,7 @@ const List = ({ namespace }: { namespace?: string }) => {
         ),
         { title: t('edit_labels') },
       ),
-    [namespace, refresh],
+    [refresh],
   );
 
   const handleAnnotations = React.useCallback(
@@ -135,7 +137,7 @@ const List = ({ namespace }: { namespace?: string }) => {
   const getRowActions = (route: HTTPProxy) => [
     {
       title: t('edit_route'),
-      onClick: () => handleEditRoute(namespace, route),
+      onClick: () => handleEditRoute(route.metadata.namespace, route),
     },
     {
       title: t('edit_labels'),
@@ -177,6 +179,7 @@ const List = ({ namespace }: { namespace?: string }) => {
                 <div className="pf-u-mt-xl">
                   <HTTPProxyTable
                     loading={loading}
+                    isAllNamespaces={isAllNamespaces}
                     filteredRoutes={filteredRoutes}
                     lastRowActions={getRowActions}
                     t={t}

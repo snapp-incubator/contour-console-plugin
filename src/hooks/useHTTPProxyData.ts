@@ -6,7 +6,11 @@ import {
   getGroupVersionKindForResource,
   K8sResourceCommon,
 } from '@openshift-console/dynamic-plugin-sdk';
-import { CONTOUR_MODEL } from '../constants';
+import {
+  CONTOUR_MODEL,
+  HTTP_PROXY_QUERY_PARAMS,
+  ALL_NAMESPACES,
+} from '../constants';
 import { labelToObject } from '../utils/labelToObject';
 
 export const useHTTPProxyData = (
@@ -19,13 +23,17 @@ export const useHTTPProxyData = (
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
+  const isAllNamespaces = namespace === ALL_NAMESPACES;
 
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
         const response = (await k8sGet({
           model: k8sModel,
-          ns: namespace,
+          ns: isAllNamespaces ? undefined : namespace,
+          queryParams: isAllNamespaces
+            ? HTTP_PROXY_QUERY_PARAMS.ALL_NAMESPACES
+            : null,
         })) as { items: K8sResourceCommon[] };
         setRoutes(response.items || []);
         setFilteredRoutes(response.items || []);

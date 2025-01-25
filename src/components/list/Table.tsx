@@ -15,6 +15,7 @@ import HTTPProxyInfo from '@/shared/HTTPProxyInfo';
 interface HTTPProxyTableProps {
   loading: boolean;
   filteredRoutes: any[];
+  isAllNamespaces: boolean;
   lastRowActions: (route: any) => any[];
   t: (key: string) => string;
 }
@@ -22,6 +23,7 @@ interface HTTPProxyTableProps {
 export const HTTPProxyTable = ({
   loading,
   filteredRoutes,
+  isAllNamespaces,
   lastRowActions,
   t,
 }: HTTPProxyTableProps) => {
@@ -51,8 +53,12 @@ export const HTTPProxyTable = ({
           <Th>{t('namespace')}</Th>
           <Th>{t('status')}</Th>
           <Th>{t('location')}</Th>
-          <Th>{t('target_port')}</Th>
-          <Th colSpan={2}>{t('service')}</Th>
+          {!isAllNamespaces && (
+            <>
+              <Th>{t('target_port')}</Th>
+              <Th colSpan={2}>{t('service')}</Th>
+            </>
+          )}
         </Tr>
       </Thead>
       <Tbody>
@@ -61,6 +67,7 @@ export const HTTPProxyTable = ({
             key={route?.metadata?.uid}
             route={route}
             lastRowActions={lastRowActions}
+            isAllNamespaces={isAllNamespaces}
             t={t}
           />
         ))}
