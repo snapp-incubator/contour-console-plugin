@@ -140,5 +140,7 @@
   "reload": "Reload",
   "invalid_yaml_format": "Invalid YAML format",
   "error_fetching_proxy": "Error fetching proxy",
-  "more_details": "(More)"
+  "more_details": "(More)",
+  "labels": "Labels",
+  "annotations": "Annotations"
 }
