@@ -157,3 +157,17 @@ export const INGRESS_CLASSES = [
     value: 'private',
   },
 ];
+
+export const HTTP_PROXY_QUERY_PARAMS = {
+  ALL_NAMESPACES: {
+    limit: '250',
+    cluster: 'local-cluster',
+  },
+} as const;
+
+export const ALL_NAMESPACES = 'all-namespaces';
+
+export const TLS_TERMINATION = {
+  PASSTHROUGH: 'passthrough',
+  EDGE: 'edge',
+} as const;

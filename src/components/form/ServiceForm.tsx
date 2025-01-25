@@ -41,6 +41,10 @@ const ServiceForm = ({
       value: port.port.toString(),
     })) || [];
 
+  const isValidWeight = (weight: number): boolean => {
+    return !isNaN(weight) && weight >= 0 && weight <= 100;
+  };
+
   return (
     <div className="service-form pf-c-form">
       <FormGroup fieldId="service-2" label={t('service_name')} isRequired>
@@ -69,15 +73,22 @@ const ServiceForm = ({
         <div className="help-block">{t('target_port_traffic')}</div>
       </FormGroup>
 
-      <FormGroup fieldId="weight" label={t('weight')}>
+      <FormGroup
+        fieldId="weight"
+        label={t('weight')}
+        helperTextInvalid={t('weight_range_error')}
+        validated={isValidWeight(service.weight) ? 'default' : 'error'}
+      >
         <TextInput
           type="number"
           value={service.weight}
           min={0}
           max={100}
-          onChange={(value) =>
-            onChange({ ...service, weight: parseInt(value) })
-          }
+          onChange={(value) => {
+            const numValue = parseInt(value) || 0;
+            onChange({ ...service, weight: numValue });
+          }}
+          validated={isValidWeight(service.weight) ? 'default' : 'error'}
         />
         <div className="help-block">{t('weight_service_route')}</div>
       </FormGroup>

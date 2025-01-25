@@ -2,7 +2,7 @@ import { dump, load } from 'js-yaml';
 import { FormData } from '../types';
 import { K8sResourceCommon } from '@openshift-console/dynamic-plugin-sdk';
 import { convertToDomain } from '../utils/fqdnHandler';
-import { HTTP_PROXY_TEMPLATE } from '../constants';
+import { HTTP_PROXY_TEMPLATE, TLS_TERMINATION } from '../constants';
 
 export const createYAMLFromTemplate = (template: any, data: any): string => {
   try {
@@ -49,10 +49,12 @@ export const convertFormToYAML = (formData: FormData): string => {
               subjectName: service.subjectName,
             },
           }),
-          timeoutPolicy: {
-            idle: `${service.idleConnection}s`,
-            response: `${service.responseTimeout}s`,
-          },
+          ...(service.websocket && {
+            timeoutPolicy: {
+              idle: `${service.idleConnection}s`,
+              response: `${service.responseTimeout}s`,
+            },
+          }),
         })),
         ...(formData.conditional?.permitInsecure && {
           permitInsecure: true,
@@ -93,7 +95,7 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
         validation: !!service.validation,
         caSecret: service.validation?.caSecret,
         subjectName: service.validation?.subjectName,
-        websocket: false,
+        websocket: service.timeoutPolicy || false,
         idleConnection: service.timeoutPolicy?.idle?.replace('s', '') || '15',
         responseTimeout:
           service.timeoutPolicy?.response?.replace('s', '') || '5',
@@ -103,8 +105,8 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
       ? {
           secureRoute: true,
           termination: spec.virtualhost.tls.passthrough
-            ? 'passthrough'
-            : 'edge',
+            ? TLS_TERMINATION.PASSTHROUGH
+            : TLS_TERMINATION.EDGE,
           permitInsecure: spec.routes?.[0]?.permitInsecure || false,
           secrets: spec.virtualhost.tls.secretName,
         }

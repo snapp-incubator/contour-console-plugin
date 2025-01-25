@@ -46,6 +46,17 @@ export const validateForm = (data: FormData, t: TFunction): string[] => {
               }),
             );
           }
+          if (
+            typeof service.weight === 'number' &&
+            (service.weight < 0 || service.weight > 100)
+          ) {
+            errors.push(
+              t('error_route_service_weight_range', {
+                number: routeIndex + 1,
+                serviceNumber: serviceIndex + 1,
+              }),
+            );
+          }
           if (service.validation) {
             if (!service.caSecret) {
               errors.push(
