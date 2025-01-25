@@ -210,14 +210,14 @@ const RouteHandlerPage = () => {
           <Divider />
           <Grid hasGutter={true}>
             <GridItem span={8}>
-              {yamlError && (
+              {yamlError ? (
                 <Alert
                   variant="danger"
                   isInline
                   title={yamlError}
                   className="pf-u-mb-md"
                 />
-              )}
+              ) : null}
               <Form onSubmit={handleSubmit}>
                 {!yamlView ? (
                   <RouteForm
@@ -255,21 +255,21 @@ const RouteHandlerPage = () => {
                   })}
                   data-test="contour-form-footer"
                 >
-                  {(validationErrors.length > 0 || saveError) && (
+                  {validationErrors.length > 0 || saveError ? (
                     <Alert
                       variant="danger"
                       title={saveError || t('validation_errors')}
                       isInline
                     >
-                      {validationErrors.length > 0 && (
+                      {validationErrors.length > 0 ? (
                         <ul>
                           {validationErrors.map((error, index) => (
                             <li key={index}>{error}</li>
                           ))}
                         </ul>
-                      )}
+                      ) : null}
                     </Alert>
-                  )}
+                  ) : null}
                   <ActionGroup className="pf-u-mt-sm">
                     <Button
                       variant="primary"

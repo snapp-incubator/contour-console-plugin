@@ -139,7 +139,7 @@ const ContourForm = ({
               />
             </FormGroup>
 
-            {formData?.conditional?.secureRoute && (
+            {formData?.conditional?.secureRoute ? (
               <>
                 <FormGroup
                   className="pf-u-mt-md"
@@ -186,7 +186,7 @@ const ContourForm = ({
                   />
                 </FormGroup>
 
-                {formData?.conditional?.termination !== 'passthrough' && (
+                {formData?.conditional?.termination !== 'passthrough' ? (
                   <FormGroup
                     className="pf-u-mt-md"
                     fieldId="secret"
@@ -212,9 +212,9 @@ const ContourForm = ({
                     />
                     <div className="help-block">{t('secret_info')}</div>
                   </FormGroup>
-                )}
+                ) : null}
               </>
-            )}
+            ) : null}
           </div>
         </div>
       </Form>

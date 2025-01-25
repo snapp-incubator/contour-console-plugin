@@ -47,7 +47,7 @@ const RouteForm = ({
       <div className="pf-u-pt-md">
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
           <FlexItem>
-            {onDelete && (
+            {onDelete ? (
               <Button
                 className="delete-button"
                 variant="link"
@@ -56,7 +56,7 @@ const RouteForm = ({
                 <span className="fa fa-minus-circle pf-u-mr-xs"></span>
                 {t('remove_route')}
               </Button>
-            )}
+            ) : null}
           </FlexItem>
         </Flex>
       </div>
@@ -78,7 +78,7 @@ const RouteForm = ({
           {route.services.map((service, index) => (
             <div key={index} className="pf-u-mb-md">
               <div>
-                {route.services.length > 1 && (
+                {route.services.length > 1 ? (
                   <Button
                     className="delete-button"
                     variant="link"
@@ -87,7 +87,7 @@ const RouteForm = ({
                     <span className="fa fa-minus-circle pf-u-mr-xs"></span>
                     {t('remove_service')}
                   </Button>
-                )}
+                ) : null}
                 <ServiceForm
                   service={service}
                   onChange={(updatedService) =>

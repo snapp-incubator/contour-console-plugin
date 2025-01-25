@@ -162,42 +162,44 @@ const List = ({ namespace }: { namespace?: string }) => {
             onCreateRoute={() => handleCreateRoute(namespace)}
             t={t}
           />
-          {routes && routes.length > 0 ? (
-            <>
-              <HTTPProxyFilters
-                selectedFilter={selectedFilter}
-                searchValue={searchValue}
-                isFilterOpen={isFilterOpen}
-                onFilterToggle={onFilterToggle}
-                onFilterSelect={onFilterSelect}
-                onSearchChange={onSearchChange}
-                t={t}
-              />
-              <div className="pf-u-mt-xl">
-                <HTTPProxyTable
-                  loading={loading}
-                  filteredRoutes={filteredRoutes}
-                  lastRowActions={getRowActions}
+          {routes ? (
+            routes.length > 0 ? (
+              <>
+                <HTTPProxyFilters
+                  selectedFilter={selectedFilter}
+                  searchValue={searchValue}
+                  isFilterOpen={isFilterOpen}
+                  onFilterToggle={onFilterToggle}
+                  onFilterSelect={onFilterSelect}
+                  onSearchChange={onSearchChange}
                   t={t}
                 />
+                <div className="pf-u-mt-xl">
+                  <HTTPProxyTable
+                    loading={loading}
+                    filteredRoutes={filteredRoutes}
+                    lastRowActions={getRowActions}
+                    t={t}
+                  />
+                </div>
+              </>
+            ) : loading ? (
+              <div className="flex pf-u-mt-xl">
+                <Skeleton width="100%" height="25%" />
+                <Skeleton width="100%" height="25%" />
               </div>
-            </>
-          ) : loading ? (
-            <div className="flex pf-u-mt-xl">
-              <Skeleton width="100%" height="25%" />
-              <Skeleton width="100%" height="25%" />
-            </div>
-          ) : (
-            <div>
-              <Alert
-                className="pf-u-mt-xl"
-                isInline
-                variant="warning"
-                title={t('not_found')}
-              />
-              <HTTPProxyInfo isTitle={false} />
-            </div>
-          )}
+            ) : (
+              <div>
+                <Alert
+                  className="pf-u-mt-xl"
+                  isInline
+                  variant="warning"
+                  title={t('not_found')}
+                />
+                <HTTPProxyInfo isTitle={false} />
+              </div>
+            )
+          ) : null}
         </PageSection>
       </Page>
     </React.Fragment>

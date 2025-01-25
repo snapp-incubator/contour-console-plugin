@@ -83,14 +83,14 @@ const YAMLTab = ({ name, ns }: YAMLTabProps) => {
 
   return (
     <div className="route-yaml-editor">
-      {(yamlError || saveError) && (
+      {yamlError || saveError ? (
         <Alert
           variant="danger"
           isInline
           title={yamlError || saveError}
           className="pf-u-mb-md"
         />
-      )}
+      ) : null}
       <React.Suspense fallback={<></>}>
         <YAMLEditor
           language="yaml"

@@ -34,7 +34,7 @@ const MetricCard = ({
     <Card isFlat={true}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        {query && (
+        {query ? (
           <Button
             className="pf-u-ml-auto"
             variant="link"
@@ -47,7 +47,7 @@ const MetricCard = ({
           >
             {title}
           </Button>
-        )}
+        ) : null}
       </CardHeader>
       <CardBody>
         <div style={{ height: '200px' }}>
