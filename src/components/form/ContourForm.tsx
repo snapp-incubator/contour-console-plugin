@@ -36,7 +36,7 @@ const ContourForm = ({
   };
 
   const updateRoute = (index: number, updatedRoute: Route) => {
-    const newRoutes = [...formData.routes];
+    const newRoutes: Route[] = [...formData.routes];
     newRoutes[index] = updatedRoute;
     const newFormData = { ...formData, routes: newRoutes };
     updateFormData(newFormData);
@@ -171,7 +171,6 @@ const ContourForm = ({
 
                 <FormGroup className="pf-u-mt-md" fieldId="permit_insecure">
                   <Switch
-                    id="permit-insecure"
                     label={t('allow_insecure_traffic')}
                     isChecked={formData?.conditional?.permitInsecure}
                     onChange={(checked) =>
