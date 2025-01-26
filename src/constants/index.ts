@@ -83,6 +83,7 @@ export const DEFAULT_SERVICE = {
 export const DEFAULT_ROUTE = {
   prefix: '/',
   services: [DEFAULT_SERVICE],
+  websocket: false,
 };
 
 export const DEFAULT_FORM_DATA = {
