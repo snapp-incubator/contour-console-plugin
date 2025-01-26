@@ -96,18 +96,18 @@ input[type='checkbox'] {
   border-radius: 2px !important;
 }
 
-.tags {
+.modal-edit-metadata .tags {
   background: var(--pf-global--BackgroundColor--300) !important;
   border-radius: 30px !important;
   color: var(--pf-global--BorderColor--400) !important;
   padding: 4px 10px !important;
 }
 
-.tags button {
+.modal-edit-metadata .tags button {
   color: var(--pf-global--BorderColor--400) !important;
 }
 
-.input-tag {
+.modal-edit-metadata .input-tag {
   background: var(--pf-global--BorderColor--200) !important;
 }
 .nested-array-field {
