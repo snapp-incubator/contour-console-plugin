@@ -239,7 +239,7 @@ const RouteHandlerPage = () => {
                         minHeight={600}
                         options={{
                           readOnly: false,
-                          scrollBeyondLastLine: false,
+                          scrollBeyondLastLine: true,
                           minimap: { enabled: true },
                           folding: true,
                           lineNumbers: true,
