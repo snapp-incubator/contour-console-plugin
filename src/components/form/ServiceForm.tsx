@@ -7,7 +7,7 @@ import {
   FlexItem,
 } from '@patternfly/react-core';
 import { useTranslation } from 'react-i18next';
-import { Service } from '../../types';
+import { Service } from '../../types/form';
 import CustomDropdown from '../shared/CustomDropdown';
 import { AlertPopover } from '../popover';
 
@@ -85,7 +85,7 @@ const ServiceForm = ({
           min={0}
           max={100}
           onChange={(value) => {
-            const numValue = parseInt(value) || 0;
+            const numValue = parseInt(value);
             onChange({ ...service, weight: numValue });
           }}
           validated={isValidWeight(service.weight) ? 'default' : 'error'}
@@ -95,7 +95,6 @@ const ServiceForm = ({
 
       <FormGroup fieldId="validation" label={t('enable_validation')}>
         <Switch
-          id="validation-switch"
           label="Enable Validation"
           isChecked={service.validation}
           onChange={(checked) => onChange({ ...service, validation: checked })}
@@ -146,40 +145,30 @@ const ServiceForm = ({
         </>
       ) : null}
 
-      <FormGroup fieldId="websocket" label={t('enable_websocket')}>
-        <Switch
-          id="websocket-switch"
-          label="Enable WebSocket"
-          isChecked={service.websocket}
-          onChange={(checked) => onChange({ ...service, websocket: checked })}
-        />
-      </FormGroup>
-      {service.websocket ? (
-        <Flex>
-          <FlexItem>
-            <FormGroup fieldId="idle" label={t('idle_connection_timeout')}>
-              <TextInput
-                type="number"
-                value={service.idleConnection}
-                onChange={(value) =>
-                  onChange({ ...service, idleConnection: value })
-                }
-              />
-            </FormGroup>
-          </FlexItem>
-          <FlexItem>
-            <FormGroup fieldId="response" label={t('response_timeout')}>
-              <TextInput
-                type="number"
-                value={service.responseTimeout}
-                onChange={(value) =>
-                  onChange({ ...service, responseTimeout: value })
-                }
-              />
-            </FormGroup>
-          </FlexItem>
-        </Flex>
-      ) : null}
+      <Flex>
+        <FlexItem>
+          <FormGroup fieldId="idle" label={t('idle_connection_timeout')}>
+            <TextInput
+              type="number"
+              value={service.idleConnection}
+              onChange={(value) =>
+                onChange({ ...service, idleConnection: value })
+              }
+            />
+          </FormGroup>
+        </FlexItem>
+        <FlexItem>
+          <FormGroup fieldId="response" label={t('response_timeout')}>
+            <TextInput
+              type="number"
+              value={service.responseTimeout}
+              onChange={(value) =>
+                onChange({ ...service, responseTimeout: value })
+              }
+            />
+          </FormGroup>
+        </FlexItem>
+      </Flex>
     </div>
   );
 };
