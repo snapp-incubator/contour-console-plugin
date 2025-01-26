@@ -54,18 +54,22 @@ export const TableRow = ({
           </Badge>
         </Td>
         <Td dataLabel={t('service')}>
-          <TableText>
-            <Badge className="co-m-resource-icon co-m-resource-service">
-              {t('s')}
-            </Badge>
-            {route?.spec?.routes?.[0]?.services?.[0]?.name ?? 'Error'}
-            <Link
-              className="pf-u-ml-sm"
-              to={`/k8s/ns/${route?.metadata?.namespace}/projectcontour.io~v1~HTTPProxy/${route?.metadata?.name}`}
-            >
-              {t('more_details')}
-            </Link>
-          </TableText>
+          {route?.spec?.routes?.map((item) =>
+            item?.services?.map((service) => (
+              <TableText>
+                <Link
+                  className="pf-u-ml-sm"
+                  key={service?.name}
+                  to={`/k8s/ns/${route?.metadata?.namespace}/services/${service?.name}`}
+                >
+                  <Badge className="co-m-resource-icon co-m-resource-service">
+                    {t('s')}
+                  </Badge>
+                  {service?.name}:{service?.port}
+                </Link>
+              </TableText>
+            )),
+          )}
         </Td>
       </>
     )}
