@@ -51,7 +51,11 @@ const RouteDetails = () => {
                   }
                   aria-label={t('details_tab_details')}
                 >
-                  <DetailsTab name={name} ns={ns} />
+                  <DetailsTab
+                    name={name}
+                    ns={ns}
+                    isActive={activeTabKey === 0}
+                  />
                 </Tab>
 
                 <Tab

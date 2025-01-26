@@ -20,9 +20,10 @@ import { StatusIndicator } from '../shared/StatusIndicator';
 interface DetailsTabProps {
   name: string;
   ns: string;
+  isActive: boolean;
 }
 
-const DetailsTab = ({ name, ns }: DetailsTabProps) => {
+const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [loading, setLoading] = useState(true);
   const [router, setRouter] = useState<any>();
@@ -48,8 +49,10 @@ const DetailsTab = ({ name, ns }: DetailsTabProps) => {
   };
 
   useEffect(() => {
-    fetchRouter();
-  }, []);
+    if (isActive) {
+      fetchRouter();
+    }
+  }, [isActive]);
 
   if (loading) {
     return <Skeleton width="100%" height="25%" />;

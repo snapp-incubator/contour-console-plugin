@@ -64,6 +64,7 @@ const YAMLTab = ({ name, ns }: YAMLTabProps) => {
       setSaveError(error.message);
     } finally {
       setIsLoading(false);
+      handleReload();
     }
   };
 
