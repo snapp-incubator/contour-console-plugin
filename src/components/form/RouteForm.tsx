@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormGroup, TextInput, Button } from '@patternfly/react-core';
+import { FormGroup, TextInput, Button, Switch } from '@patternfly/react-core';
 import { RouteFormProps, Service } from '../../types';
 import ServiceForm from './ServiceForm';
 import { DEFAULT_SERVICE } from '../../constants';
@@ -74,6 +74,7 @@ const RouteForm = ({
           />
           <div className="help-block">{t('path_service_route')}</div>
         </FormGroup>
+
         <div className="pf-u-mt-md">
           {route.services.map((service, index) => (
             <div key={index} className="pf-u-mb-md">
@@ -100,6 +101,18 @@ const RouteForm = ({
             </div>
           ))}
         </div>
+
+        <FormGroup
+          fieldId="websocket"
+          className="pf-u-mb-md"
+          label={t('enable_websocket')}
+        >
+          <Switch
+            label={t('enable_websocket')}
+            isChecked={route.websocket}
+            onChange={(checked) => onChange({ ...route, websocket: checked })}
+          />
+        </FormGroup>
         <Button variant="link" onClick={addService}>
           <span className="fa fa-plus-circle pf-u-mr-xs"></span>
           {t('add_service')}
