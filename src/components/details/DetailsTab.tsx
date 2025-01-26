@@ -169,21 +169,33 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
               <Td>
                 <TableText>
                   {route?.services?.map((service) => (
-                    <Link
-                      className="pf-u-ml-sm"
-                      to={`/k8s/ns/${ns}/services/${service?.name}`}
-                    >
-                      <Badge className="co-m-resource-icon co-m-resource-service">
-                        {t('s')}
-                      </Badge>
-                      {service?.name}:{service?.port}
-                    </Link>
+                    <div key={service.name}>
+                      <Link
+                        className="pf-u-ml-sm"
+                        to={`/k8s/ns/${ns}/services/${service?.name}`}
+                      >
+                        <Badge className="co-m-resource-icon co-m-resource-service">
+                          {t('s')}
+                        </Badge>
+                        {service?.name}:{service?.port}
+                      </Link>
+                    </div>
                   ))}
                 </TableText>
               </Td>
-              <Td>{route?.services?.[index]?.validation?.secret || '-'}</Td>
               <Td>
-                {route?.services?.[index]?.validation?.subjectName || '-'}
+                {route?.services?.map((service, serviceIndex) => (
+                  <TableText key={serviceIndex}>
+                    {service?.validation?.caSecret}
+                  </TableText>
+                ))}
+              </Td>
+              <Td>
+                {route?.services?.map((service, serviceIndex) => (
+                  <TableText key={serviceIndex}>
+                    {service?.validation?.subjectName}
+                  </TableText>
+                ))}
               </Td>
             </Tr>
           ))}
