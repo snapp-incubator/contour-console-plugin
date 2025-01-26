@@ -7,7 +7,6 @@ export interface Service {
   validation: boolean;
   caSecret?: string;
   subjectName?: string;
-  websocket: boolean;
   idleConnection: string;
   responseTimeout: string;
 }

@@ -8,7 +8,6 @@ export interface Service {
   validation: boolean;
   caSecret?: string;
   subjectName?: string;
-  websocket: boolean;
   idleConnection: string;
   responseTimeout: string;
 }
@@ -16,6 +15,7 @@ export interface Service {
 export interface Route {
   prefix: string;
   services: Service[];
+  websocket?: boolean;
 }
 
 export interface RouteFormProps {

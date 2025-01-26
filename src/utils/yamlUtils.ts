@@ -37,8 +37,13 @@ export const convertFormToYAML = (formData: FormData): string => {
           },
         }),
       },
-      routes: formData.routes.map((route) => ({
-        conditions: [{ prefix: route.prefix || '/' }],
+      routes: formData.routes.map((route: any) => ({
+        conditions: [
+          {
+            prefix: route.prefix || '/',
+          },
+        ],
+        enableWebsockets: route.websocket || undefined,
         services: route.services.map((service) => ({
           name: service.name,
           port: service.port ? parseInt(service.port) : '',
@@ -49,12 +54,10 @@ export const convertFormToYAML = (formData: FormData): string => {
               subjectName: service.subjectName,
             },
           }),
-          ...(service.websocket && {
-            timeoutPolicy: {
-              idle: `${service.idleConnection}s`,
-              response: `${service.responseTimeout}s`,
-            },
-          }),
+          timeoutPolicy: {
+            idle: `${service.idleConnection}s`,
+            response: `${service.responseTimeout}s`,
+          },
         })),
         ...(formData.conditional?.permitInsecure && {
           permitInsecure: true,
@@ -88,6 +91,7 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
     annotations: k8sResource.metadata.annotations,
     routes: spec.routes.map((route) => ({
       prefix: route.conditions?.[0]?.prefix || '/',
+      websocket: route.enableWebsockets || false,
       services: route.services.map((service) => ({
         name: service.name,
         port: service.port.toString(),
@@ -95,7 +99,6 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
         validation: !!service.validation,
         caSecret: service.validation?.caSecret,
         subjectName: service.validation?.subjectName,
-        websocket: service.timeoutPolicy || false,
         idleConnection: service.timeoutPolicy?.idle?.replace('s', '') || '15',
         responseTimeout:
           service.timeoutPolicy?.response?.replace('s', '') || '5',
