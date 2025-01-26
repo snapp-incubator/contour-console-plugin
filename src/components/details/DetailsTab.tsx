@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   GridItem,
   Grid,
@@ -7,7 +8,15 @@ import {
   Text,
   Badge,
 } from '@patternfly/react-core';
-import { Table, Tbody, Th, Thead, Tr, Td } from '@patternfly/react-table';
+import {
+  Table,
+  Tbody,
+  Th,
+  Thead,
+  Tr,
+  Td,
+  TableText,
+} from '@patternfly/react-table';
 import {
   k8sGet,
   getGroupVersionKindForResource,
@@ -149,7 +158,6 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
           <Tr>
             <Th>{t('details_routes_path')}</Th>
             <Th>{t('details_routes_service')}</Th>
-            <Th>{t('details_routes_port')}</Th>
             <Th>{t('secret')}</Th>
             <Th>{t('subject_name')}</Th>
           </Tr>
@@ -158,14 +166,65 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
           {router?.spec?.routes?.map((route, index) => (
             <Tr key={index}>
               <Td>{route?.conditions?.[index]?.prefix || '/'}</Td>
-              <Td>{route?.services?.[index]?.name || '-'}</Td>
-              <Td>{route?.services?.[index]?.port || '-'}</Td>
-              <Td>{route?.services?.[index]?.subjectName || '-'}</Td>
-              <Td>{route?.services?.[index]?.secret || '-'}</Td>
+              <Td>
+                <TableText>
+                  {route?.services?.map((service) => (
+                    <Link
+                      className="pf-u-ml-sm"
+                      to={`/k8s/ns/${ns}/services/${service?.name}`}
+                    >
+                      <Badge className="co-m-resource-icon co-m-resource-service">
+                        {t('s')}
+                      </Badge>
+                      {service?.name}:{service?.port}
+                    </Link>
+                  ))}
+                </TableText>
+              </Td>
+              <Td>{route?.services?.[index]?.validation?.secret || '-'}</Td>
+              <Td>
+                {route?.services?.[index]?.validation?.subjectName || '-'}
+              </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
+
+      {router?.spec?.includes?.length > 0 ? (
+        <>
+          <Text className="pf-u-mt-xl">
+            <strong>{t('details_includes_title')}</strong>
+          </Text>
+          <Table
+            aria-label={t('details_includes_title')}
+            variant="compact"
+            className="pf-u-mt-xl"
+          >
+            <Thead>
+              <Tr>
+                <Th>{t('name')}</Th>
+                <Th>{t('details_namespace')}</Th>
+                <Th>{t('details_routes_path')}</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {router?.spec?.includes?.map((include, index) => (
+                <Tr key={index}>
+                  <Td>{include?.name}</Td>
+                  <Td>{include?.namespace}</Td>
+                  <Td>
+                    {include?.conditions?.map((condition, condIndex) => (
+                      <Badge isRead className="pf-u-mr-sm" key={condIndex}>
+                        {condition?.prefix || '/'}
+                      </Badge>
+                    ))}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </>
+      ) : null}
 
       <Divider className="pf-u-mt-xl" />
       <Text className="pf-u-mt-xl">
