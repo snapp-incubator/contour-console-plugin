@@ -135,11 +135,11 @@ const RouteHandlerPage = () => {
       } else {
         await createContourProxy(formData, namespace, k8sModel);
       }
+      history.push(pageList);
     } catch (err) {
       setSaveError(err.message);
     } finally {
       setLoading(false);
-      history.push(pageList);
     }
   };
 
