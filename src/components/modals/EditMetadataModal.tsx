@@ -36,6 +36,7 @@ export const EditMetadataModal = ({
   return (
     <Modal
       variant={ModalVariant.small}
+      className="modal-edit-metadata"
       title={t(isLabels ? 'edit_labels' : 'edit_annotations')}
       isOpen={isOpen}
       onClose={onClose}
