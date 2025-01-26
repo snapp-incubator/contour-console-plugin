@@ -1,3 +1,5 @@
+import { K8sService } from './k8s';
+
 export interface Service {
   name: string;
   weight: number;
@@ -13,6 +15,7 @@ export interface Service {
 export interface Route {
   prefix: string;
   services: Service[];
+  websocket?: boolean;
 }
 
 export interface ConditionalFields {
@@ -27,6 +30,7 @@ export interface FormData {
   namespace?: string;
   ingressClassName: string;
   resourceVersion?: string;
+  websocket?: boolean;
   fqdn: string;
   routes: Route[];
   labels?: Record<string, string>;
@@ -39,8 +43,8 @@ export interface RouteFormProps {
   onChange: (route: Route) => void;
   onDelete?: () => void;
   onCreate?: () => void;
-  availableServices: string[];
-  availablePorts: string[];
+  availableServices: K8sService[];
+  availablePorts?: string[];
   availableSecrets: string[];
 }
 
