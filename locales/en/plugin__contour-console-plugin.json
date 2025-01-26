@@ -150,5 +150,6 @@
   "metrics_error": "Error fetching metrics",
   "metrics_no_data_description": "No data available for this query",
   "metrics_unit": "bytes/s",
-  "view_query": "View Query"
+  "view_query": "View Query",
+  "details_includes_title": "Includes"
 }
