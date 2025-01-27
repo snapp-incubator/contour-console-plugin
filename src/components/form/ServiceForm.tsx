@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  FormGroup,
-  TextInput,
-  Switch,
-  Flex,
-  FlexItem,
-} from '@patternfly/react-core';
+import { FormGroup, TextInput, Switch } from '@patternfly/react-core';
 import { useTranslation } from 'react-i18next';
 import { Service } from '../../types/form';
 import CustomDropdown from '../shared/CustomDropdown';
@@ -81,12 +75,11 @@ const ServiceForm = ({
       >
         <TextInput
           type="number"
-          value={service.weight}
+          value={service.weight || 0}
           min={0}
           max={100}
           onChange={(value) => {
-            const numValue = parseInt(value);
-            onChange({ ...service, weight: numValue });
+            onChange({ ...service, weight: parseInt(value) });
           }}
           validated={isValidWeight(service.weight) ? 'default' : 'error'}
         />
@@ -144,31 +137,6 @@ const ServiceForm = ({
           </FormGroup>
         </>
       ) : null}
-
-      <Flex>
-        <FlexItem>
-          <FormGroup fieldId="idle" label={t('idle_connection_timeout')}>
-            <TextInput
-              type="number"
-              value={service.idleConnection}
-              onChange={(value) =>
-                onChange({ ...service, idleConnection: value })
-              }
-            />
-          </FormGroup>
-        </FlexItem>
-        <FlexItem>
-          <FormGroup fieldId="response" label={t('response_timeout')}>
-            <TextInput
-              type="number"
-              value={service.responseTimeout}
-              onChange={(value) =>
-                onChange({ ...service, responseTimeout: value })
-              }
-            />
-          </FormGroup>
-        </FlexItem>
-      </Flex>
     </div>
   );
 };

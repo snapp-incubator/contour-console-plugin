@@ -7,14 +7,14 @@ export interface Service {
   validation: boolean;
   caSecret?: string;
   subjectName?: string;
-  idleConnection: string;
-  responseTimeout: string;
 }
 
 export interface Route {
   prefix: string;
   services: Service[];
   websocket?: boolean;
+  idleConnection?: string;
+  responseTimeout?: string;
 }
 
 export interface ConditionalFields {

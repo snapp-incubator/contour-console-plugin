@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormGroup, TextInput, Button, Switch } from '@patternfly/react-core';
-import { RouteFormProps, Service } from '../../types';
+import { RouteFormProps, Service } from '../../types/form';
 import ServiceForm from './ServiceForm';
 import { DEFAULT_SERVICE } from '../../constants';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +32,7 @@ const RouteForm = ({
   };
 
   const updateService = (index: number, updatedService: Service) => {
+    console.log('updatedService', index, updatedService);
     const newServices = [...route.services];
     newServices[index] = updatedService;
     onChange({ ...route, services: newServices });
@@ -102,6 +103,10 @@ const RouteForm = ({
           ))}
         </div>
 
+        <Button variant="link" onClick={addService}>
+          <span className="fa fa-plus-circle pf-u-mr-xs"></span>
+          {t('add_service')}
+        </Button>
         <FormGroup
           fieldId="websocket"
           className="pf-u-mb-md"
@@ -113,10 +118,35 @@ const RouteForm = ({
             onChange={(checked) => onChange({ ...route, websocket: checked })}
           />
         </FormGroup>
-        <Button variant="link" onClick={addService}>
-          <span className="fa fa-plus-circle pf-u-mr-xs"></span>
-          {t('add_service')}
-        </Button>
+
+        <Flex>
+          <FlexItem>
+            <FormGroup fieldId="idle" label={t('idle_connection_timeout')}>
+              <TextInput
+                type="number"
+                value={(route.idleConnection as string) || '15'}
+                onChange={(value) =>
+                  onChange({ ...route, idleConnection: value })
+                }
+              />
+            </FormGroup>
+          </FlexItem>
+          <FlexItem>
+            <FormGroup
+              className="pf-u-mb-lg"
+              fieldId="response"
+              label={t('response_timeout')}
+            >
+              <TextInput
+                type="number"
+                value={(route.responseTimeout as string) || '5'}
+                onChange={(value) =>
+                  onChange({ ...route, responseTimeout: value })
+                }
+              />
+            </FormGroup>
+          </FlexItem>
+        </Flex>
       </div>
     </div>
   );

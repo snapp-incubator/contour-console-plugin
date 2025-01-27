@@ -44,6 +44,10 @@ export const convertFormToYAML = (formData: FormData): string => {
           },
         ],
         enableWebsockets: route.websocket || undefined,
+        timeoutPolicy: {
+          idle: `${route.idleConnection || '15'}s`,
+          response: `${route.responseTimeout || '5'}s`,
+        },
         services: route.services.map((service) => ({
           name: service.name,
           port: service.port ? parseInt(service.port) : '',
@@ -54,10 +58,6 @@ export const convertFormToYAML = (formData: FormData): string => {
               subjectName: service.subjectName,
             },
           }),
-          timeoutPolicy: {
-            idle: `${service.idleConnection}s`,
-            response: `${service.responseTimeout}s`,
-          },
         })),
         ...(formData.conditional?.permitInsecure && {
           permitInsecure: true,
@@ -92,6 +92,8 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
     routes: spec.routes.map((route) => ({
       prefix: route.conditions?.[0]?.prefix || '/',
       websocket: route.enableWebsockets || false,
+      idleConnection: route.timeoutPolicy?.idle?.replace('s', '') || '15',
+      responseTimeout: route.timeoutPolicy?.response?.replace('s', '') || '5',
       services: route.services.map((service) => ({
         name: service.name,
         port: service.port.toString(),
@@ -99,9 +101,6 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
         validation: !!service.validation,
         caSecret: service.validation?.caSecret,
         subjectName: service.validation?.subjectName,
-        idleConnection: service.timeoutPolicy?.idle?.replace('s', '') || '15',
-        responseTimeout:
-          service.timeoutPolicy?.response?.replace('s', '') || '5',
       })),
     })),
     conditional: spec.virtualhost.tls
