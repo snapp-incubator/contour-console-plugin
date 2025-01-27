@@ -16,11 +16,16 @@ interface YAMLTabProps {
   ns: string;
 }
 
+interface AlertMessage {
+  type: 'success' | 'danger';
+  message: string;
+}
+
 const YAMLTab = ({ name, ns }: YAMLTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [yamlData, setYamlData] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [alert, setAlert] = useState<AlertMessage | null>(null);
   const [yamlError, setYamlError] = useState<string | null>(null);
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
 
@@ -34,7 +39,10 @@ const YAMLTab = ({ name, ns }: YAMLTabProps) => {
       setYamlData(yamlDump(response));
     } catch (error) {
       console.error('Error fetching routes:', error);
-      setSaveError(t('error_fetching_proxy', { error: error.message }));
+      setAlert({
+        type: 'danger',
+        message: t('error_fetching_proxy', { error: error.message }),
+      });
     }
   };
 
@@ -50,21 +58,29 @@ const YAMLTab = ({ name, ns }: YAMLTabProps) => {
 
   const handleSave = async () => {
     setIsLoading(true);
-    setSaveError(null);
+    setAlert(null);
 
     try {
       const yamlObject = yamlLoad(yamlData);
-      await k8sUpdate({
+      const response = await k8sUpdate({
         model: k8sModel,
         data: yamlObject,
         ns,
         name,
       });
+      const version = response?.metadata?.resourceVersion;
+      setAlert({
+        type: 'success',
+        message: t('yaml_updated_successfully_with_version', {
+          name,
+          version,
+        }),
+      });
+      handleReload();
     } catch (error) {
-      setSaveError(error.message);
+      setAlert({ type: 'danger', message: error.message });
     } finally {
       setIsLoading(false);
-      handleReload();
     }
   };
 
@@ -84,14 +100,14 @@ const YAMLTab = ({ name, ns }: YAMLTabProps) => {
 
   return (
     <div className="route-yaml-editor">
-      {yamlError || saveError ? (
+      {(yamlError || alert) && (
         <Alert
-          variant="danger"
+          variant={alert?.type || 'danger'}
           isInline
-          title={yamlError || saveError}
+          title={yamlError || alert?.message}
           className="pf-u-mb-md"
         />
-      ) : null}
+      )}
       <React.Suspense fallback={<></>}>
         <YAMLEditor
           language="yaml"
