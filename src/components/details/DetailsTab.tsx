@@ -152,7 +152,7 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
       <Table
         aria-label={t('details_routes_title')}
         variant="compact"
-        className="pf-u-mt-xl"
+        className="pf-u-mt-sm"
       >
         <Thead>
           <Tr>
@@ -184,15 +184,15 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
                 </TableText>
               </Td>
               <Td>
-                {route?.services?.map((service, serviceIndex) => (
-                  <TableText key={serviceIndex}>
+                {route?.services?.map((service) => (
+                  <TableText key={service?.validation?.caSecret}>
                     {service?.validation?.caSecret}
                   </TableText>
                 ))}
               </Td>
               <Td>
-                {route?.services?.map((service, serviceIndex) => (
-                  <TableText key={serviceIndex}>
+                {route?.services?.map((service) => (
+                  <TableText key={service?.validation?.subjectName}>
                     {service?.validation?.subjectName}
                   </TableText>
                 ))}
@@ -210,20 +210,18 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
           <Table
             aria-label={t('details_includes_title')}
             variant="compact"
-            className="pf-u-mt-xl"
+            className="pf-u-mt-sm"
           >
             <Thead>
               <Tr>
-                <Th>{t('name')}</Th>
-                <Th>{t('details_namespace')}</Th>
                 <Th>{t('details_routes_path')}</Th>
+                <Th>{t('http_proxy')}</Th>
+                <Th>{t('details_namespace')}</Th>
               </Tr>
             </Thead>
             <Tbody>
               {router?.spec?.includes?.map((include, index) => (
                 <Tr key={index}>
-                  <Td>{include?.name}</Td>
-                  <Td>{include?.namespace}</Td>
                   <Td>
                     {include?.conditions?.map((condition, condIndex) => (
                       <Badge isRead className="pf-u-mr-sm" key={condIndex}>
@@ -231,6 +229,8 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
                       </Badge>
                     ))}
                   </Td>
+                  <Td>{include?.name}</Td>
+                  <Td>{include?.namespace}</Td>
                 </Tr>
               ))}
             </Tbody>
@@ -238,7 +238,6 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
         </>
       ) : null}
 
-      <Divider className="pf-u-mt-xl" />
       <Text className="pf-u-mt-xl">
         <strong>{t('details_tls_title')}</strong>
       </Text>
