@@ -133,7 +133,11 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
           <Text className="pf-u-mt-xl">
             <strong>{t('details_status')}</strong>
           </Text>
-          <StatusIndicator status={router?.status?.currentStatus} t={t} />
+          <StatusIndicator
+            status={router?.status?.currentStatus}
+            conditions={router?.status?.conditions}
+            t={t}
+          />
           <Text className="pf-u-mt-xl">
             <strong>{t('details_fqdn')}</strong>
           </Text>

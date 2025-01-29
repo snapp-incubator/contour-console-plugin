@@ -153,5 +153,7 @@
   "view_query": "View Query",
   "details_includes_title": "Includes",
   "http_proxy": "HTTPProxy",
-  "yaml_updated_successfully_with_version": "{{name}} updated successfully with version  {{version}}"
+  "yaml_updated_successfully_with_version": "{{name}} updated successfully with version  {{version}}",
+  "error_details": "Details",
+  "show_error_details": "Show Error Details"
 }
