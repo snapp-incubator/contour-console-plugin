@@ -52,7 +52,7 @@ export const HTTPProxyFilters = ({
             value={searchValue}
             type="text"
             onChange={onSearchChange}
-            aria-label={t('searchBy', { filter: selectedFilter })}
+            aria-label={t('search_by', { filter: selectedFilter })}
             placeholder={t('search_by_placeholder').replace(
               '{{filter}}',
               selectedFilter.toLowerCase(),
