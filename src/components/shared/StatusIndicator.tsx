@@ -70,7 +70,7 @@ export const StatusIndicator = ({
             headerContent={t('error_details')}
             bodyContent={<ErrorContent />}
           >
-            <Button variant="link" isInline>
+            <Button variant="link" className="pf-u-mt-0 pf-u-mb-0" isInline>
               {t('error')}
               <span className="pf-u-ml-xs">({t('error_details')})</span>
             </Button>
