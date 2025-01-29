@@ -155,5 +155,6 @@
   "http_proxy": "HTTPProxy",
   "yaml_updated_successfully_with_version": "{{name}} updated successfully with version  {{version}}",
   "error_details": "Details",
-  "show_error_details": "Show Error Details"
+  "show_error_details": "Show Error Details",
+  "search_by": "Search by {{filter}}"
 }
