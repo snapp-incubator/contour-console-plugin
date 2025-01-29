@@ -131,6 +131,9 @@ const RouteForm = ({
                 onChange={(value) =>
                   onChange({ ...route, idleConnection: value })
                 }
+                onWheel={(e) => {
+                  e.currentTarget.blur();
+                }}
               />
             </FormGroup>
           </FlexItem>
@@ -146,6 +149,9 @@ const RouteForm = ({
                 onChange={(value) =>
                   onChange({ ...route, responseTimeout: value })
                 }
+                onWheel={(e) => {
+                  e.currentTarget.blur();
+                }}
               />
             </FormGroup>
           </FlexItem>
