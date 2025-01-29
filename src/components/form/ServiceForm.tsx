@@ -75,11 +75,15 @@ const ServiceForm = ({
       >
         <TextInput
           type="number"
-          value={service.weight || 0}
+          value={service.weight}
           min={0}
           max={100}
           onChange={(value) => {
-            onChange({ ...service, weight: parseInt(value) });
+            const numValue = value === '' ? 0 : parseInt(value);
+            onChange({ ...service, weight: numValue });
+          }}
+          onWheel={(e) => {
+            e.currentTarget.blur();
           }}
           validated={isValidWeight(service.weight) ? 'default' : 'error'}
         />

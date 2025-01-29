@@ -32,9 +32,12 @@ const RouteForm = ({
   };
 
   const updateService = (index: number, updatedService: Service) => {
-    console.log('updatedService', index, updatedService);
     const newServices = [...route.services];
-    newServices[index] = updatedService;
+    newServices[index] = {
+      ...updatedService,
+      weight:
+        typeof updatedService.weight === 'number' ? updatedService.weight : 0,
+    };
     onChange({ ...route, services: newServices });
   };
 
@@ -92,9 +95,9 @@ const RouteForm = ({
                 ) : null}
                 <ServiceForm
                   service={service}
-                  onChange={(updatedService) =>
-                    updateService(index, updatedService)
-                  }
+                  onChange={(updatedService) => {
+                    updateService(index, updatedService);
+                  }}
                   availableServices={servicesWithPorts}
                   availableSecrets={availableSecrets}
                 />
