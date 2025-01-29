@@ -151,5 +151,7 @@
   "metrics_no_data_description": "No data available for this query",
   "metrics_unit": "bytes/s",
   "view_query": "View Query",
-  "details_includes_title": "Includes"
+  "details_includes_title": "Includes",
+  "http_proxy": "HTTPProxy",
+  "yaml_updated_successfully_with_version": "{{name}} updated successfully with version  {{version}}"
 }
