@@ -9,7 +9,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
-export const LoadingState: React.FC = () => {
+export const LoadingState = () => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   return (
     <EmptyState>
@@ -21,7 +21,7 @@ export const LoadingState: React.FC = () => {
   );
 };
 
-export const ErrorState: React.FC<{ error: string }> = ({ error }) => {
+export const ErrorState = ({ error }: { error: string }) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   return (
     <EmptyState>
@@ -34,7 +34,7 @@ export const ErrorState: React.FC<{ error: string }> = ({ error }) => {
   );
 };
 
-export const EmptyDataState: React.FC = () => {
+export const EmptyDataState = () => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   return (
     <EmptyState>
