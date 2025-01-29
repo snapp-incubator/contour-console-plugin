@@ -39,20 +39,15 @@ export const updateContourProxy = async (
   name: string,
   namespace: string,
   k8sModel: K8sModel,
+  originalResponse?: any,
 ) => {
-  const yamlString = convertFormToYAML(formData);
+  const yamlString = convertFormToYAML(formData, originalResponse);
+
   const yamlData = load(yamlString);
   try {
     const response = await k8sUpdate({
       model: k8sModel,
-      data: {
-        ...yamlData,
-        metadata: {
-          ...yamlData.metadata,
-          name,
-          namespace,
-        },
-      },
+      data: yamlData,
       name,
       ns: namespace,
     });

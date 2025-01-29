@@ -79,8 +79,7 @@ const ServiceForm = ({
           min={0}
           max={100}
           onChange={(value) => {
-            const numValue = value === '' ? 0 : parseInt(value);
-            onChange({ ...service, weight: numValue });
+            onChange({ ...service, weight: parseInt(value) });
           }}
           onWheel={(e) => {
             e.currentTarget.blur();

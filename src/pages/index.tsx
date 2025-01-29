@@ -28,6 +28,7 @@ import {
   convertFormToYAML,
   convertYAMLToForm,
   convertK8sToForm,
+  parseYAML,
 } from '../utils/yamlUtils';
 import { FormData } from '../types';
 import { DEFAULT_FORM_DATA, CONTOUR_MODEL } from '../constants';
@@ -66,21 +67,23 @@ const RouteHandlerPage = () => {
   const [yamlError, setYamlError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [originalResponse, setOriginalResponse] = useState<any>(null);
 
   const handleFormChange = useCallback(
     (newFormData: FormData) => {
       setFormData(newFormData);
       if (yamlView) {
-        const yamlString = convertFormToYAML(newFormData);
+        const yamlString = convertFormToYAML(newFormData, originalResponse);
         setYamlData(yamlString);
       }
     },
-    [yamlView],
+    [yamlView, originalResponse],
   );
 
   const handleYamlChange = useCallback(
     (newYaml: string) => {
       setYamlData(newYaml);
+      setOriginalResponse(parseYAML(newYaml));
       try {
         const newFormData = convertYAMLToForm(newYaml);
         if (newFormData) {
@@ -98,7 +101,7 @@ const RouteHandlerPage = () => {
     if (view === 'yaml') {
       setYamlView(true);
       try {
-        const yamlString = convertFormToYAML(formData);
+        const yamlString = convertFormToYAML(formData, originalResponse);
         setYamlData(yamlString);
       } catch (error) {
         setYamlError(t('error_converting_form'));
@@ -107,7 +110,6 @@ const RouteHandlerPage = () => {
       setYamlView(false);
       try {
         const newFormData = convertYAMLToForm(yamlData);
-
         if (newFormData) {
           setFormData(newFormData);
         }
@@ -131,7 +133,13 @@ const RouteHandlerPage = () => {
 
     try {
       if (isEdit) {
-        await updateContourProxy(formData, name, namespace, k8sModel);
+        await updateContourProxy(
+          formData,
+          name,
+          namespace,
+          k8sModel,
+          originalResponse,
+        );
       } else {
         await createContourProxy(formData, namespace, k8sModel);
       }
@@ -154,11 +162,9 @@ const RouteHandlerPage = () => {
             namespace,
           );
           const formData = convertK8sToForm(response);
+          setOriginalResponse(response);
           setFormData(formData);
-          if (yamlView) {
-            const convertedFormData = convertFormToYAML(response);
-            setYamlData(convertedFormData);
-          }
+          setYamlData(response);
         } catch (error) {
           setSaveError(t('error_fetching_proxy', { error: error.message }));
         } finally {
@@ -168,7 +174,7 @@ const RouteHandlerPage = () => {
     };
 
     fetchProxyData();
-  }, [isEdit]);
+  }, [isEdit, name, namespace]);
 
   return (
     <>
