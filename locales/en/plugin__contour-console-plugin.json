@@ -43,7 +43,7 @@
   "subject_name": "Subject Name",
   "create_http_proxy": "Create HTTPProxy",
   "advance_configuration": "Advance Configuration",
-  "advance_description": "HTTPProxies allows for the use of advanced configuration options in the YAML tab, offering greater flexibility and control over routing and load balancing behaviors.",
+  "advance_description": "HTTPProxies allow for the use of advanced configuration options in the YAML tab, offering greater flexibility and control over routing and load balancing behaviors.",
   "namespace": "Namespace",
   "status": "Status",
   "location": "Location",
