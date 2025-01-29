@@ -1,17 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  Button,
-} from '@patternfly/react-core';
+import { Card, CardHeader, CardTitle, CardBody } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import type { MetricCardProps } from './metricCard.type';
 import { getMonitoringURL } from '../../utils/promql/metrix';
 import { LoadingState, ErrorState, EmptyDataState } from './MetricStates';
 import MetricChart from './MetricChart';
+import { Link } from 'react-router-dom';
 
 const MetricCard = ({
   title,
@@ -44,18 +39,14 @@ const MetricCard = ({
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         {query && !loading && !error ? (
-          <Button
+          <Link
             className="pf-u-ml-auto"
-            variant="link"
-            icon={<ExternalLinkAltIcon />}
-            component="a"
-            href={getMonitoringURL(query)}
-            target="_blank"
+            to={getMonitoringURL(query)}
             rel="noopener noreferrer"
-            isInline
           >
+            <ExternalLinkAltIcon className="pf-u-mr-xs" />
             {t('view_query')}
-          </Button>
+          </Link>
         ) : null}
       </CardHeader>
       <CardBody>
