@@ -35,8 +35,8 @@ const createRouteObject = (route: Route, originalRoute?: any) => {
     conditions: [{ prefix: route.prefix || '/' }],
     ...(route.websocket !== undefined && { enableWebsockets: route.websocket }),
     timeoutPolicy: {
-      ...(route.idleConnection && { idle: `${route.idleConnection}s` }),
-      ...(route.responseTimeout && { response: `${route.responseTimeout}s` }),
+      idle: `${route.idleConnection || '15'}s`,
+      response: `${route.responseTimeout || '5'}s`,
     },
     services: route.services.map((service) => ({
       ...(service.name && { name: service.name }),
