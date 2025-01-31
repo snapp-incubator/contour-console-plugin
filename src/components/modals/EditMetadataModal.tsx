@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, ModalVariant, Button, FormGroup } from '@patternfly/react-core';
 import { TagsInput } from 'react-tag-input-component';
 import { objectToLabel } from '../../utils/labelToObject';
@@ -29,6 +29,18 @@ export const EditMetadataModal = ({
 
   const [metadata, setMetadata] = useState(objectToLabel(initialData));
 
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay to ensure the modal is fully rendered
+      setTimeout(() => {
+        const input = document.querySelector('.input-tag');
+        if (input instanceof HTMLInputElement) {
+          input.focus();
+        }
+      }, 100);
+    }
+  }, [isOpen]);
+
   const handleChange = (newValues: string[]) => {
     setMetadata(newValues);
   };
@@ -58,15 +70,15 @@ export const EditMetadataModal = ({
     >
       <p>{t(isLabels ? 'labels_help_text' : 'annotations_help_text')}</p>
       <FormGroup
-        label={`${isLabels ? 'Labels' : 'Annotations'} for: ${
-          route.metadata?.name
-        }`}
+        label={`${t(isLabels ? 'metadata_labels' : 'metadata_annotations')} ${t(
+          'metadata_for',
+        )} ${route.metadata?.name}`}
         isRequired
         fieldId={isLabels ? 'tags-label' : 'annotations-input'}
-        className="pf-u-mt-lg"
+        className="pf-u-mt-lg pf-u-mb-xs"
       >
         <TagsInput
-          classNames={{ tag: 'tags', input: 'input-tag' }}
+          classNames={{ tag: 'tags ', input: 'input-tag' }}
           value={metadata}
           onChange={handleChange}
           name={isLabels ? 'tags' : 'annotations'}

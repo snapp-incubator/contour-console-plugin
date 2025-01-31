@@ -15,8 +15,8 @@ import { labelToObject } from '../utils/labelToObject';
 
 export const useHTTPProxyData = (
   namespace: string,
-  searchValue: string,
-  selectedFilter: string,
+  searchValue?: string,
+  selectedFilter?: string,
 ) => {
   const [routes, setRoutes] = useState<any[]>([]);
   const [filteredRoutes, setFilteredRoutes] = useState<any[]>([]);

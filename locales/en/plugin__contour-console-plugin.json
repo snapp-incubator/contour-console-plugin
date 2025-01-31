@@ -156,5 +156,13 @@
   "yaml_updated_successfully_with_version": "{{name}} updated successfully with version  {{version}}",
   "error_details": "Details",
   "show_error_details": "Show Error Details",
-  "search_by": "Search by {{filter}}"
+  "search_by": "Search by {{filter}}",
+  "metadata_labels": "Labels",
+  "metadata_annotations": "Annotations",
+  "metadata_format_help": "Metadata Format",
+  "metadata_format_description": "Enter each pair as 'key=value' and press Enter to add it. Multiple pairs can be added, with each pair on a new line. Click Save when finished. For example: environment=prod or tier=frontend.",
+  "labels_updated_success": "Labels updated successfully",
+  "labels_updated_error": "Error updating labels",
+  "annotations_updated_success": "Annotations updated successfully",
+  "annotations_updated_error": "Error updating annotations"
 }

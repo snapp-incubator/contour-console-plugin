@@ -7,6 +7,7 @@ import {
   Skeleton,
   Text,
   Badge,
+  Button,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -25,7 +26,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { CONTOUR_MODEL } from '../../constants';
 import { StatusIndicator } from '../shared/StatusIndicator';
-
+import { EditMetadataModal } from '../modals/EditMetadataModal';
+import { PencilAltIcon } from '@patternfly/react-icons';
+import { useHTTPProxyData } from '../../hooks/useHTTPProxyData';
+import { Toast, useToast } from '../toast';
 interface DetailsTabProps {
   name: string;
   ns: string;
@@ -36,7 +40,11 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [loading, setLoading] = useState(true);
   const [router, setRouter] = useState<any>();
+  const [isEditLabelsOpen, setIsEditLabelsOpen] = useState(false);
+  const [isEditAnnotationsOpen, setIsEditAnnotationsOpen] = useState(false);
+  const { alerts, addAlert, removeAlert } = useToast();
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
+  const { handleLabelsUpdate, handleAnnotationsUpdate } = useHTTPProxyData(ns);
 
   const location = router?.spec?.virtualhost?.tls
     ? `https://${router?.spec?.virtualhost?.fqdn}`
@@ -63,12 +71,35 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
     }
   }, [isActive]);
 
+  const handleSaveLabels = async (route: any, metadata: any) => {
+    try {
+      await handleLabelsUpdate(route, metadata);
+      await fetchRouter();
+      addAlert(t('labels_updated_success'), 'success');
+      setIsEditLabelsOpen(false);
+    } catch (error) {
+      addAlert(t('labels_updated_error'));
+    }
+  };
+
+  const handleSaveAnnotations = async (route: any, metadata: any) => {
+    try {
+      await handleAnnotationsUpdate(route, metadata);
+      await fetchRouter();
+      addAlert(t('annotations_updated_success'), 'success');
+      setIsEditAnnotationsOpen(false);
+    } catch (error) {
+      addAlert(t('annotations_updated_error'));
+    }
+  };
+
   if (loading) {
     return <Skeleton width="100%" height="25%" />;
   }
 
   return (
     <>
+      <Toast t={t} alerts={alerts} removeAlert={removeAlert} />
       <Grid hasGutter={true}>
         <GridItem span={6}>
           <Text className="pf-u-mt-xl">
@@ -90,6 +121,15 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
             <>
               <Text className="pf-u-mt-xl">
                 <strong>{t('labels')}</strong>
+                <Button
+                  variant="link"
+                  className="pf-u-ml-sm"
+                  icon={<PencilAltIcon />}
+                  onClick={() => setIsEditLabelsOpen(true)}
+                  isInline
+                >
+                  {t('edit')}
+                </Button>
               </Text>
               {Object.entries(router?.metadata?.labels).map(([key, value]) => (
                 <Badge
@@ -106,6 +146,15 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
             <>
               <Text className="pf-u-mt-xl">
                 <strong>{t('annotations')}</strong>
+                <Button
+                  variant="link"
+                  className="pf-u-ml-sm"
+                  icon={<PencilAltIcon />}
+                  onClick={() => setIsEditAnnotationsOpen(true)}
+                  isInline
+                >
+                  {t('edit')}
+                </Button>
               </Text>
               {Object.entries(router?.metadata?.annotations).map(
                 ([key, value]) => (
@@ -315,6 +364,22 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
           ))}
         </Tbody>
       </Table>
+      <EditMetadataModal
+        route={router}
+        type="labels"
+        onSave={handleSaveLabels}
+        onClose={() => setIsEditLabelsOpen(false)}
+        t={t}
+        isOpen={isEditLabelsOpen}
+      />
+      <EditMetadataModal
+        route={router}
+        type="annotations"
+        onSave={handleSaveAnnotations}
+        onClose={() => setIsEditAnnotationsOpen(false)}
+        t={t}
+        isOpen={isEditAnnotationsOpen}
+      />
     </>
   );
 };
