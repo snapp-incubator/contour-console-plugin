@@ -59,7 +59,7 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
       });
       setRouter(response);
     } catch (error) {
-      console.log('Error fetching routes:', error);
+      addAlert(t('error_fetching_routes'), 'danger');
     } finally {
       setLoading(false);
     }
