@@ -69,7 +69,7 @@ const RouteDetails = () => {
                   eventKey={2}
                   title={<TabTitleText>{t('details_tab_yaml')}</TabTitleText>}
                 >
-                  <YAMLTab name={name} ns={ns} />
+                  <YAMLTab name={name} ns={ns} isActive={activeTabKey === 2} />
                 </Tab>
               </Tabs>
             </GridItem>

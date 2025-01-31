@@ -14,6 +14,7 @@ import { CONTOUR_MODEL } from '../../constants';
 interface YAMLTabProps {
   name: string;
   ns: string;
+  isActive: boolean;
 }
 
 interface AlertMessage {
@@ -21,7 +22,7 @@ interface AlertMessage {
   message: string;
 }
 
-const YAMLTab = ({ name, ns }: YAMLTabProps) => {
+const YAMLTab = ({ name, ns, isActive }: YAMLTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [yamlData, setYamlData] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -96,7 +97,7 @@ const YAMLTab = ({ name, ns }: YAMLTabProps) => {
     fetchRouter().finally(() => {
       setIsLoading(false);
     });
-  }, [name, ns]);
+  }, [name, ns, isActive]);
 
   return (
     <div className="route-yaml-editor">
