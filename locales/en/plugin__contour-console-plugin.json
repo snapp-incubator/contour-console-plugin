@@ -164,5 +164,6 @@
   "labels_updated_success": "Labels updated successfully",
   "labels_updated_error": "Error updating labels",
   "annotations_updated_success": "Annotations updated successfully",
-  "annotations_updated_error": "Error updating annotations"
+  "annotations_updated_error": "Error updating annotations",
+  "metadata_for": "For:"
 }
