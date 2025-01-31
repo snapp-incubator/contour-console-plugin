@@ -117,21 +117,20 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
             <strong>{t('details_created')}</strong>
           </Text>
           <Text>{router?.metadata?.creationTimestamp}</Text>
-          {router?.metadata?.labels ? (
-            <>
-              <Text className="pf-u-mt-xl">
-                <strong>{t('labels')}</strong>
-                <Button
-                  variant="link"
-                  className="pf-u-ml-sm"
-                  icon={<PencilAltIcon />}
-                  onClick={() => setIsEditLabelsOpen(true)}
-                  isInline
-                >
-                  {t('edit')}
-                </Button>
-              </Text>
-              {Object.entries(router?.metadata?.labels).map(([key, value]) => (
+          <Text className="pf-u-mt-xl">
+            <strong>{t('labels')}</strong>
+            <Button
+              variant="link"
+              className="pf-u-ml-sm"
+              icon={<PencilAltIcon />}
+              onClick={() => setIsEditLabelsOpen(true)}
+              isInline
+            >
+              {t('edit')}
+            </Button>
+          </Text>
+          {router?.metadata?.labels
+            ? Object.entries(router?.metadata?.labels).map(([key, value]) => (
                 <Badge
                   isRead={true}
                   className="pf-u-mr-xs pf-u-mt-xs pf-c-badge-BorderWidth pf-c-badge-BorderColor"
@@ -139,24 +138,22 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
                 >
                   {key}: {value}
                 </Badge>
-              ))}
-            </>
-          ) : null}
-          {router?.metadata?.annotations ? (
-            <>
-              <Text className="pf-u-mt-xl">
-                <strong>{t('annotations')}</strong>
-                <Button
-                  variant="link"
-                  className="pf-u-ml-sm"
-                  icon={<PencilAltIcon />}
-                  onClick={() => setIsEditAnnotationsOpen(true)}
-                  isInline
-                >
-                  {t('edit')}
-                </Button>
-              </Text>
-              {Object.entries(router?.metadata?.annotations).map(
+              ))
+            : null}
+          <Text className="pf-u-mt-md">
+            <strong>{t('annotations')}</strong>
+            <Button
+              variant="link"
+              className="pf-u-ml-sm"
+              icon={<PencilAltIcon />}
+              onClick={() => setIsEditAnnotationsOpen(true)}
+              isInline
+            >
+              {t('edit')}
+            </Button>
+          </Text>
+          {router?.metadata?.annotations
+            ? Object.entries(router?.metadata?.annotations).map(
                 ([key, value]) => (
                   <Badge
                     isRead={true}
@@ -166,9 +163,8 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
                     {key}: {value}
                   </Badge>
                 ),
-              )}
-            </>
-          ) : null}
+              )
+            : null}
         </GridItem>
         <GridItem span={6}>
           <Text className="pf-u-mt-xl">
