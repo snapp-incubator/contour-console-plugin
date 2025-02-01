@@ -29,7 +29,7 @@ import { StatusIndicator } from '../shared/StatusIndicator';
 import { EditMetadataModal } from '../modals/EditMetadataModal';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import { useHTTPProxyData } from '../../hooks/useHTTPProxyData';
-import { Toast, useToast } from '../toast';
+import { Toast, useToast } from '@/toast';
 interface DetailsTabProps {
   name: string;
   ns: string;
