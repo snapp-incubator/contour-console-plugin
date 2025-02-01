@@ -165,5 +165,7 @@
   "labels_updated_error": "Error updating labels",
   "annotations_updated_success": "Annotations updated successfully",
   "annotations_updated_error": "Error updating annotations",
-  "metadata_for": "For:"
+  "metadata_for": "For:",
+  "create_success": "HTTPProxy created successfully",
+  "update_success": "HTTPProxy updated successfully"
 }
