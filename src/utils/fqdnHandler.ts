@@ -17,17 +17,20 @@ export const convertToDomain = (
 
   if (/^[a-zA-Z0-9-]+$/.test(cleanedValue)) {
     const hostname = window.location.hostname;
-    const parts = hostname.replace(/^console\./, '').split('.');
 
-    // Extract all components
-    const subdomain = parts[0];
-    const currentIngressClass = parts[1];
-    const cluster = parts[2];
-    const region = parts.slice(3).join('.');
+    // Extract domain parts
+    const [subdomain, currentIngressClass, cluster, ...regionParts] = hostname
+      .replace(/^console\./, '')
+      .split('.');
 
-    const newDomain = `${subdomain}.${
-      ingressClassName || currentIngressClass
-    }.${cluster}.${region}`;
+    const region = regionParts.join('.');
+    const ingressClass = ingressClassName || currentIngressClass;
+
+    const domainParts = [subdomain, ingressClass, cluster, region].filter(
+      Boolean,
+    );
+
+    const newDomain = domainParts.join('.');
     return `${cleanedValue}.${newDomain}`;
   }
 
