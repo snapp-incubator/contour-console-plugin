@@ -4,7 +4,7 @@ import { Modal, ModalVariant, Button, Text } from '@patternfly/react-core';
 interface DeleteConfirmationModalProps {
   route: any;
   namespace: string;
-  onDelete: (ns: string, route: any) => void;
+  onSave: (route: any, ns: string) => void;
   onClose: () => void;
   t: (key: string, options?: object) => string;
   isOpen: boolean;
@@ -13,7 +13,7 @@ interface DeleteConfirmationModalProps {
 export const DeleteConfirmationModal = ({
   route,
   namespace,
-  onDelete,
+  onSave,
   onClose,
   t,
   isOpen,
@@ -29,7 +29,7 @@ export const DeleteConfirmationModal = ({
           className="pf-u-mr-lg"
           variant="danger"
           onClick={() => {
-            onDelete(namespace, route);
+            onSave(route, namespace);
             onClose();
           }}
         >
