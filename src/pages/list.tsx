@@ -35,7 +35,6 @@ const List = ({ namespace }: { namespace?: string }) => {
     routes,
     filteredRoutes,
     loading,
-    refresh,
     setRefresh,
     handleLabelsUpdate,
     handleAnnotationsUpdate,
@@ -74,65 +73,57 @@ const List = ({ namespace }: { namespace?: string }) => {
         resource: route,
         ns: ns,
       });
-      setRefresh(true);
     } catch (e) {
       console.error('Error deleting route:', e);
+    } finally {
+      setRefresh(true);
     }
   };
 
-  const handleDelete = React.useCallback(
-    (route: HTTPProxy) =>
-      launchModal(
-        ({ closeModal }) => (
-          <DeleteConfirmationModal
-            isOpen={true}
-            route={route}
-            namespace={route.metadata.namespace}
-            onDelete={handleDeleteModal}
-            onClose={closeModal}
-            t={t}
-          />
-        ),
-        { title: t('delete_route') },
+  const handleDelete = (route: HTTPProxy) =>
+    launchModal(
+      ({ closeModal }) => (
+        <DeleteConfirmationModal
+          isOpen={true}
+          route={route}
+          namespace={route.metadata.namespace}
+          onDelete={handleDeleteModal}
+          onClose={closeModal}
+          t={t}
+        />
       ),
-    [refresh],
-  );
+      { title: t('delete_route') },
+    );
 
-  const handleLabels = React.useCallback(
-    (route: HTTPProxy) =>
-      launchModal(
-        ({ closeModal }) => (
-          <EditMetadataModal
-            route={route}
-            type="labels"
-            onSave={handleLabelsUpdate}
-            onClose={closeModal}
-            t={t}
-            isOpen={true}
-          />
-        ),
-        { title: t('edit_labels') },
+  const handleLabels = (route: HTTPProxy) =>
+    launchModal(
+      ({ closeModal }) => (
+        <EditMetadataModal
+          route={route}
+          type="labels"
+          onSave={handleLabelsUpdate}
+          onClose={closeModal}
+          t={t}
+          isOpen={true}
+        />
       ),
-    [refresh],
-  );
+      { title: t('edit_labels') },
+    );
 
-  const handleAnnotations = React.useCallback(
-    (route: HTTPProxy) =>
-      launchModal(
-        ({ closeModal }) => (
-          <EditMetadataModal
-            route={route}
-            type="annotations"
-            onSave={handleAnnotationsUpdate}
-            onClose={closeModal}
-            t={t}
-            isOpen={true}
-          />
-        ),
-        { title: t('edit_annotations') },
+  const handleAnnotations = (route: HTTPProxy) =>
+    launchModal(
+      ({ closeModal }) => (
+        <EditMetadataModal
+          route={route}
+          type="annotations"
+          onSave={handleAnnotationsUpdate}
+          onClose={closeModal}
+          t={t}
+          isOpen={true}
+        />
       ),
-    [],
-  );
+      { title: t('edit_annotations') },
+    );
 
   const getRowActions = (route: HTTPProxy) => [
     {
