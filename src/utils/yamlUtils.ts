@@ -89,7 +89,9 @@ export const convertFormToYAML = (
       }),
       virtualhost: {
         ...baseObject.spec?.virtualhost,
-        ...(formData.fqdn && { fqdn: convertToDomain(formData.fqdn) }),
+        ...(formData.fqdn && {
+          fqdn: convertToDomain(formData.ingressClassName, formData.fqdn),
+        }),
         ...(formData?.conditional?.secureRoute !== undefined && {
           tls: formData.conditional.secureRoute
             ? {
