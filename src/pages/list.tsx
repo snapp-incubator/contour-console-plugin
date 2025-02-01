@@ -3,12 +3,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { Page, PageSection, Alert, Skeleton } from '@patternfly/react-core';
-import {
-  useK8sModel,
-  k8sDelete,
-  getGroupVersionKindForResource,
-  useModal,
-} from '@openshift-console/dynamic-plugin-sdk';
+import { useModal } from '@openshift-console/dynamic-plugin-sdk';
 import type { HTTPProxy } from '../types/k8s';
 import { HTTPProxyHeader } from '@/list/Header';
 import { HTTPProxyFilters } from '@/list/Filter';
@@ -17,7 +12,7 @@ import { EditMetadataModal } from '@/modals/EditMetadataModal';
 import { DeleteConfirmationModal } from '@/modals/DeleteConfirmationModal';
 import { useHTTPProxyData } from '../hooks/useHTTPProxyData';
 import HTTPProxyInfo from '@/shared/HTTPProxyInfo';
-import { CONTOUR_MODEL, ALL_NAMESPACES } from '../constants';
+import { ALL_NAMESPACES } from '../constants';
 
 const List = ({ namespace }: { namespace?: string }) => {
   const navigate = useHistory();
@@ -35,12 +30,10 @@ const List = ({ namespace }: { namespace?: string }) => {
     routes,
     filteredRoutes,
     loading,
-    setRefresh,
     handleLabelsUpdate,
     handleAnnotationsUpdate,
+    handleDelete,
   } = useHTTPProxyData(namespace, searchValue, selectedFilter);
-
-  const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
 
   const onFilterToggle = (isOpen: boolean) => {
     setIsFilterOpen(isOpen);
@@ -66,28 +59,14 @@ const List = ({ namespace }: { namespace?: string }) => {
     );
   };
 
-  const handleDeleteModal = async (ns: string, route: HTTPProxy) => {
-    try {
-      await k8sDelete({
-        model: k8sModel,
-        resource: route,
-        ns: ns,
-      });
-    } catch (e) {
-      console.error('Error deleting route:', e);
-    } finally {
-      setRefresh(true);
-    }
-  };
-
-  const handleDelete = (route: HTTPProxy) =>
+  const handleDeleteRoute = (route: HTTPProxy) =>
     launchModal(
       ({ closeModal }) => (
         <DeleteConfirmationModal
           isOpen={true}
           route={route}
           namespace={route.metadata.namespace}
-          onDelete={handleDeleteModal}
+          onSave={handleDelete}
           onClose={closeModal}
           t={t}
         />
@@ -140,7 +119,7 @@ const List = ({ namespace }: { namespace?: string }) => {
     },
     {
       title: t('deleteRoute'),
-      onClick: () => handleDelete(route),
+      onClick: () => handleDeleteRoute(route),
     },
   ];
 

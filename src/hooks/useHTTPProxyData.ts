@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   k8sGet,
   k8sPatch,
+  k8sDelete,
   useK8sModel,
   getGroupVersionKindForResource,
   K8sResourceCommon,
@@ -105,6 +106,19 @@ export const useHTTPProxyData = (
     }
   };
 
+  const handleDelete = async (route: any, namespace: string) => {
+    try {
+      await k8sDelete({
+        model: k8sModel,
+        resource: route,
+        ns: namespace,
+      });
+      setRefresh(true);
+    } catch (error) {
+      console.error('Error deleting route:', error);
+    }
+  };
+
   return {
     routes,
     filteredRoutes,
@@ -114,5 +128,6 @@ export const useHTTPProxyData = (
     setLoading,
     handleLabelsUpdate,
     handleAnnotationsUpdate,
+    handleDelete,
   };
 };
