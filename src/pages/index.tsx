@@ -30,6 +30,7 @@ import {
   convertK8sToForm,
   parseYAML,
 } from '../utils/yamlUtils';
+import { delayedNavigate } from '../utils/navigationUtils';
 import { FormData } from '../types';
 import { DEFAULT_FORM_DATA, CONTOUR_MODEL } from '../constants';
 import { useFormValidation } from '../hooks/useFormValidation';
@@ -38,6 +39,7 @@ import {
   updateContourProxy,
   getContourProxy,
 } from '../utils/k8sUtils';
+import { useToast, Toast } from '@/toast';
 
 import '../style.css';
 
@@ -45,6 +47,7 @@ const RouteHandlerPage = () => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const history = useHistory();
   const { ns, name } = useParams<{ ns?: string; name?: string }>();
+  const { alerts, addAlert, removeAlert } = useToast();
 
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
   const pageList = `/k8s/ns/${ns}/projectcontour.io~v1~HTTPProxy`;
@@ -125,6 +128,7 @@ const RouteHandlerPage = () => {
 
     const { isValid } = validate(formData);
     if (!isValid) {
+      addAlert(t('validation_errors'), 'danger');
       return;
     }
 
@@ -140,10 +144,12 @@ const RouteHandlerPage = () => {
           k8sModel,
           originalResponse,
         );
+        addAlert(t('update_success'), 'success');
       } else {
         await createContourProxy(formData, namespace, k8sModel);
+        addAlert(t('create_success'), 'success');
       }
-      history.push(pageList);
+      delayedNavigate(history, pageList);
     } catch (err) {
       setSaveError(err.message);
     } finally {
@@ -181,6 +187,7 @@ const RouteHandlerPage = () => {
       <Helmet>
         <title>{t('http_proxies')}</title>
       </Helmet>
+      <Toast alerts={alerts} removeAlert={removeAlert} t={t} />
       <Page>
         <PageSection id="create-route-contour" variant="light">
           <Title headingLevel="h1">{t('http_proxies')}</Title>
