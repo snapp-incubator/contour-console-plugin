@@ -45,14 +45,6 @@ export const TableRow = ({
     </Td>
     {!isAllNamespaces && (
       <>
-        <Td dataLabel={t('target_port')}>
-          <Badge isRead>
-            <TableText>
-              {t('tcp')}-
-              {route?.spec?.routes?.[0]?.services?.[0]?.port ?? 'Error'}
-            </TableText>
-          </Badge>
-        </Td>
         <Td dataLabel={t('service')}>
           {route?.spec?.routes?.map((item) =>
             item?.services?.map((service) => (

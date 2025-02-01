@@ -55,7 +55,6 @@ export const HTTPProxyTable = ({
           <Th>{t('location')}</Th>
           {!isAllNamespaces && (
             <>
-              <Th>{t('target_port')}</Th>
               <Th colSpan={2}>{t('service')}</Th>
             </>
           )}
