@@ -169,22 +169,6 @@ const ContourForm = ({
                   </div>
                 </FormGroup>
 
-                <FormGroup className="pf-u-mt-md" fieldId="permit_insecure">
-                  <Switch
-                    label={t('allow_insecure_traffic')}
-                    isChecked={formData?.conditional?.permitInsecure}
-                    onChange={(checked) =>
-                      updateFormData((prev) => ({
-                        ...prev,
-                        conditional: {
-                          ...prev.conditional,
-                          permitInsecure: checked,
-                        },
-                      }))
-                    }
-                  />
-                </FormGroup>
-
                 {formData?.conditional?.termination !== 'passthrough' ? (
                   <FormGroup
                     className="pf-u-mt-md"

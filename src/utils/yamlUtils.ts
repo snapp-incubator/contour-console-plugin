@@ -34,6 +34,9 @@ const createRouteObject = (route: Route, originalRoute?: any) => {
   const routeObject = {
     conditions: [{ prefix: route.prefix || '/' }],
     ...(route.websocket !== undefined && { enableWebsockets: route.websocket }),
+    ...(route.permitInsecure !== undefined && {
+      permitInsecure: route.permitInsecure,
+    }),
     timeoutPolicy: {
       idle: `${route.idleConnection || '15'}s`,
       response: `${route.responseTimeout || '5'}s`,
@@ -142,6 +145,7 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
       websocket: route?.enableWebsockets || false,
       idleConnection: route?.timeoutPolicy?.idle?.replace('s', '') || '15',
       responseTimeout: route?.timeoutPolicy?.response?.replace('s', '') || '5',
+      permitInsecure: route?.permitInsecure || false,
       services: route?.services?.map((service) => ({
         name: service.name,
         port: service.port.toString(),

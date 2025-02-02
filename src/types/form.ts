@@ -15,6 +15,7 @@ export interface Route {
   websocket?: boolean;
   idleConnection?: string;
   responseTimeout?: string;
+  permitInsecure?: boolean;
 }
 
 export interface ConditionalFields {

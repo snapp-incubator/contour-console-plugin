@@ -121,7 +121,19 @@ const RouteForm = ({
             onChange={(checked) => onChange({ ...route, websocket: checked })}
           />
         </FormGroup>
-
+        <FormGroup
+          fieldId="permit_insecure"
+          className="pf-u-mb-md"
+          label={t('allow_insecure_traffic')}
+        >
+          <Switch
+            label={t('allow_insecure_traffic')}
+            isChecked={route.permitInsecure || false}
+            onChange={(checked) =>
+              onChange({ ...route, permitInsecure: checked })
+            }
+          />
+        </FormGroup>
         <Flex>
           <FlexItem>
             <FormGroup fieldId="idle" label={t('idle_connection_timeout')}>
