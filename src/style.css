@@ -7,10 +7,10 @@
 #create-route-contour .array-item .nested-array-field {
   margin: 0px -50vh 0 -25px;
   padding: 2px 50vh 0 25px;
-  background: #262b36;
+  background: var(--pf-global--palette--black-850);
 }
 #create-route-contour .nested-array-field .array-item-content {
-  background: #1c2028;
+  background: var(--pf-global--palette--black-850);
   margin: 0 -50vh 0px -25px;
   padding: 25px 50vh 0 25px;
 }
@@ -68,7 +68,7 @@
 }
 
 #create-route-contour .control-label .required {
-  color: #a30000;
+  color: var(--pf-global--palette--red-200);
 }
 
 #create-route-contour .custom-dropdown-options {
@@ -89,7 +89,7 @@ input[type='checkbox'] {
 }
 
 .rti--container {
-  background: var(--pf-global--BorderColor--200) !important;
+  background: var(--pf-global--palette--black-300) !important;
   border: 1px solid var(--pf-c-menu--m-nav--BackgroundColor) !important;
   min-height: 100px !important;
   align-items: baseline !important;
@@ -97,9 +97,9 @@ input[type='checkbox'] {
 }
 
 .modal-edit-metadata .tags {
-  background: var(--pf-global--BackgroundColor--300) !important;
+  background: var(--pf-global--palette--black-800) !important;
   border-radius: 30px !important;
-  color: var(--pf-global--BorderColor--400) !important;
+  color: #ccc !important;
   padding: 4px 10px !important;
 }
 
@@ -108,8 +108,22 @@ input[type='checkbox'] {
 }
 
 .modal-edit-metadata .input-tag {
+  background: var(--pf-global--palette--black-300) !important;
+}
+
+.pf-theme-dark .rti--container {
+  background: var(--pf-global--BorderColor--200) !important;
+  border: 1px solid var(--pf-c-menu--m-nav--BackgroundColor) !important;
+}
+
+.pf-theme-dark .modal-edit-metadata .tags {
+  background: var(--pf-global--BackgroundColor--300) !important;
+}
+
+.pf-theme-dark .modal-edit-metadata .input-tag {
   background: var(--pf-global--BorderColor--200) !important;
 }
+
 .nested-array-field {
   margin-bottom: 1rem;
 }
@@ -148,15 +162,15 @@ input[type='checkbox'] {
 
 .wrapper-route {
   padding: 0 25px;
-  background: #e5e5e5;
+  background: var(--pf-global--palette--black-150);
 }
 
 .pf-theme-dark .wrapper-route {
-  background: #202328;
+  background: var(--pf-global--palette--black-850);
 }
 
 .delete-button {
-  color: #b80c0a !important;
+  color: var(--pf-global--palette--red-100) !important;
 }
 
 #create-route-contour input[type='number'] {
@@ -165,11 +179,11 @@ input[type='checkbox'] {
 
 .service-form {
   padding: 16px 25px;
-  border-left: 1px solid #cfcfcf;
+  border-left: 1px solid var(--pf-global--palette--black-200);
 }
 
 .pf-theme-dark .service-form {
-  border-left: 1px solid #36373a;
+  border-left: 1px solid var(--pf-global--palette--black-600);
 }
 .pf-c-form__label {
   display: inline-flex;
