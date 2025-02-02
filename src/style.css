@@ -148,6 +148,10 @@ input[type='checkbox'] {
 
 .wrapper-route {
   padding: 0 25px;
+  background: #e5e5e5;
+}
+
+.pf-theme-dark .wrapper-route {
   background: #202328;
 }
 
@@ -158,11 +162,15 @@ input[type='checkbox'] {
 #create-route-contour input[type='number'] {
   max-width: initial !important;
 }
+
 .service-form {
   padding: 16px 25px;
-  border-left: 1px solid #36373a;
+  border-left: 1px solid #cfcfcf;
 }
 
+.pf-theme-dark .service-form {
+  border-left: 1px solid #36373a;
+}
 .pf-c-form__label {
   display: inline-flex;
 }
