@@ -167,5 +167,6 @@
   "annotations_updated_error": "Error updating annotations",
   "metadata_for": "For:",
   "create_success": "HTTPProxy created successfully",
-  "update_success": "HTTPProxy updated successfully"
+  "update_success": "HTTPProxy updated successfully",
+  "tls_termination": "TLS Termination"
 }

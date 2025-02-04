@@ -13,7 +13,7 @@ import { ContourFormProps, Route } from '../../types';
 import { useK8sResources } from '../../hooks/useK8sResources';
 import RouteForm from './RouteForm';
 import CustomDropdown from '../shared/CustomDropdown';
-import { DEFAULT_ROUTE } from '../../constants';
+import { DEFAULT_ROUTE, TLS_TERMINATION } from '../../constants';
 
 const ContourForm = ({
   formData,
@@ -144,15 +144,21 @@ const ContourForm = ({
                 <FormGroup
                   className="pf-u-mt-md"
                   fieldId="tls_termination"
+                  label={t('tls_termination')}
                   isRequired
                 >
                   <CustomDropdown
                     options={[
-                      { label: 'Edge', value: 'edge' },
-                      { label: 'Passthrough', value: 'passthrough' },
-                      { label: 'Re-encrypt', value: 're-encrypt' },
+                      { label: 'Edge', value: TLS_TERMINATION.EDGE },
+                      {
+                        label: 'Passthrough',
+                        value: TLS_TERMINATION.PASSTHROUGH,
+                      },
+                      { label: 'Re-encrypt', value: TLS_TERMINATION.REENCRYPT },
                     ]}
-                    value={formData.conditional.termination}
+                    value={
+                      formData.conditional.termination || TLS_TERMINATION.EDGE
+                    }
                     onChange={(value) => {
                       updateFormData((prev) => ({
                         ...prev,
@@ -169,7 +175,8 @@ const ContourForm = ({
                   </div>
                 </FormGroup>
 
-                {formData?.conditional?.termination !== 'passthrough' ? (
+                {formData?.conditional?.termination !==
+                TLS_TERMINATION.PASSTHROUGH ? (
                   <FormGroup
                     className="pf-u-mt-md"
                     fieldId="secret"
