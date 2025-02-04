@@ -29,7 +29,7 @@ const ContourForm = ({
   const addRoute = () => {
     const newFormData = {
       ...formData,
-      routes: [...formData.routes, { ...DEFAULT_ROUTE }],
+      routes: [...(formData.routes || []), { ...DEFAULT_ROUTE }],
     };
     updateFormData(newFormData);
     onChange(newFormData);

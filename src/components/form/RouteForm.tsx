@@ -27,7 +27,7 @@ const RouteForm = ({
   const addService = () => {
     onChange({
       ...route,
-      services: [...route.services, { ...DEFAULT_SERVICE }],
+      services: [...(route.services || []), { ...DEFAULT_SERVICE }],
     });
   };
 
@@ -80,7 +80,7 @@ const RouteForm = ({
         </FormGroup>
 
         <div className="pf-u-mt-md">
-          {route.services.map((service, index) => (
+          {route?.services?.map((service, index) => (
             <div key={index} className="pf-u-mb-md">
               <div>
                 {route.services.length > 1 ? (

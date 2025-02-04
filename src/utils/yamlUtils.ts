@@ -30,7 +30,11 @@ const isObject = (item: any): boolean => {
   return item && typeof item === 'object' && !Array.isArray(item);
 };
 
-const createRouteObject = (route: Route, originalRoute?: any) => {
+const createRouteObject = (
+  route: Route,
+  formData: FormData,
+  originalRoute?: any,
+) => {
   const routeObject = {
     conditions: [{ prefix: route.prefix || '/' }],
     ...(route.websocket !== undefined && { enableWebsockets: route.websocket }),
@@ -41,10 +45,13 @@ const createRouteObject = (route: Route, originalRoute?: any) => {
       idle: `${route.idleConnection || '15'}s`,
       response: `${route.responseTimeout || '5'}s`,
     },
-    services: route.services.map((service) => ({
+    services: route?.services?.map((service) => ({
       ...(service.name && { name: service.name }),
       ...(service.port && { port: parseInt(service.port) }),
       ...(service.weight && { weight: service.weight }),
+      ...(formData?.conditional?.termination === TLS_TERMINATION.REENCRYPT
+        ? { protocol: 'tls' }
+        : undefined),
       ...(service.validation && {
         validation: {
           ...(service.caSecret && { caSecret: service.caSecret }),
@@ -112,7 +119,7 @@ export const convertFormToYAML = (
           const originalRoute = originalResponse?.spec?.routes?.find(
             (r: any) => r.conditions?.[0]?.prefix === route.prefix,
           );
-          return createRouteObject(route, originalRoute);
+          return createRouteObject(route, formData, originalRoute);
         }),
       }),
     },
@@ -160,6 +167,10 @@ export const convertK8sToForm = (k8sResource: K8sResourceCommon): FormData => {
           secureRoute: true,
           termination: spec?.virtualhost?.tls?.passthrough
             ? TLS_TERMINATION.PASSTHROUGH
+            : spec?.routes?.some((route) =>
+                route?.services?.some((service) => service?.protocol === 'tls'),
+              )
+            ? TLS_TERMINATION.REENCRYPT
             : TLS_TERMINATION.EDGE,
           permitInsecure: spec?.routes?.[0]?.permitInsecure || false,
           secrets: spec?.virtualhost?.tls?.secretName,
