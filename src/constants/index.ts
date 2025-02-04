@@ -86,6 +86,12 @@ export const DEFAULT_ROUTE = {
   websocket: false,
 };
 
+export const TLS_TERMINATION = {
+  PASSTHROUGH: 'passthrough',
+  EDGE: 'edge',
+  REENCRYPT: 're-encrypt',
+} as const;
+
 export const DEFAULT_FORM_DATA = {
   name: '',
   ingressClassName: 'private',
@@ -94,6 +100,7 @@ export const DEFAULT_FORM_DATA = {
   conditional: {
     secureRoute: false,
     permitInsecure: false,
+    termination: TLS_TERMINATION.EDGE,
   },
 };
 
@@ -167,8 +174,3 @@ export const HTTP_PROXY_QUERY_PARAMS = {
 } as const;
 
 export const ALL_NAMESPACES = 'all-namespaces';
-
-export const TLS_TERMINATION = {
-  PASSTHROUGH: 'passthrough',
-  EDGE: 'edge',
-} as const;

@@ -37,6 +37,37 @@ export const EditMetadataModal = ({
 
   const [metadata, setMetadata] = useState(objectToLabel(initialData));
 
+  // Get the current input value from the tags input
+  const getPendingInputValue = () => {
+    const input = inputRef.current?.querySelector('input') as HTMLInputElement;
+    return input?.value || '';
+  };
+
+  const isValidKeyValuePair = (value: string) => {
+    if (!value || !value.includes('=')) return false;
+    const [, val] = value.split('=');
+    return !!val;
+  };
+
+  const addNewMetadata = (value: string) => {
+    if (!metadata.includes(value)) {
+      return [...metadata, value];
+    }
+    return metadata;
+  };
+
+  const handleSave = () => {
+    const pendingValue = getPendingInputValue();
+
+    if (isValidKeyValuePair(pendingValue)) {
+      const updatedMetadata = addNewMetadata(pendingValue);
+      onSave(route, updatedMetadata);
+    } else {
+      onSave(route, metadata);
+    }
+    onClose();
+  };
+
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
@@ -66,14 +97,7 @@ export const EditMetadataModal = ({
       isOpen={isOpen}
       onClose={onClose}
       actions={[
-        <Button
-          className="pf-u-mr-lg"
-          variant="primary"
-          onClick={() => {
-            onSave(route, metadata);
-            onClose();
-          }}
-        >
+        <Button className="pf-u-mr-lg" variant="primary" onClick={handleSave}>
           {t('save')}
         </Button>,
         <Button variant="link" onClick={onClose}>
