@@ -134,10 +134,10 @@ export enum ResourceUtilizationQuery {
 
 export const MetricsQueries = {
   [ResourceUtilizationQuery.NETWORK_IN]: _.template(
-    "sum without (instance,exported_pod,exported_service,pod,server)(irate(cloud:routes_received:bytes{namespace='<%= namespace %>',authority='<%= authority %>'}[5m]))",
+    "cloud:routes_received_bits:rate5m{authority='<%= authority %>'}",
   ),
   [ResourceUtilizationQuery.NETWORK_OUT]: _.template(
-    "sum without (instance,exported_pod,exported_service,pod,server) (irate(cloud:routes_sent:bytes{namespace='<%= namespace %>',authority='<%= authority %>'}[5m]))",
+    "cloud:routes_sent_bits:rate5m{authority='<%= authority %>'}",
   ),
   [ResourceUtilizationQuery.CONNECTION_RATE]: _.template(
     "sum without (instance,exported_pod,exported_service,pod,server) (irate(haproxy_backend_connections_total{exported_namespace='<%= namespace %>',route='<%= name %>'}[5m]))",
