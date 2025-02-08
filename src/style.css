@@ -188,3 +188,9 @@ input[type='checkbox'] {
 .pf-c-form__label {
   display: inline-flex;
 }
+.contour-annotation-tag {
+  white-space: nowrap;
+  max-width: 180px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
