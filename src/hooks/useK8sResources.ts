@@ -7,6 +7,10 @@ import {
 import { K8sResources } from '../types';
 import { SERVICE_MODEL, SECRET_MODEL, INGRESS_CLASSES } from '../constants';
 import { defaultSecret, TLSType } from '../constants';
+import {
+  INGRESS_CLASSE_SERVER,
+  INGRESS_CLASSE_URL,
+} from '../config/environment';
 
 export const useK8sResources = (namespace: string): K8sResources => {
   const [resources, setResources] = useState<K8sResources>({
@@ -22,6 +26,23 @@ export const useK8sResources = (namespace: string): K8sResources => {
     getGroupVersionKindForResource(SECRET_MODEL),
   );
 
+  const getIngressClasses = async () => {
+    if (INGRESS_CLASSE_SERVER) {
+      try {
+        const response = await fetch(INGRESS_CLASSE_URL);
+        const data = await response.json();
+        const values = Object.values(data)[0] as string[];
+        return values?.map((name: string) => ({
+          value: name,
+          label: name,
+        }));
+      } catch (fetchError) {
+        console.error('Error fetching from INGRESS_CLASSE_URL:', fetchError);
+      }
+    }
+    return INGRESS_CLASSES;
+  };
+
   useEffect(() => {
     const fetchResources = async () => {
       try {
@@ -34,13 +55,14 @@ export const useK8sResources = (namespace: string): K8sResources => {
           services: servicesRes?.items || [],
           secrets: [
             defaultSecret,
-            ...(secretsRes?.items?.filter((s) => s.type === TLSType) || []),
+            ...(secretsRes?.items?.filter((s: any) => s.type === TLSType) ||
+              []),
           ],
-          ingressClasses: INGRESS_CLASSES,
+          ingressClasses: await getIngressClasses(),
           loading: false,
           error: null,
         });
-      } catch (err) {
+      } catch (err: any) {
         setResources((prev) => ({
           ...prev,
           loading: false,
