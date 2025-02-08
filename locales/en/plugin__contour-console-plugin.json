@@ -169,5 +169,11 @@
   "create_success": "HTTPProxy created successfully",
   "update_success": "HTTPProxy updated successfully",
   "tls_termination": "TLS Termination",
-  "latency": "Latency"
+  "latency": "Latency",
+  "enter_value": "Enter value",
+  "remove_annotation": "Remove annotation",
+  "add_more": "Add more",
+  "enter_key": "Enter key",
+  "key": "Key",
+  "value": "Value"
 }
