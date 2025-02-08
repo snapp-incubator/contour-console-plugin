@@ -8,5 +8,5 @@ export const getClusterDomainFromBrowser = () => {
 export const constructConfigIngressUrl = () => {
   const browserClusterDomain = getClusterDomainFromBrowser();
 
-  return `http://config-server.apps.private.${browserClusterDomain}/api/contour`;
+  return `https://config-server.apps.private.${browserClusterDomain}/api/contour`;
 };
