@@ -27,9 +27,11 @@ import { useTranslation } from 'react-i18next';
 import { CONTOUR_MODEL } from '../../constants';
 import { StatusIndicator } from '../shared/StatusIndicator';
 import { EditMetadataModal } from '../modals/EditMetadataModal';
+import { EditAnnotationsModal } from '../modals/EditAnnotationsModal';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import { useHTTPProxyData } from '../../hooks/useHTTPProxyData';
 import { Toast, useToast } from '@/toast';
+
 interface DetailsTabProps {
   name: string;
   ns: string;
@@ -157,7 +159,7 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
                 ([key, value]) => (
                   <Badge
                     isRead={true}
-                    className="pf-u-mr-xs pf-u-mt-xs pf-c-badge-BorderWidth pf-c-badge-BorderColor"
+                    className="contour-annotation-tag pf-u-mr-xs pf-u-mt-xs pf-c-badge-BorderWidth pf-c-badge-BorderColor"
                     key={key}
                   >
                     {key}: {value}
@@ -368,9 +370,8 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
         t={t}
         isOpen={isEditLabelsOpen}
       />
-      <EditMetadataModal
+      <EditAnnotationsModal
         route={router}
-        type="annotations"
         onSave={handleSaveAnnotations}
         onClose={() => setIsEditAnnotationsOpen(false)}
         t={t}

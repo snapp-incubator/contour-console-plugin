@@ -13,13 +13,13 @@ import { DeleteConfirmationModal } from '@/modals/DeleteConfirmationModal';
 import { useHTTPProxyData } from '../hooks/useHTTPProxyData';
 import HTTPProxyInfo from '@/shared/HTTPProxyInfo';
 import { ALL_NAMESPACES } from '../constants';
+import { EditAnnotationsModal } from '@/modals/EditAnnotationsModal';
 
 const List = ({ namespace }: { namespace?: string }) => {
   const navigate = useHistory();
   const launchModal = useModal();
   const { t } = useTranslation('plugin__contour-console-plugin');
 
-  // State management
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(t('name'));
   const [searchValue, setSearchValue] = useState<string>('');
@@ -92,11 +92,10 @@ const List = ({ namespace }: { namespace?: string }) => {
   const handleAnnotations = (route: HTTPProxy) =>
     launchModal(
       ({ closeModal }) => (
-        <EditMetadataModal
+        <EditAnnotationsModal
           route={route}
-          type="annotations"
           onSave={handleAnnotationsUpdate}
-          onClose={closeModal}
+          onClose={() => closeModal()}
           t={t}
           isOpen={true}
         />

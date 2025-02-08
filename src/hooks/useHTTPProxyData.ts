@@ -70,6 +70,7 @@ export const useHTTPProxyData = (
 
   const handleLabelsUpdate = async (route: any, labels: any) => {
     try {
+      setLoading(true);
       await k8sPatch({
         model: k8sModel,
         resource: route,
@@ -81,14 +82,17 @@ export const useHTTPProxyData = (
           },
         ],
       });
-      setRefresh(true);
+      setRefresh((prev) => !prev);
     } catch (error) {
       console.error('Error updating labels:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleAnnotationsUpdate = async (route: any, annotations: any) => {
     try {
+      setLoading(true);
       await k8sPatch({
         model: k8sModel,
         resource: route,
@@ -96,13 +100,15 @@ export const useHTTPProxyData = (
           {
             op: 'replace',
             path: '/metadata/annotations',
-            value: labelToObject(annotations),
+            value: annotations,
           },
         ],
       });
-      setRefresh(true);
+      setRefresh((prev) => !prev);
     } catch (error) {
       console.error('Error updating annotations:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
