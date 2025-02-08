@@ -147,14 +147,12 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
       </GridItem>
       <GridItem span={6}>
         <MetricCard
-          title={t('connection_rate')}
-          data={metricsData[ResourceUtilizationQuery.CONNECTION_RATE] || []}
+          title={t('latency')}
+          data={metricsData[ResourceUtilizationQuery.LATENCY] || []}
           loading={loading}
           error={error}
           unit=" conn/s"
-          query={
-            metricsQueries?.[ResourceUtilizationQuery.CONNECTION_RATE]?.[0]
-          }
+          query={metricsQueries?.[ResourceUtilizationQuery.LATENCY]?.[0]}
         />
       </GridItem>
       <GridItem span={6}>

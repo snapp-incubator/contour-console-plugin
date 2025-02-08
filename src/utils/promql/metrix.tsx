@@ -29,10 +29,10 @@ export const getMetricsQueries = (
       authority: authority || `${name}.${baseURL}`,
     }),
   ],
-  [ResourceUtilizationQuery.CONNECTION_RATE]: [
-    MetricsQueries[ResourceUtilizationQuery.CONNECTION_RATE]({
+  [ResourceUtilizationQuery.LATENCY]: [
+    MetricsQueries[ResourceUtilizationQuery.LATENCY]({
       namespace,
-      name,
+      authority: authority || `${name}.${baseURL}`,
     }),
   ],
   [ResourceUtilizationQuery.PRS]: [

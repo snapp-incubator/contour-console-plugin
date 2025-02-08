@@ -128,7 +128,7 @@ export const MONITORING_BASE_URL = '/monitoring/query-browser';
 export enum ResourceUtilizationQuery {
   NETWORK_IN = 'NETWORK_IN',
   NETWORK_OUT = 'NETWORK_OUT',
-  CONNECTION_RATE = 'CONNECTION_RATE',
+  LATENCY = 'LATENCY',
   PRS = 'PRS',
 }
 
@@ -139,8 +139,8 @@ export const MetricsQueries = {
   [ResourceUtilizationQuery.NETWORK_OUT]: _.template(
     "cloud:routes_sent_bits:rate5m{authority='<%= authority %>'}",
   ),
-  [ResourceUtilizationQuery.CONNECTION_RATE]: _.template(
-    "sum without (instance,exported_pod,exported_service,pod,server) (irate(haproxy_backend_connections_total{exported_namespace='<%= namespace %>',route='<%= name %>'}[5m]))",
+  [ResourceUtilizationQuery.LATENCY]: _.template(
+    "cloud:routes_avg:ms{route_name='<%= authority %>'}",
   ),
   [ResourceUtilizationQuery.PRS]: _.template(
     "sum (cloud:routes:rps{namespace='<%= namespace %>',route_name='<%= name %>'}) OR on() vector(0)",
