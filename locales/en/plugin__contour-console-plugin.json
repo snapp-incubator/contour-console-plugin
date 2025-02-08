@@ -168,5 +168,6 @@
   "metadata_for": "For:",
   "create_success": "HTTPProxy created successfully",
   "update_success": "HTTPProxy updated successfully",
-  "tls_termination": "TLS Termination"
+  "tls_termination": "TLS Termination",
+  "latency": "Latency"
 }
