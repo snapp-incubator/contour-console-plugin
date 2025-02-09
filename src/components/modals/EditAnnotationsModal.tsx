@@ -144,7 +144,7 @@ export const EditAnnotationsModal = ({
               />
             </FormGroup>
           </SplitItem>
-          <SplitItem className="pf-u-mt-xl">
+          <SplitItem className="pf-u-mt-lg">
             <Button
               variant={ButtonVariant.plain}
               onClick={() => removePair(index)}
