@@ -151,8 +151,8 @@ input[type='checkbox'] {
 }
 
 /* Adjusting button spacing */
-.pf-c-button.pf-m-link {
-  margin-bottom: 0.5rem;
+.wrapper-route .pf-c-button.pf-m-link {
+  margin-bottom: 0.8rem;
 }
 
 /* Form group spacing */
