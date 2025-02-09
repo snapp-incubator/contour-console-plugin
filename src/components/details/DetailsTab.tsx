@@ -71,7 +71,7 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
     if (isActive) {
       fetchRouter();
     }
-  }, [isActive]);
+  }, [isActive, isEditLabelsOpen]);
 
   const handleSaveLabels = async (route: any, metadata: any) => {
     try {
