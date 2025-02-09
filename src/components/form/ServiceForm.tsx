@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormGroup, TextInput, Switch } from '@patternfly/react-core';
 import { useTranslation } from 'react-i18next';
 import { Service } from '../../types/form';

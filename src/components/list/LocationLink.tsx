@@ -1,4 +1,3 @@
-import React from 'react';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 
 interface LocationLinkProps {

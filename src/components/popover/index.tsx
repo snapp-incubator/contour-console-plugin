@@ -1,4 +1,3 @@
-import React from 'react';
 import { Popover, Button } from '@patternfly/react-core';
 import InfoCircleIcon from '@patternfly/react-icons/dist/esm/icons/info-circle-icon';
 import { PopoverContentProps, PopoverComponentProps } from './popover.type';

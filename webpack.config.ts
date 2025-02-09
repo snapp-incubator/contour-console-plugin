@@ -4,6 +4,7 @@ import { Configuration as WebpackConfiguration } from 'webpack';
 import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 import * as path from 'path';
 import { ConsoleRemotePlugin } from '@openshift-console/dynamic-plugin-sdk-webpack';
+import webpack from 'webpack';
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -37,6 +38,9 @@ const config: Configuration = {
             loader: 'ts-loader',
             options: {
               configFile: path.resolve(__dirname, 'tsconfig.json'),
+              compilerOptions: {
+                jsx: 'react-jsx',
+              },
             },
           },
         ],
@@ -79,6 +83,9 @@ const config: Configuration = {
     new ConsoleRemotePlugin(),
     new CopyWebpackPlugin({
       patterns: [{ from: path.resolve(__dirname, 'locales'), to: 'locales' }],
+    }),
+    new webpack.ProvidePlugin({
+      React: 'react',
     }),
   ],
   devtool: 'source-map',

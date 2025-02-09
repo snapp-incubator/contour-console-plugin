@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormGroup, TextInput, Button, Switch } from '@patternfly/react-core';
 import { RouteFormProps, Service } from '../../types/form';
 import ServiceForm from './ServiceForm';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Modal, ModalVariant, Button, Text } from '@patternfly/react-core';
 
 interface DeleteConfirmationModalProps {

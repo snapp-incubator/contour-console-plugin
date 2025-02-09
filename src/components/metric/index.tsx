@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardTitle, CardBody } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';

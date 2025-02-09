@@ -1,4 +1,3 @@
-import React from 'react';
 import { Flex, Popover, Button } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
