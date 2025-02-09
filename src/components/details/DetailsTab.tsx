@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   GridItem,
@@ -235,15 +235,15 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
                 </TableText>
               </Td>
               <Td>
-                {route?.services?.map((service) => (
-                  <TableText key={service?.validation?.caSecret}>
+                {route?.services?.map((service, serviceIndex) => (
+                  <TableText key={`${service.name}-validation-${serviceIndex}`}>
                     {service?.validation?.caSecret}
                   </TableText>
                 ))}
               </Td>
               <Td>
-                {route?.services?.map((service) => (
-                  <TableText key={service?.validation?.subjectName}>
+                {route?.services?.map((service, serviceIndex) => (
+                  <TableText key={`${service.name}-subject-${serviceIndex}`}>
                     {service?.validation?.subjectName}
                   </TableText>
                 ))}
