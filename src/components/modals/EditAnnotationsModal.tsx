@@ -94,7 +94,12 @@ export const EditAnnotationsModal = ({
         <Button key="save" variant="primary" onClick={handleSave}>
           {t('save')}
         </Button>,
-        <Button key="cancel" variant="link" onClick={onClose}>
+        <Button
+          className="pf-u-ml-md"
+          key="cancel"
+          variant="link"
+          onClick={onClose}
+        >
           {t('cancel')}
         </Button>,
       ]}
