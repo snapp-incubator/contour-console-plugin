@@ -5,6 +5,11 @@ export const getClusterDomainFromBrowser = () => {
   return match ? match[0] : null;
 };
 
+export const isSnappgroupUrl = () => {
+  if (typeof window === 'undefined') return false;
+  return window.location.hostname.includes('snappgroup');
+};
+
 export const constructConfigIngressUrl = () => {
   const browserClusterDomain = getClusterDomainFromBrowser();
 
