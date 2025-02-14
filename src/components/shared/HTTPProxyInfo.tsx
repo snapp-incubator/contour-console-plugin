@@ -9,6 +9,7 @@ import {
   HintFooter,
 } from '@patternfly/react-core';
 import { useTranslation } from 'react-i18next';
+import { isSnappgroupUrl } from '../../utils/urlHelpers';
 
 interface DocsType {
   isTitle?: boolean;
@@ -16,6 +17,9 @@ interface DocsType {
 
 const HTTPProxyInfo = ({ isTitle }: DocsType) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
+  const docLink = isSnappgroupUrl()
+    ? t('doc_snappgroup_link')
+    : t('doc_snapp_link');
 
   return (
     <Card isFullHeight={true} isFlat={true}>
@@ -27,7 +31,7 @@ const HTTPProxyInfo = ({ isTitle }: DocsType) => {
           <HintTitle>{t('advance_configuration')}</HintTitle>
           <HintBody>{t('advance_description')}</HintBody>
           <HintFooter>
-            <a href={t('cloud_doc_link')} target="_blank">
+            <a href={docLink} target="_blank">
               {t('read_more_doc')}
             </a>
           </HintFooter>
