@@ -21,15 +21,27 @@ const MetricChart = ({ data, unit }: MetricChartProps) => {
         />
       }
       scale={{ x: 'time', y: 'linear' }}
-      padding={DEFAULT_PADDING_CHART}
+      padding={{ ...DEFAULT_PADDING_CHART }}
       height={200}
       themeColor={ChartThemeColor.blue}
     >
       <ChartAxis
-        tickFormat={(tick) => new Date(tick).toLocaleTimeString()}
-        style={{
-          tickLabels: { fontSize: 12, padding: 5 },
+        tickFormat={(tick) => {
+          const date = new Date(tick);
+          return `${date.getHours()}:${String(date.getMinutes()).padStart(
+            2,
+            '0',
+          )}`;
         }}
+        style={{
+          tickLabels: {
+            fontSize: 12,
+            padding: 5,
+            angle: -45,
+            textAnchor: 'end',
+          },
+        }}
+        tickCount={6}
       />
       <ChartAxis
         dependentAxis
@@ -42,7 +54,7 @@ const MetricChart = ({ data, unit }: MetricChartProps) => {
         <ChartLine
           data={data}
           style={{
-            data: { strokeWidth: 2 },
+            data: { strokeWidth: 1 },
           }}
         />
       </ChartGroup>

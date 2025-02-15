@@ -151,7 +151,7 @@ const MetricsTab = ({ name, ns, router }: MetricsTabProps) => {
           data={metricsData[ResourceUtilizationQuery.LATENCY] || []}
           loading={loading}
           error={error}
-          unit=" conn/s"
+          unit=" ms"
           query={metricsQueries?.[ResourceUtilizationQuery.LATENCY]?.[0]}
         />
       </GridItem>
