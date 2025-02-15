@@ -15,24 +15,23 @@ export const getMetricsQueries = (
   name: string,
   namespace: string,
   authority?: string,
-  baseURL?: string,
 ): { [key: string]: string[] } => ({
   [ResourceUtilizationQuery.NETWORK_IN]: [
     MetricsQueries[ResourceUtilizationQuery.NETWORK_IN]({
       namespace,
-      authority: authority || `${name}.${baseURL}`,
+      authority: authority,
     }),
   ],
   [ResourceUtilizationQuery.NETWORK_OUT]: [
     MetricsQueries[ResourceUtilizationQuery.NETWORK_OUT]({
       namespace,
-      authority: authority || `${name}.${baseURL}`,
+      authority: authority,
     }),
   ],
   [ResourceUtilizationQuery.LATENCY]: [
     MetricsQueries[ResourceUtilizationQuery.LATENCY]({
       namespace,
-      authority: authority || `${name}.${baseURL}`,
+      name: name.replace(/\./g, '_'),
     }),
   ],
   [ResourceUtilizationQuery.PRS]: [
@@ -42,7 +41,6 @@ export const getMetricsQueries = (
 
 export const useResourceMetricsQueries = (
   obj: any,
-  baseURL: string,
 ): { [key: string]: string[] } => {
   const [model] = useK8sModel(getGroupVersionKindForResource(obj));
   const authority = obj?.spec?.virtualhost?.fqdn;
@@ -52,7 +50,6 @@ export const useResourceMetricsQueries = (
       obj.metadata.name,
       obj.metadata.namespace,
       authority,
-      baseURL,
     );
   }
   return null;
