@@ -149,19 +149,19 @@ export const MetricsQueries = {
 
 export const INGRESS_CLASSES = [
   {
-    label: 'Inter-venture',
+    label: 'inter-venture',
     value: 'inter-venture',
   },
   {
-    label: 'Inter-dc',
+    label: 'inter-dc',
     value: 'inter-dc',
   },
   {
-    label: 'Public',
+    label: 'public',
     value: 'public',
   },
   {
-    label: 'Private',
+    label: 'private',
     value: 'private',
   },
 ];
