@@ -6,28 +6,29 @@ import {
   ResourceUtilizationQuery,
 } from '../../utils/promql/metrix';
 import MetricCard from '@/metric';
-import { getBaseURL } from '../../utils/fqdnHandler';
-import { PROMETHEUS_API, CONTOUR_MODEL } from '../../constants';
-import { MetricsTabProps, MetricDataPoint } from './metricsTab.type';
-const MetricsTab = ({ name, ns }: MetricsTabProps) => {
+import { CONTOUR_MODEL, PROMETHEUS_API } from '../../constants';
+import { MetricDataPoint, MetricsTabProps } from './metricsTab.type';
+
+const MetricsTab = ({ name, ns, router }: MetricsTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [loading, setLoading] = useState(true);
   const [metricsData, setMetricsData] = useState<
     Record<string, MetricDataPoint[]>
   >({});
   const [error, setError] = useState<string | null>(null);
-  const baseURL = getBaseURL();
 
-  const metricsQueries = useResourceMetricsQueries(
-    {
-      ...CONTOUR_MODEL,
-      metadata: {
-        name,
-        namespace: ns,
+  const metricsQueries = useResourceMetricsQueries({
+    ...CONTOUR_MODEL,
+    metadata: {
+      name,
+      namespace: ns,
+    },
+    spec: {
+      virtualhost: {
+        fqdn: router?.spec?.virtualhost?.fqdn,
       },
     },
-    baseURL,
-  );
+  });
 
   const formatValue = (value: string): number => {
     const num = parseFloat(value);
@@ -36,7 +37,6 @@ const MetricsTab = ({ name, ns }: MetricsTabProps) => {
 
   const processMetricsData = (data: Record<string, any>) => {
     const processed: Record<string, MetricDataPoint[]> = {};
-
     Object.entries(data).forEach(([queryType, metrics]: [string, any]) => {
       try {
         if (!metrics?.data?.result?.[0]?.values) {

@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   GridItem,
   Grid,
   Divider,
-  Skeleton,
   Text,
   Badge,
   Button,
@@ -18,13 +17,7 @@ import {
   Td,
   TableText,
 } from '@patternfly/react-table';
-import {
-  k8sGet,
-  getGroupVersionKindForResource,
-  useK8sModel,
-} from '@openshift-console/dynamic-plugin-sdk';
 import { useTranslation } from 'react-i18next';
-import { CONTOUR_MODEL } from '../../constants';
 import { StatusIndicator } from '../shared/StatusIndicator';
 import { EditMetadataModal } from '../modals/EditMetadataModal';
 import { EditAnnotationsModal } from '../modals/EditAnnotationsModal';
@@ -33,50 +26,26 @@ import { useHTTPProxyData } from '../../hooks/useHTTPProxyData';
 import { Toast, useToast } from '@/toast';
 
 interface DetailsTabProps {
-  name: string;
   ns: string;
-  isActive: boolean;
+  router: any;
+  refetch: () => Promise<void>;
 }
 
-const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
+const DetailsTab = ({ ns, router, refetch }: DetailsTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
-  const [loading, setLoading] = useState(true);
-  const [router, setRouter] = useState<any>();
   const [isEditLabelsOpen, setIsEditLabelsOpen] = useState(false);
   const [isEditAnnotationsOpen, setIsEditAnnotationsOpen] = useState(false);
   const { alerts, addAlert, removeAlert } = useToast();
-  const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
   const { handleLabelsUpdate, handleAnnotationsUpdate } = useHTTPProxyData(ns);
 
   const location = router?.spec?.virtualhost?.tls
     ? `https://${router?.spec?.virtualhost?.fqdn}`
     : `http://${router?.spec?.virtualhost?.fqdn}`;
 
-  const fetchRouter = async () => {
-    try {
-      const response = await k8sGet({
-        model: k8sModel,
-        ns,
-        name,
-      });
-      setRouter(response);
-    } catch (error) {
-      addAlert(t('error_fetching_routes'), 'danger');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isActive) {
-      fetchRouter();
-    }
-  }, [isActive, isEditLabelsOpen]);
-
   const handleSaveLabels = async (route: any, metadata: any) => {
     try {
       await handleLabelsUpdate(route, metadata);
-      await fetchRouter();
+      await refetch();
       addAlert(t('labels_updated_success'), 'success');
       setIsEditLabelsOpen(false);
     } catch (error) {
@@ -87,17 +56,13 @@ const DetailsTab = ({ name, ns, isActive }: DetailsTabProps) => {
   const handleSaveAnnotations = async (route: any, metadata: any) => {
     try {
       await handleAnnotationsUpdate(route, metadata);
-      await fetchRouter();
+      await refetch();
       addAlert(t('annotations_updated_success'), 'success');
       setIsEditAnnotationsOpen(false);
     } catch (error) {
       addAlert(t('annotations_updated_error'));
     }
   };
-
-  if (loading) {
-    return <Skeleton width="100%" height="25%" />;
-  }
 
   return (
     <>

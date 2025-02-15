@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { YAMLEditor } from '@openshift-console/dynamic-plugin-sdk';
 import {
-  k8sGet,
   k8sUpdate,
   getGroupVersionKindForResource,
   useK8sModel,
@@ -14,7 +13,8 @@ import { CONTOUR_MODEL } from '../../constants';
 interface YAMLTabProps {
   name: string;
   ns: string;
-  isActive: boolean;
+  router: any;
+  refetch: () => Promise<void>;
 }
 
 interface AlertMessage {
@@ -22,7 +22,7 @@ interface AlertMessage {
   message: string;
 }
 
-const YAMLTab = ({ name, ns, isActive }: YAMLTabProps) => {
+const YAMLTab = ({ name, ns, router, refetch }: YAMLTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [yamlData, setYamlData] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -30,22 +30,11 @@ const YAMLTab = ({ name, ns, isActive }: YAMLTabProps) => {
   const [yamlError, setYamlError] = useState<string | null>(null);
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
 
-  const fetchRouter = async () => {
-    try {
-      const response = await k8sGet({
-        model: k8sModel,
-        ns,
-        name,
-      });
-      setYamlData(yamlDump(response));
-    } catch (error) {
-      console.error('Error fetching routes:', error);
-      setAlert({
-        type: 'danger',
-        message: t('error_fetching_proxy', { error: error.message }),
-      });
+  useEffect(() => {
+    if (router) {
+      setYamlData(yamlDump(router));
     }
-  };
+  }, [router]);
 
   const handleYamlChange = (newYaml: string) => {
     setYamlData(newYaml);
@@ -77,27 +66,13 @@ const YAMLTab = ({ name, ns, isActive }: YAMLTabProps) => {
           version,
         }),
       });
-      handleReload();
+      refetch();
     } catch (error) {
       setAlert({ type: 'danger', message: error.message });
     } finally {
       setIsLoading(false);
     }
   };
-
-  const handleReload = async () => {
-    setIsLoading(true);
-    fetchRouter().finally(() => {
-      setIsLoading(false);
-      setYamlError(null);
-    });
-  };
-
-  useEffect(() => {
-    fetchRouter().finally(() => {
-      setIsLoading(false);
-    });
-  }, [name, ns, isActive]);
 
   return (
     <div className="route-yaml-editor">
@@ -109,7 +84,7 @@ const YAMLTab = ({ name, ns, isActive }: YAMLTabProps) => {
           className="pf-u-mb-md"
         />
       )}
-      <React.Suspense fallback={<></>}>
+      <Suspense fallback={<></>}>
         <YAMLEditor
           language="yaml"
           value={yamlData}
@@ -124,7 +99,7 @@ const YAMLTab = ({ name, ns, isActive }: YAMLTabProps) => {
             wordWrap: 'on',
           }}
         />
-      </React.Suspense>
+      </Suspense>
       <div className="ocs-form-footer pf-u-mt-xl contour-footer ocs-form-footer__sticky">
         <ActionGroup>
           <Button
@@ -136,13 +111,7 @@ const YAMLTab = ({ name, ns, isActive }: YAMLTabProps) => {
           >
             {t('update')}
           </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              handleReload();
-            }}
-            isDisabled={isLoading}
-          >
+          <Button variant="secondary" onClick={refetch} isDisabled={isLoading}>
             {t('reload')}
           </Button>
         </ActionGroup>

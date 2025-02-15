@@ -140,7 +140,7 @@ export const MetricsQueries = {
     "cloud:routes_sent_bits:rate5m{authority='<%= authority %>'}",
   ),
   [ResourceUtilizationQuery.LATENCY]: _.template(
-    "cloud:routes_avg:ms{route_name='<%= authority %>'}",
+    "cloud:routes_avg:ms{route_name='<%= name %>'}",
   ),
   [ResourceUtilizationQuery.PRS]: _.template(
     "sum (cloud:routes:rps{namespace='<%= namespace %>',route_name='<%= name %>'}) OR on() vector(0)",
