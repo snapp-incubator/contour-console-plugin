@@ -21,6 +21,7 @@ import {
 } from '@openshift-console/dynamic-plugin-sdk';
 import { CONTOUR_MODEL } from '../constants';
 import { HTTPProxy } from '../types/k8s';
+import { Toast, useToast } from '@/toast';
 
 import DetailsTab from '@/details/DetailsTab';
 import MetricsTab from '@/details/MetricsTab';
@@ -34,6 +35,7 @@ const RouteDetails = () => {
   const [router, setRouter] = useState<HTTPProxy>();
   const [error, setError] = useState<string | null>(null);
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
+  const { alerts, addAlert, removeAlert } = useToast();
 
   const fetchRouter = async () => {
     try {
@@ -126,12 +128,25 @@ const RouteDetails = () => {
   const renderContent = () => {
     switch (activeTabKey) {
       case 0:
-        return <DetailsTab ns={ns} router={router} refetch={fetchRouter} />;
+        return (
+          <DetailsTab
+            ns={ns}
+            router={router}
+            refetch={fetchRouter}
+            addAlert={addAlert}
+          />
+        );
       case 1:
         return <MetricsTab name={name} ns={ns} router={router} />;
       case 2:
         return (
-          <YAMLTab name={name} ns={ns} router={router} refetch={fetchRouter} />
+          <YAMLTab
+            name={name}
+            ns={ns}
+            router={router}
+            refetch={fetchRouter}
+            addAlert={addAlert}
+          />
         );
       default:
         return null;
@@ -145,6 +160,7 @@ const RouteDetails = () => {
       </Helmet>
       <Page className="contour-details-page">
         <PageSection variant="light">
+          <Toast t={t} alerts={alerts} removeAlert={removeAlert} />
           <Title size="xl" className="pf-u-mb-md" headingLevel="h1">
             <Badge className="pf-u-font-size-md pf-u-mr-xs">{t('hp')}</Badge>
             {name}

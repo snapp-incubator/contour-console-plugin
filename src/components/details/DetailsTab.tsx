@@ -23,19 +23,18 @@ import { EditMetadataModal } from '../modals/EditMetadataModal';
 import { EditAnnotationsModal } from '../modals/EditAnnotationsModal';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import { useHTTPProxyData } from '../../hooks/useHTTPProxyData';
-import { Toast, useToast } from '@/toast';
 
 interface DetailsTabProps {
   ns: string;
   router: any;
   refetch: () => Promise<void>;
+  addAlert: (title: string, variant?: 'danger' | 'success') => void;
 }
 
-const DetailsTab = ({ ns, router, refetch }: DetailsTabProps) => {
+const DetailsTab = ({ ns, router, refetch, addAlert }: DetailsTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [isEditLabelsOpen, setIsEditLabelsOpen] = useState(false);
   const [isEditAnnotationsOpen, setIsEditAnnotationsOpen] = useState(false);
-  const { alerts, addAlert, removeAlert } = useToast();
   const { handleLabelsUpdate, handleAnnotationsUpdate } = useHTTPProxyData(ns);
 
   const location = router?.spec?.virtualhost?.tls
@@ -49,7 +48,7 @@ const DetailsTab = ({ ns, router, refetch }: DetailsTabProps) => {
       addAlert(t('labels_updated_success'), 'success');
       setIsEditLabelsOpen(false);
     } catch (error) {
-      addAlert(t('labels_updated_error'));
+      addAlert(t('labels_updated_error'), 'danger');
     }
   };
 
@@ -60,13 +59,12 @@ const DetailsTab = ({ ns, router, refetch }: DetailsTabProps) => {
       addAlert(t('annotations_updated_success'), 'success');
       setIsEditAnnotationsOpen(false);
     } catch (error) {
-      addAlert(t('annotations_updated_error'));
+      addAlert(t('annotations_updated_error'), 'danger');
     }
   };
 
   return (
     <>
-      <Toast t={t} alerts={alerts} removeAlert={removeAlert} />
       <Grid hasGutter={true}>
         <GridItem span={6}>
           <Text className="pf-u-mt-xl">

@@ -15,18 +15,13 @@ interface YAMLTabProps {
   ns: string;
   router: any;
   refetch: () => Promise<void>;
+  addAlert: (title: string, variant?: 'danger' | 'success') => void;
 }
 
-interface AlertMessage {
-  type: 'success' | 'danger';
-  message: string;
-}
-
-const YAMLTab = ({ name, ns, router, refetch }: YAMLTabProps) => {
+const YAMLTab = ({ name, ns, router, refetch, addAlert }: YAMLTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [yamlData, setYamlData] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [alert, setAlert] = useState<AlertMessage | null>(null);
   const [yamlError, setYamlError] = useState<string | null>(null);
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
 
@@ -48,7 +43,6 @@ const YAMLTab = ({ name, ns, router, refetch }: YAMLTabProps) => {
 
   const handleSave = async () => {
     setIsLoading(true);
-    setAlert(null);
 
     try {
       const yamlObject = yamlLoad(yamlData);
@@ -59,16 +53,16 @@ const YAMLTab = ({ name, ns, router, refetch }: YAMLTabProps) => {
         name,
       });
       const version = response?.metadata?.resourceVersion;
-      setAlert({
-        type: 'success',
-        message: t('yaml_updated_successfully_with_version', {
+      addAlert(
+        t('yaml_updated_successfully_with_version', {
           name,
           version,
         }),
-      });
+        'success',
+      );
       refetch();
     } catch (error) {
-      setAlert({ type: 'danger', message: error.message });
+      addAlert(error.message, 'danger');
     } finally {
       setIsLoading(false);
     }
@@ -76,11 +70,11 @@ const YAMLTab = ({ name, ns, router, refetch }: YAMLTabProps) => {
 
   return (
     <div className="route-yaml-editor">
-      {(yamlError || alert) && (
+      {yamlError && (
         <Alert
-          variant={alert?.type || 'danger'}
+          variant="danger"
           isInline
-          title={yamlError || alert?.message}
+          title={yamlError}
           className="pf-u-mb-md"
         />
       )}
