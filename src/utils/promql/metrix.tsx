@@ -31,11 +31,14 @@ export const getMetricsQueries = (
   [ResourceUtilizationQuery.LATENCY]: [
     MetricsQueries[ResourceUtilizationQuery.LATENCY]({
       namespace,
-      name: name.replace(/\./g, '_'),
+      name: name.replace(/[.-]/g, '_'),
     }),
   ],
   [ResourceUtilizationQuery.PRS]: [
-    MetricsQueries[ResourceUtilizationQuery.PRS]({ namespace, name }),
+    MetricsQueries[ResourceUtilizationQuery.PRS]({
+      namespace,
+      name: name.replace(/[.-]/g, '_'),
+    }),
   ],
 });
 
