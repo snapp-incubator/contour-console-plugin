@@ -38,6 +38,8 @@ const CustomDropdown = ({
       placeholderText={placeholder}
       isDisabled={isDisabled}
       className={className}
+      hasInlineFilter
+      maxHeight="200px"
     >
       {options.map(({ label, value }) => (
         <SelectOption key={value} value={value}>
