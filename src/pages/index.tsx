@@ -146,7 +146,12 @@ const RouteHandlerPage = () => {
         );
         addAlert(t('update_success'), 'success');
       } else {
-        await createContourProxy(formData, namespace, k8sModel);
+        await createContourProxy(
+          formData,
+          namespace,
+          k8sModel,
+          originalResponse,
+        );
         addAlert(t('create_success'), 'success');
       }
       delayedNavigate(history, pageList);

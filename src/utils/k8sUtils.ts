@@ -12,8 +12,9 @@ export const createContourProxy = async (
   formData: FormData,
   namespace: string,
   k8sModel: K8sModel,
+  originalResponse?: any,
 ) => {
-  const yamlString = convertFormToYAML(formData);
+  const yamlString = convertFormToYAML(formData, originalResponse);
   const yamlData = load(yamlString);
 
   try {
