@@ -21,13 +21,14 @@ interface YAMLTabProps {
 const YAMLTab = ({ name, ns, router, refetch, addAlert }: YAMLTabProps) => {
   const { t } = useTranslation('plugin__contour-console-plugin');
   const [yamlData, setYamlData] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [yamlError, setYamlError] = useState<string | null>(null);
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
 
   useEffect(() => {
     if (router) {
       setYamlData(yamlDump(router));
+      setIsLoading(false);
     }
   }, [router]);
 
