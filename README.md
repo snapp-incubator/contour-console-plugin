@@ -3,6 +3,10 @@
 Route Generation Form for OpenShift's Contour Plugin
 Contour is an ingress controller for Kubernetes that works by deploying the Envoy proxy as a reverse proxy and load balancer. Contour supports dynamic configuration updates out of the box while maintaining a lightweight profile.
 
+## Demo
+
+![HTTPProxies Configuration UI](./demo-httpproxies.png)
+
 ## Development
 
 In one terminal window, run:
