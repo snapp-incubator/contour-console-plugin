@@ -7,6 +7,8 @@ export const DEFAULT_PADDING_CHART = {
   top: 20,
 };
 
+export const TLSType = 'kubernetes.io/tls';
+
 export const PROMETHEUS_API = {
   BASE_URL: '/api/prometheus/api/v1',
   QUERY_RANGE: '/api/prometheus/api/v1/query_range',
@@ -92,25 +94,24 @@ export const TLS_TERMINATION = {
   REENCRYPT: 're-encrypt',
 } as const;
 
+export const defaultSecret = {
+  metadata: {
+    name: 'openshift-ingress/letsencrypt',
+  },
+  type: TLSType,
+};
+
 export const DEFAULT_FORM_DATA = {
   name: '',
   ingressClassName: 'private',
   fqdn: '',
   routes: [DEFAULT_ROUTE],
   conditional: {
-    secureRoute: false,
+    secureRoute: true,
     permitInsecure: false,
     termination: TLS_TERMINATION.EDGE,
+    secrets: defaultSecret.metadata.name,
   },
-};
-
-export const TLSType = 'kubernetes.io/tls';
-
-export const defaultSecret = {
-  metadata: {
-    name: 'openshift-ingress/letsencrypt',
-  },
-  type: TLSType,
 };
 
 export const HTTP_PROXY_TEMPLATE = {

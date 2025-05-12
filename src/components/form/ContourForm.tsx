@@ -187,7 +187,7 @@ const ContourForm = ({
                         label: secret.metadata.name,
                         value: secret.metadata.name,
                       }))}
-                      value={formData?.conditional.secrets}
+                      value={secrets[0]?.metadata?.name}
                       onChange={(value) =>
                         updateFormData((prev) => ({
                           ...prev,
