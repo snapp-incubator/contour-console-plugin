@@ -1,34 +1,54 @@
-// Regular expression for valid domain
 const domainRegex = /^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
 
-export const convertToDomain = (value: string): string => {
-  if (value != null) {
-    // Regular expression for valid domain
-    const domainRegex = /^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
-
-    // Check if it's a valid domain
-    if (domainRegex.test(value)) {
-      return value;
-    }
-
-    const parts = value.split('.');
-    if (parts.length > 0) {
-      const hostname = window.location.hostname;
-      // Remove 'console' from the hostname
-      const cleanedHostname = hostname.replace(/^console\./, '');
-      return `${value}.${cleanedHostname}`;
-    }
+export const convertToDomain = (
+  ingressClassName: string,
+  fqdn: string,
+): string => {
+  if (!fqdn || fqdn.trim() === '') {
+    return fqdn;
   }
-  return value;
+
+  // Remove leading/trailing dots and whitespace
+  const cleanedValue = fqdn.trim().replace(/^\.+|\.+$/g, '');
+
+  if (domainRegex.test(cleanedValue)) {
+    return cleanedValue;
+  }
+
+  if (/^[a-zA-Z0-9-]+$/.test(cleanedValue)) {
+    const hostname = window.location.hostname;
+
+    // Extract domain parts
+    const [subdomain, currentIngressClass, cluster, ...regionParts] = hostname
+      .replace(/^console\./, '')
+      .split('.');
+
+    const region = regionParts.join('.');
+    const ingressClass = ingressClassName || currentIngressClass;
+
+    const domainParts = [subdomain, ingressClass, cluster, region].filter(
+      Boolean,
+    );
+
+    const newDomain = domainParts.join('.');
+    return `${cleanedValue}.${newDomain}`;
+  }
+
+  return fqdn;
 };
 
 export const convertToString = (value: string): string => {
   if (value != null) {
-    // Check if it's a valid domain
     if (domainRegex.test(value)) {
       return value;
     }
   }
 
   return value;
+};
+
+export const getBaseURL = () => {
+  const hostname = window.location.hostname;
+  const parts = hostname.split('.');
+  return parts.slice(1).join('.');
 };

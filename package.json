@@ -51,7 +51,7 @@
     "react-helmet": "^6.1.0",
     "react-i18next": "^13.0.0",
     "react-router": "5.2.0",
-    "react-router-dom": "5.2.0",
+    "react-router-dom": "^5.3.4",
     "style-loader": "^3.3.1",
     "stylelint": "^15.3.0",
     "stylelint-config-standard": "^31.0.0",
@@ -68,14 +68,20 @@
     "displayName": "OpenShift Console Contour Plugin",
     "description": "Route Generation Form for OpenShift's Contour Plugin",
     "exposedModules": {
-      "CreateRoute": "./components/CreateRoute"
+      "RouteHandlerPage": "./pages/index",
+      "RoutesList": "./pages/list",
+      "RouteDetails": "./pages/details"
     },
     "dependencies": {
       "@console/pluginAPI": "*"
     }
   },
   "dependencies": {
+    "@patternfly/react-charts": "^7.4.8",
+    "@patternfly/react-table": "^5.4.1",
     "@rjsf/core": "2.5.1",
-    "classnames": "^2.5.1"
+    "classnames": "^2.5.1",
+    "react-tag-input-component": "^2.0.2",
+    "zustand": "^5.0.1"
   }
 }
