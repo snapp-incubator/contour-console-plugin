@@ -4,6 +4,7 @@
     "properties": {
       "exact": true,
       "path": [
+        "/k8s/ns/:ns/routes/~new/form",
         "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy/~new",
         "/k8s/cluster/projectcontour.io~v1~HTTPProxy/~new",
         "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy/:name/edit"
@@ -18,6 +19,7 @@
     "properties": {
       "exact": true,
       "path": [
+        "/k8s/ns/:ns/routes",
         "/k8s/ns/:ns/projectcontour.io~v1~HTTPProxy",
         "/k8s/all-namespaces/projectcontour.io~v1~HTTPProxy"
       ],
