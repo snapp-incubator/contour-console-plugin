@@ -8,8 +8,8 @@ import { K8sResources } from '../types';
 import { SERVICE_MODEL, SECRET_MODEL, INGRESS_CLASSES } from '../constants';
 import { defaultSecret, TLSType } from '../constants';
 import {
-  INGRESS_CLASSE_SERVER,
-  INGRESS_CLASSE_URL,
+  INGRESS_CLASS_USE_REMOTE,
+  INGRESS_CLASS_URL,
 } from '../config/environment';
 
 export const useK8sResources = (namespace: string): K8sResources => {
@@ -27,9 +27,12 @@ export const useK8sResources = (namespace: string): K8sResources => {
   );
 
   const getIngressClasses = async () => {
-    if (INGRESS_CLASSE_SERVER) {
+    if (INGRESS_CLASS_USE_REMOTE && INGRESS_CLASS_URL) {
       try {
-        const response = await fetch(INGRESS_CLASSE_URL);
+        const response = await fetch(INGRESS_CLASS_URL);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
         const data = await response.json();
         const values = Object.values(data)[0] as string[];
         return values?.map((name: string) => ({
@@ -37,13 +40,20 @@ export const useK8sResources = (namespace: string): K8sResources => {
           label: name,
         }));
       } catch (fetchError) {
-        console.error('Error fetching from INGRESS_CLASSE_URL:', fetchError);
+        console.error(
+          'Error fetching ingress classes from config URL:',
+          fetchError,
+        );
       }
     }
     return INGRESS_CLASSES;
   };
 
   useEffect(() => {
+    if (!k8sModel || !k8sModelSecret) {
+      return;
+    }
+
     const fetchResources = async () => {
       try {
         const [servicesRes, secretsRes]: any = await Promise.all([
@@ -62,17 +72,17 @@ export const useK8sResources = (namespace: string): K8sResources => {
           loading: false,
           error: null,
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
         setResources((prev) => ({
           ...prev,
           loading: false,
-          error: err.message,
+          error: err instanceof Error ? err.message : String(err),
         }));
       }
     };
 
     fetchResources();
-  }, [namespace]);
+  }, [namespace, k8sModel, k8sModelSecret]);
 
   return resources;
 };
