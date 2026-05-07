@@ -3,6 +3,7 @@ import { FormData, Route } from '../types';
 import { K8sResourceCommon } from '@openshift-console/dynamic-plugin-sdk';
 import { convertToDomain } from './fqdnHandler';
 import { HTTP_PROXY_TEMPLATE, TLS_TERMINATION } from '../constants';
+import { getErrorMessage } from './errorUtils';
 
 const deepMerge = (target: any, source: any): any => {
   if (Array.isArray(source)) {
@@ -132,7 +133,7 @@ export const parseYAML = (yamlString: string): any => {
   try {
     return load(yamlString);
   } catch (error) {
-    throw new Error(`Error parsing YAML: ${error.message}`);
+    throw new Error(`Error parsing YAML: ${getErrorMessage(error)}`);
   }
 };
 

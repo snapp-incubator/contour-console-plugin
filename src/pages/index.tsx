@@ -40,6 +40,7 @@ import {
   getContourProxy,
 } from '../utils/k8sUtils';
 import { useToast, Toast } from '@/toast';
+import { getErrorMessage } from '../utils/errorUtils';
 
 import '../style.css';
 
@@ -86,13 +87,14 @@ const RouteHandlerPage = () => {
   const handleYamlChange = useCallback(
     (newYaml: string) => {
       setYamlData(newYaml);
-      setOriginalResponse(parseYAML(newYaml));
+      setYamlError(null);
       try {
+        setOriginalResponse(parseYAML(newYaml));
         const newFormData = convertYAMLToForm(newYaml);
         if (newFormData) {
           setFormData(newFormData);
         }
-      } catch (error) {
+      } catch {
         setYamlError(t('invalid_yaml_format'));
       }
     },
@@ -156,7 +158,7 @@ const RouteHandlerPage = () => {
       }
       delayedNavigate(history, pageList);
     } catch (err) {
-      setSaveError(err.message);
+      setSaveError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -164,28 +166,27 @@ const RouteHandlerPage = () => {
 
   useEffect(() => {
     const fetchProxyData = async () => {
-      if (isEdit) {
-        try {
-          setLoading(true);
-          const response: any = await getContourProxy(
-            k8sModel,
-            name,
-            namespace,
-          );
-          const formData = convertK8sToForm(response);
-          setOriginalResponse(response);
-          setFormData(formData);
-          setYamlData(response);
-        } catch (error) {
-          setSaveError(t('error_fetching_proxy', { error: error.message }));
-        } finally {
-          setLoading(false);
-        }
+      if (!isEdit || !name || !k8sModel) {
+        return;
+      }
+      try {
+        setLoading(true);
+        const response: any = await getContourProxy(k8sModel, name, namespace);
+        const nextFormData = convertK8sToForm(response);
+        setOriginalResponse(response);
+        setFormData(nextFormData);
+        setYamlData(convertFormToYAML(nextFormData, response));
+      } catch (error) {
+        setSaveError(
+          t('error_fetching_proxy', { error: getErrorMessage(error) }),
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProxyData();
-  }, [isEdit, name, namespace]);
+  }, [isEdit, name, namespace, k8sModel, t]);
 
   return (
     <>

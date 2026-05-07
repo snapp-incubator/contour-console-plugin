@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Helmet from 'react-helmet';
 import { useParams } from 'react-router-dom';
 import {
@@ -26,6 +26,7 @@ import { Toast, useToast } from '@/toast';
 import DetailsTab from '@/details/DetailsTab';
 import MetricsTab from '@/details/MetricsTab';
 import YAMLTab from '@/details/YAMLTab';
+import { getErrorMessage } from '../utils/errorUtils';
 
 const RouteDetails = () => {
   const { t } = useTranslation('plugin__contour-console-plugin');
@@ -37,7 +38,7 @@ const RouteDetails = () => {
   const [k8sModel] = useK8sModel(getGroupVersionKindForResource(CONTOUR_MODEL));
   const { alerts, addAlert, removeAlert } = useToast();
 
-  const fetchRouter = async () => {
+  const fetchRouter = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -48,17 +49,18 @@ const RouteDetails = () => {
       });
       setRouter(response as HTTPProxy);
     } catch (error) {
-      setError(error.message);
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
-  };
+  }, [k8sModel, ns, name]);
 
   useEffect(() => {
-    if (name && ns) {
-      fetchRouter();
+    if (!name || !ns || !k8sModel) {
+      return;
     }
-  }, [name, ns]);
+    fetchRouter();
+  }, [name, ns, k8sModel, fetchRouter]);
 
   const onSelect = (result: { itemId: number | string }) => {
     setActiveTabKey(result.itemId);

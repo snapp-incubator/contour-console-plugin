@@ -7,6 +7,7 @@ import {
 import { FormData } from '../types';
 import { convertFormToYAML } from './yamlUtils';
 import { load } from 'js-yaml';
+import { getErrorMessage } from './errorUtils';
 
 export const createContourProxy = async (
   formData: FormData,
@@ -31,7 +32,7 @@ export const createContourProxy = async (
 
     return response;
   } catch (error) {
-    throw new Error(`Failed to create HTTP Proxy: ${error.message}`);
+    throw new Error(`Failed to create HTTP Proxy: ${getErrorMessage(error)}`);
   }
 };
 
@@ -54,7 +55,7 @@ export const updateContourProxy = async (
     });
     return response;
   } catch (error) {
-    throw new Error(`Failed to update HTTP Proxy: ${error.message}`);
+    throw new Error(`Failed to update HTTP Proxy: ${getErrorMessage(error)}`);
   }
 };
 
@@ -71,6 +72,6 @@ export const getContourProxy = async (
     });
     return response;
   } catch (error) {
-    throw new Error(`Failed to get HTTP Proxy: ${error.message}`);
+    throw new Error(`Failed to get HTTP Proxy: ${getErrorMessage(error)}`);
   }
 };
