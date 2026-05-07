@@ -1,4 +1,5 @@
 import { constructConfigIngressUrl } from '../utils/urlHelpers';
 
-export const INGRESS_CLASSE_SERVER = true;
-export const INGRESS_CLASSE_URL = constructConfigIngressUrl();
+/** When true and {@link INGRESS_CLASS_URL} is set, fetch IngressClass names from config API; else use static list. */
+export const INGRESS_CLASS_USE_REMOTE = true;
+export const INGRESS_CLASS_URL = constructConfigIngressUrl();
