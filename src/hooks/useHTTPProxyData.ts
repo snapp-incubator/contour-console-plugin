@@ -28,6 +28,9 @@ export const useHTTPProxyData = (
 
   useEffect(() => {
     const fetchRoutes = async () => {
+      if (!k8sModel) {
+        return;
+      }
       try {
         const response = (await k8sGet({
           model: k8sModel,
@@ -46,7 +49,7 @@ export const useHTTPProxyData = (
     };
 
     fetchRoutes();
-  }, [namespace, refresh]);
+  }, [namespace, refresh, k8sModel, isAllNamespaces]);
 
   useEffect(() => {
     const filtered = searchValue
@@ -119,7 +122,7 @@ export const useHTTPProxyData = (
         resource: route,
         ns: namespace,
       });
-      setRefresh(true);
+      setRefresh((prev) => !prev);
     } catch (error) {
       console.error('Error deleting route:', error);
     }
