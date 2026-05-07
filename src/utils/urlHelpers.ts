@@ -10,8 +10,11 @@ export const isSnappgroupUrl = () => {
   return window.location.hostname.includes('snappgroup');
 };
 
-export const constructConfigIngressUrl = () => {
+/** Returns config-server URL for Contour ingress metadata, or null when the cluster domain cannot be detected. */
+export const constructConfigIngressUrl = (): string | null => {
   const browserClusterDomain = getClusterDomainFromBrowser();
-
+  if (!browserClusterDomain) {
+    return null;
+  }
   return `https://config-server.apps.private.${browserClusterDomain}/api/contour`;
 };
